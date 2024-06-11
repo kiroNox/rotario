@@ -1,0 +1,43 @@
+.show-password-container{
+	position: relative;
+}
+.show-password-container input{
+	padding-right: 2.5rem;
+	background-image: none !important;
+}
+.show-password-container .show-password-btn{
+	position: absolute;
+	top: 0;
+	right: 0;
+	cursor: pointer;
+	height: 100%;
+	width: 2.5rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	-moz-user-select: -moz-none;
+	-khtml-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+.show-password-container input:disabled + .show-password-btn{
+	opacity: .5;
+	cursor: default;
+}
+
+.cursor-pointer{
+	cursor: pointer !important;
+}
+.row-cursor-pointer tr {
+	cursor: pointer;
+}
+.no-select/*Evita seleccion (sombreado azul)*/
+{
+	-moz-user-select: -moz-none;
+	-khtml-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
