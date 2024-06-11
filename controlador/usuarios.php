@@ -40,6 +40,7 @@
 
 
 		$cl->set_con(null);
+		Bitacora::ingreso_modulo(2);
 		require_once("vista/".$pagina.".php");
 	}
 	else{

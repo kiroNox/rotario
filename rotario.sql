@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 11-06-2024 a las 08:02:51
+-- Tiempo de generación: 11-06-2024 a las 20:11:58
 -- Versión del servidor: 10.1.38-MariaDB
 -- Versión de PHP: 7.3.2
 
@@ -23,6 +23,26 @@ SET time_zone = "+00:00";
 --
 CREATE DATABASE IF NOT EXISTS `rotario` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 USE `rotario`;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `bitacora`
+--
+
+CREATE TABLE `bitacora` (
+  `id_usuario` int(11) DEFAULT NULL,
+  `id_modulo` int(11) DEFAULT NULL,
+  `fecha` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `descripcion` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Volcado de datos para la tabla `bitacora`
+--
+
+INSERT INTO `bitacora` (`id_usuario`, `id_modulo`, `fecha`, `descripcion`) VALUES
+(1, NULL, '2024-06-11 18:09:41', 'Inicio de sesión');
 
 -- --------------------------------------------------------
 
@@ -127,13 +147,20 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`id_persona`, `id_rol`, `clave`, `token`) VALUES
-(1, 1, '$2y$10$T2pA0Ie3aXtjmUoecSo1C.R6A94Y74A3NX9oe0lEaX8WWJjSTQ6/a', '$2y$10$hq7ADJoUSP2KP2492lYlOeyPLT0oDCTAu1RQL9qj5D5QtRPm8Joym'),
+(1, 1, '$2y$10$T2pA0Ie3aXtjmUoecSo1C.R6A94Y74A3NX9oe0lEaX8WWJjSTQ6/a', '$2y$10$K6xe4BZDBf8qRFgJuzoIb.o2LlCKePMksBqXlOpq.QpfTbdrolqoe'),
 (12, 1, 'Hola123', '1'),
 (13, 1, 'Hola123', '1');
 
 --
 -- Índices para tablas volcadas
 --
+
+--
+-- Indices de la tabla `bitacora`
+--
+ALTER TABLE `bitacora`
+  ADD KEY `id_persona` (`id_usuario`),
+  ADD KEY `id_modulo` (`id_modulo`);
 
 --
 -- Indices de la tabla `modulos`
@@ -194,6 +221,13 @@ ALTER TABLE `roles`
 --
 -- Restricciones para tablas volcadas
 --
+
+--
+-- Filtros para la tabla `bitacora`
+--
+ALTER TABLE `bitacora`
+  ADD CONSTRAINT `bitacora_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id_persona`),
+  ADD CONSTRAINT `bitacora_ibfk_2` FOREIGN KEY (`id_modulo`) REFERENCES `modulos` (`id_modulo`);
 
 --
 -- Filtros para la tabla `permisos`

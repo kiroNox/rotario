@@ -92,35 +92,39 @@
 		document.getElementById('f1').onsubmit = function(e) {
 			e.preventDefault();
 
-			$("#f1 input").each((i,elem)=>{
-				if(!elem.validarme()){
-					return false;
-				}
-			});
+			muestraMensaje("Seguro?", "", "?", (resp)=>{
 
-			var datos = new FormData($("#f1")[0]);
-			datos.append("accion","registrar");
-			enviaAjax(datos,function(respuesta, exito, fail){
-			
-				var lee = JSON.parse(respuesta);
-				if(lee.resultado == "registrar"){
 
-					muestraMensaje("Exito", "Usuario nuevo registrado", "s");
-					
-				}
-				else if (lee.resultado == 'is-invalid'){
-					muestraMensaje(lee.titulo, lee.mensaje,"error");
-				}
-				else if(lee.resultado == "error"){
-					muestraMensaje(lee.titulo, lee.mensaje,"error");
-					console.error(lee.mensaje);
-				}
-				else if(lee.resultado == "console"){
-					console.log(lee.mensaje);
-				}
-				else{
-					muestraMensaje(lee.titulo, lee.mensaje,"error");
-				}
+				$("#f1 input").each((i,elem)=>{
+					if(!elem.validarme()){
+						return false;
+					}
+				});
+
+				var datos = new FormData($("#f1")[0]);
+				datos.append("accion","registrar");
+				enviaAjax(datos,function(respuesta, exito, fail){
+				
+					var lee = JSON.parse(respuesta);
+					if(lee.resultado == "registrar"){
+
+						muestraMensaje("Exito", "Usuario nuevo registrado", "s");
+						
+					}
+					else if (lee.resultado == 'is-invalid'){
+						muestraMensaje(lee.titulo, lee.mensaje,"error");
+					}
+					else if(lee.resultado == "error"){
+						muestraMensaje(lee.titulo, lee.mensaje,"error");
+						console.error(lee.mensaje);
+					}
+					else if(lee.resultado == "console"){
+						console.log(lee.mensaje);
+					}
+					else{
+						muestraMensaje(lee.titulo, lee.mensaje,"error");
+					}
+				});
 			});
 		}
 		

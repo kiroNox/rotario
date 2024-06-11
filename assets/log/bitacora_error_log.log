@@ -1,0 +1,6 @@
+2024-06-11 18:46:11 UTC 
+C:\xampp\htdocs\items_x\proyectos\rotario\modelo\bitacora.php LINE 67
+C:\xampp\htdocs\items_x\proyectos\rotario\controlador\usuarios.php LINE 43
+C:\xampp\htdocs\items_x\proyectos\rotario\index.php LINE 21
+SQLSTATE[42S02]: Base table or view not found: 1146 Table 'rotario.bitaco' doesn't exist
+

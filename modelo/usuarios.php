@@ -12,7 +12,7 @@ class Usuarios extends Conexion
 		// al instanciar la clase puede hacerce con una conexion vieja o no 
 		// se pasaria como argumento (para controlar transacciones)
 		// "con" = conexion
-		if(!($this->con instanceof PDO)){// si "con" no es una instancia de PDO
+		if(!($con instanceof PDO)){// si "con" no es una instancia de PDO
 			$this->con = $this->conecta();// crea la conexion 
 		}
 

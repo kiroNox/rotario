@@ -8,7 +8,7 @@ class Loging extends Conexion
 		// al instanciar la clase puede hacerce con una conexion vieja o no 
 		// se pasaria como argumento (para controlar transacciones)
 		// "con" = conexion
-		if(!($this->con instanceof PDO)){// si "con" no es una instancia de PDO
+		if(!($con instanceof PDO)){// si "con" no es una instancia de PDO
 			$this->con = $this->conecta();// crea la conexion 
 		}
 
@@ -58,6 +58,8 @@ class Loging extends Conexion
 
 					$_SESSION["token_rotario"] = $token;
 					$_SESSION["usuario_rotario"] = $id;
+
+					Bitacora::registro($this->con, NULL, "Inicio de sesión");
 					$this->con->commit();
 				}
 				else{// si la contraseña es erronea lanza la exception
@@ -78,6 +80,11 @@ class Loging extends Conexion
 					// se aplique el rollback
 				}
 			}
+			if(isset($_SESSION["token_rotario"])){
+
+				session_unset();
+				session_destroy();
+			}
 			$r['resultado'] = 'is-invalid';
 			$r['titulo'] = 'Error';
 			$r['mensaje'] =  $e->getMessage();
@@ -88,6 +95,11 @@ class Loging extends Conexion
 				if($this->con->inTransaction()){
 					$this->con->rollBack();
 				}
+			}
+			if(isset($_SESSION["token_rotario"])){
+
+				session_unset();
+				session_destroy();
 			}
 			$r['resultado'] = 'error';
 			$r['titulo'] = 'Error';
