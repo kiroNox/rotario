@@ -5,7 +5,10 @@
 
 		if(!empty($_POST)){// si hay alguna consulta tipo POST
 			$accion = $_POST["accion"];// siempre se pasa un parametro con la accion que se va a realizar
-			if($accion == "registrar"){
+			if($accion == "valid_cedula"){
+				echo json_encode( $cl->valid_cedula($_POST["cedula"]) );
+			}
+			else if($accion == "registrar"){
 				if(isset($permisos["usuarios"]["crear"]) and $permisos["usuarios"]["crear"] == "1"){
 					$resp = $cl->registrar_s(
 						$_POST["cedula"],
@@ -31,6 +34,10 @@
 				else{
 					$cl->no_permision_msg();
 				}
+			}
+			else if($accion == "listar"){
+				if($permisos["usuarios"]["consultar"])
+				echo json_encode( $cl->listar_usuarios() );
 			}
 
 			$cl->set_con(null);

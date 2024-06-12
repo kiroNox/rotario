@@ -70,6 +70,55 @@ class Usuarios extends Conexion
 		return $this->registrar();
 	}
 
+	PUBLIC function valid_cedula ($cedula){
+		try {
+			Validaciones::validarCedula($cedula);
+			$this->validar_conexion($this->con);
+			$this->con->beginTransaction();
+
+			$consulta = $this->con->prepare("SELECT 1 FROM personas WHERE cedula = ?;");
+			$consulta->execute([$cedula]);
+
+			if($consulta->fetch()){
+				$r["mensaje"] = 1;//existe
+			}
+			else{
+				$r["mensaje"] = 0;//no existe
+			}
+			// code
+			
+			$r['resultado'] = 'valid_cedula';
+			
+			$this->con->commit();
+		
+		} catch (Validaciones $e){
+			if($this->con instanceof PDO){
+				if($this->con->inTransaction()){
+					$this->con->rollBack();
+				}
+			}
+			$r['resultado'] = 'is-invalid';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+			$r['console'] =  $e->getMessage().": Code : ".$e->getLine();
+		} catch (Exception $e) {
+			if($this->con instanceof PDO){
+				if($this->con->inTransaction()){
+					$this->con->rollBack();
+				}
+			}
+		
+			$r['resultado'] = 'error';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+			//$r['mensaje'] =  $e->getMessage().": LINE : ".$e->getLine();
+		}
+		finally{
+			//$this->con = null;
+		}
+		return $r;
+	}
+
 	PRIVATE function registrar(){
 		try {
 			$this->validar_conexion($this->con);
@@ -81,6 +130,8 @@ class Usuarios extends Conexion
 			Validaciones::validarEmail($this->correo);
 			Validaciones::numero($this->id_rol,"1,","El rol seleccionado no es valido");
 			Validaciones::validarContrasena($this->pass);
+
+			$this->pass = password_hash($this->pass, PASSWORD_DEFAULT);
 
 			$consulta = $this->con->prepare("SELECT 1 FROM roles WHERE id_rol = ?;");
 			$consulta->execute([$this->id_rol]);
@@ -170,6 +221,8 @@ class Usuarios extends Conexion
 		}
 		return $r;
 	}
+
+	
 
 
 	PUBLIC function get_cedula(){

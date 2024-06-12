@@ -5,7 +5,7 @@ if( !in_array($pagina, $excepciones_p) ){
 		$con = $clase->conecta();
 		try {
 			$consulta = $con->prepare("SELECT 
-											m.descripcion, perm.crear,perm.modificar,perm.eliminar,perm.consultar
+											m.nombre, perm.crear,perm.modificar,perm.eliminar,perm.consultar
 											FROM
 											usuarios as u
 											LEFT JOIN roles as r 
@@ -13,7 +13,7 @@ if( !in_array($pagina, $excepciones_p) ){
 											LEFT JOIN permisos as perm
 											on perm.id_rol = r.id_rol
 											LEFT JOIN modulos as m
-											on m.id_modulo = perm.id_modulo
+											on m.id_modulos = perm.id_modulos
 
 											WHERE 
 											u.id_persona = ? AND
@@ -24,7 +24,7 @@ if( !in_array($pagina, $excepciones_p) ){
 			if($consulta){// si el token es valido retorna los permisos del usuario
 				$permisos = array();
 				foreach ($consulta as $elem) {
-					$permisos[$elem['descripcion']] = array('crear' => $elem["crear"], "modificar" => $elem["modificar"], "eliminar" => $elem["eliminar"], "consultar" => $elem["consultar"] );
+					$permisos[$elem['nombre']] = array('crear' => $elem["crear"], "modificar" => $elem["modificar"], "eliminar" => $elem["eliminar"], "consultar" => $elem["consultar"] );
 				}
 				// guarda en la variable global "$permisos" los permisos del usuario de tal modo que
 				// $permisos["inicio"]["consultar"] me retornara el permiso de consultar en el modulo de incio
