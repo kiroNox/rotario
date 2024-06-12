@@ -2,7 +2,6 @@
 <html lang="es">
 <head>
 	<?php require_once 'assets/comun/head.php'; ?>
-	<?php require_once 'assets/comun/menu_head.php'; ?>
 	<title>Inicio</title>
 </head>
 <body>
