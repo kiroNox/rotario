@@ -1,5 +1,6 @@
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
 <link rel="stylesheet" type="text/css" href="<?=BASE_URL; ?>/assets/general/bootstrap/css/bootstrap.css">
 <link rel="stylesheet" type="text/css" href="<?=BASE_URL; ?>/assets/general/bootstrap-icons/bootstrap-icons.min.css">
 <link rel="stylesheet" type="text/css" href="<?=BASE_URL; ?>/assets/general/datatables/datatables.css"/> 
@@ -17,6 +18,3 @@
 
 <!-- Custom scripts for all pages-->
 <script src="assets/js/sb-admin-2.min.js"></script>
-
-<!-- Bootstrap core JavaScript-->
-<script src="assets/jquery/jquery.min.js"></script>
