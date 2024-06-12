@@ -35,9 +35,34 @@
 					$cl->no_permision_msg();
 				}
 			}
-			else if($accion == "listar"){
-				if($permisos["usuarios"]["consultar"])
-				echo json_encode( $cl->listar_usuarios() );
+			else if($accion == "listar_usuarios"){
+				if($permisos["usuarios"]["consultar"]){
+					echo json_encode( $cl->listar_usuarios() );
+				}
+				else{
+					$cl->no_permision_msg();
+				}
+			}
+			else if($accion == "modificar_usuario"){
+				if($permisos["usuarios"]["modificar"]){
+					echo json_encode( $cl->modificar_usuario_s(
+						$_POST["id"],
+						$_POST["cedula"],
+						$_POST["nombre"],
+						$_POST["apellido"],
+						$_POST["telefono"],
+						$_POST["correo"],
+						$_POST["rol"],
+						$_POST["pass"]
+					) );
+				}
+				else{
+					$cl->no_permision_msg();
+				}
+			}
+
+			else if($accion == "get_user"){
+				echo json_encode( $cl->get_user($_POST["id"]));
 			}
 
 			$cl->set_con(null);

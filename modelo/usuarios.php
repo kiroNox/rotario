@@ -5,7 +5,7 @@
  */
 class Usuarios extends Conexion
 {
-	PRIVATE $cedula, $nombre, $apellido, $telefono, $correo, $id_rol, $pass, $con;
+	PRIVATE $cedula, $nombre, $apellido, $telefono, $correo, $id_rol, $pass, $con, $id;
 
 	function __construct($con = '')
 	{
@@ -70,6 +70,19 @@ class Usuarios extends Conexion
 		return $this->registrar();
 	}
 
+	PUBLIC function modificar_usuario_s($modificar_id, $cedula, $nombre, $apellido, $telefono, $correo, $rol, $pass ){
+		$this->set_id($modificar_id);
+		$this->set_cedula($cedula);
+		$this->set_nombre($nombre);
+		$this->set_apellido($apellido);
+		$this->set_telefono($telefono);
+		$this->set_correo($correo);
+		$this->set_id_rol($rol);
+		$this->set_pass($pass);
+
+		return $this->modificar_usuario();
+	}
+
 	PUBLIC function valid_cedula ($cedula){
 		try {
 			Validaciones::validarCedula($cedula);
@@ -89,6 +102,155 @@ class Usuarios extends Conexion
 			
 			$r['resultado'] = 'valid_cedula';
 			
+			$this->con->commit();
+		
+		} catch (Validaciones $e){
+			if($this->con instanceof PDO){
+				if($this->con->inTransaction()){
+					$this->con->rollBack();
+				}
+			}
+			$r['resultado'] = 'is-invalid';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+			$r['console'] =  $e->getMessage().": Code : ".$e->getLine();
+		} catch (Exception $e) {
+			if($this->con instanceof PDO){
+				if($this->con->inTransaction()){
+					$this->con->rollBack();
+				}
+			}
+		
+			$r['resultado'] = 'error';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+			//$r['mensaje'] =  $e->getMessage().": LINE : ".$e->getLine();
+		}
+		finally{
+			//$this->con = null;
+		}
+		return $r;
+	}
+
+	PUBLIC function listar_usuarios(){
+		try {
+			$this->validar_conexion($this->con);
+			$this->con->beginTransaction();
+			$consulta = $this->con->query("SELECT p.id_persona,cedula,nombre,apellido,telefono,correo, r.descripcion as rol FROM personas as p join usuarios as u on u.id_persona = p.id_persona left join roles as r on r.id_rol = u.id_rol WHERE 1;")->fetchall(PDO::FETCH_NUM);
+
+
+			
+			$r['resultado'] = 'listar_usuarios';
+			$r['titulo'] = 'Éxito';
+			$r['mensaje'] = $consulta;
+			$this->con->commit();
+		
+		} catch (Validaciones $e){
+			if($this->con instanceof PDO){
+				if($this->con->inTransaction()){
+					$this->con->rollBack();
+				}
+			}
+			$r['resultado'] = 'is-invalid';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+			$r['console'] =  $e->getMessage().": Code : ".$e->getLine();
+		} catch (Exception $e) {
+			if($this->con instanceof PDO){
+				if($this->con->inTransaction()){
+					$this->con->rollBack();
+				}
+			}
+		
+			$r['resultado'] = 'error';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+			//$r['mensaje'] =  $e->getMessage().": LINE : ".$e->getLine();
+		}
+		finally{
+			//$this->con = null;
+		}
+		return $r;
+	}
+
+	PUBLIC function get_user($id){
+		try {
+			$this->validar_conexion($this->con);
+			$this->con->beginTransaction();
+			$consulta = $this->con->prepare("SELECT p.*,r.id_rol as rol FROM personas as p left join usuarios as u on u.id_persona = p.id_persona left join roles as r on r.id_rol = u.id_rol WHERE u.id_persona = ?;");
+			$consulta->execute([$id]);
+
+
+			
+			$r['resultado'] = 'get_user';
+			$r['titulo'] = 'Éxito';
+			$r['mensaje'] =  $consulta->fetch(PDO::FETCH_ASSOC);
+			//$this->con->commit();
+		
+		} catch (Validaciones $e){
+			if($this->con instanceof PDO){
+				if($this->con->inTransaction()){
+					$this->con->rollBack();
+				}
+			}
+			$r['resultado'] = 'is-invalid';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+			$r['console'] =  $e->getMessage().": Code : ".$e->getLine();
+		} catch (Exception $e) {
+			if($this->con instanceof PDO){
+				if($this->con->inTransaction()){
+					$this->con->rollBack();
+				}
+			}
+		
+			$r['resultado'] = 'error';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+			//$r['mensaje'] =  $e->getMessage().": LINE : ".$e->getLine();
+		}
+		finally{
+			//$this->con = null;
+		}
+		return $r;
+	}
+
+	PRIVATE function modificar_usuario(){
+		try {
+
+			// TODO Validaciones
+
+			$this->validar_conexion($this->con);
+			$this->con->beginTransaction();
+			$consulta = $this->con->prepare("SELECT * FROM personas WHERE id_persona = ?;");
+			$consulta->execute([$this->id]);
+
+			$usuario = $consulta->fetch(PDO::FETCH_ASSOC);
+
+			if($usuario["cedula"] != $this->cedula){
+				$consulta = $this->con->prepare("SELECT 1 FROM personas WHERE cedula = ? LIMIT 1;");
+				$consulta->execute([$this->cedula]);
+
+				if($consulta->fetch()){
+					throw new Exception("La nueva cedula ($this->cedula) ya existe", 1);
+				}
+			}
+
+			$consulta = $this->con->prepare("UPDATE `personas` 
+				SET 
+				`nombre`=:nombre,`apellido`=:apellido,`telefono`=:telefono,`correo`=:correo WHERE id_persona = :id_persona;");
+
+			$consulta->bindValue(":nombre",$this->nombre);
+			$consulta->bindValue(":apellido",$this->apellido);
+			$consulta->bindValue(":telefono",$this->telefono);
+			$consulta->bindValue(":correo",$this->correo);
+			$consulta->bindValue(":id_persona",$this->id);
+			$consulta->execute();
+
+
+			
+			$r['resultado'] = 'modificar_usuario';
+			$r['titulo'] = 'Éxito';
 			$this->con->commit();
 		
 		} catch (Validaciones $e){
@@ -274,6 +436,13 @@ class Usuarios extends Conexion
 	}
 	PUBLIC function set_con($value){
 		$this->con = $value;
+	}
+
+	PUBLIC function get_id(){
+		return $this->id;
+	}
+	PUBLIC function set_id($value){
+		$this->id = $value;
 	}
 }
 
