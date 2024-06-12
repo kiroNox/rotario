@@ -2,9 +2,14 @@
 <html lang="es">
 <head>
 	<?php require_once 'assets/comun/head.php'; ?>
+	<?php require_once 'assets/comun/menu_head.php'; ?>
 	<title>Inicio</title>
 </head>
 <body>
+
+		<?php
+			require_once("assets/comun/menu.php");
+		?>
 	<div class="container text-center">
 		<h1>SESION INICIADA</h1>
 		

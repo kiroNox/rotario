@@ -9,3 +9,14 @@
 <script type="text/javascript" src="<?=BASE_URL; ?>/assets/general/datatables/datatables.min.js"></script>
 <script type="text/javascript" src="<?=BASE_URL; ?>/assets/js/comun/comun-x.js"></script>
 <script type="text/javascript" src="<?=BASE_URL; ?>/assets/js/comun/sweetalert2.js"></script>
+
+<link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+
+<!-- Core plugin JavaScript-->
+<script src="assets/jquery-easing/jquery.easing.min.js"></script>
+
+<!-- Custom scripts for all pages-->
+<script src="assets/js/sb-admin-2.min.js"></script>
+
+<!-- Bootstrap core JavaScript-->
+<script src="assets/jquery/jquery.min.js"></script>

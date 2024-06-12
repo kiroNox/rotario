@@ -4,3 +4,183 @@ C:\xampp\htdocs\items_x\proyectos\rotario\controlador\usuarios.php LINE 43
 C:\xampp\htdocs\items_x\proyectos\rotario\index.php LINE 21
 SQLSTATE[42S02]: Base table or view not found: 1146 Table 'rotario.bitaco' doesn't exist
 
+2024-06-12 19:47:41 UTC 
+C:\xampp\htdocs\rotario\modelo\bitacora.php LINE 67
+C:\xampp\htdocs\rotario\controlador\administrar_empleado.php LINE 50
+C:\xampp\htdocs\rotario\index.php LINE 21
+SQLSTATE[42S22]: Column not found: 1054 Unknown column 'id_modulo' in 'field list'
+
+2024-06-12 19:48:30 UTC 
+C:\xampp\htdocs\rotario\modelo\bitacora.php LINE 67
+C:\xampp\htdocs\rotario\controlador\administrar_empleado.php LINE 50
+C:\xampp\htdocs\rotario\index.php LINE 21
+SQLSTATE[42S22]: Column not found: 1054 Unknown column 'id_modulo' in 'field list'
+
+2024-06-12 19:49:42 UTC 
+C:\xampp\htdocs\rotario\modelo\bitacora.php LINE 67
+C:\xampp\htdocs\rotario\controlador\administrar_empleado.php LINE 50
+C:\xampp\htdocs\rotario\index.php LINE 21
+SQLSTATE[42S22]: Column not found: 1054 Unknown column 'id_modulo' in 'field list'
+
+2024-06-12 19:50:49 UTC 
+C:\xampp\htdocs\rotario\modelo\bitacora.php LINE 67
+C:\xampp\htdocs\rotario\controlador\administrar_empleado.php LINE 50
+C:\xampp\htdocs\rotario\index.php LINE 21
+SQLSTATE[42S22]: Column not found: 1054 Unknown column 'id_modulo' in 'field list'
+
+2024-06-12 19:53:31 UTC 
+C:\xampp\htdocs\rotario\modelo\bitacora.php LINE 67
+C:\xampp\htdocs\rotario\controlador\administrar_empleado.php LINE 50
+C:\xampp\htdocs\rotario\index.php LINE 21
+SQLSTATE[42S22]: Column not found: 1054 Unknown column 'id_modulo' in 'field list'
+
+2024-06-12 19:53:34 UTC 
+C:\xampp\htdocs\rotario\modelo\bitacora.php LINE 67
+C:\xampp\htdocs\rotario\controlador\administrar_empleado.php LINE 50
+C:\xampp\htdocs\rotario\index.php LINE 21
+SQLSTATE[42S22]: Column not found: 1054 Unknown column 'id_modulo' in 'field list'
+
+2024-06-12 19:53:36 UTC 
+C:\xampp\htdocs\rotario\modelo\bitacora.php LINE 67
+C:\xampp\htdocs\rotario\controlador\administrar_empleado.php LINE 50
+C:\xampp\htdocs\rotario\index.php LINE 21
+SQLSTATE[42S22]: Column not found: 1054 Unknown column 'id_modulo' in 'field list'
+
+2024-06-12 19:56:28 UTC 
+C:\xampp\htdocs\rotario\modelo\bitacora.php LINE 67
+C:\xampp\htdocs\rotario\controlador\administrar_empleado.php LINE 50
+C:\xampp\htdocs\rotario\index.php LINE 21
+SQLSTATE[42S22]: Column not found: 1054 Unknown column 'id_modulo' in 'field list'
+
+2024-06-12 19:56:51 UTC 
+C:\xampp\htdocs\rotario\modelo\bitacora.php LINE 67
+C:\xampp\htdocs\rotario\controlador\administrar_empleado.php LINE 50
+C:\xampp\htdocs\rotario\index.php LINE 21
+SQLSTATE[42S22]: Column not found: 1054 Unknown column 'id_modulo' in 'field list'
+
+2024-06-12 19:58:30 UTC 
+C:\xampp\htdocs\rotario\modelo\bitacora.php LINE 67
+C:\xampp\htdocs\rotario\controlador\administrar_empleado.php LINE 50
+C:\xampp\htdocs\rotario\index.php LINE 21
+SQLSTATE[42S22]: Column not found: 1054 Unknown column 'id_modulo' in 'field list'
+
+2024-06-12 19:59:19 UTC 
+C:\xampp\htdocs\rotario\modelo\bitacora.php LINE 67
+C:\xampp\htdocs\rotario\controlador\administrar_empleado.php LINE 50
+C:\xampp\htdocs\rotario\index.php LINE 21
+SQLSTATE[42S22]: Column not found: 1054 Unknown column 'id_modulo' in 'field list'
+
+2024-06-12 19:59:31 UTC 
+C:\xampp\htdocs\rotario\modelo\bitacora.php LINE 67
+C:\xampp\htdocs\rotario\controlador\administrar_empleado.php LINE 50
+C:\xampp\htdocs\rotario\index.php LINE 21
+SQLSTATE[42S22]: Column not found: 1054 Unknown column 'id_modulo' in 'field list'
+
+2024-06-12 20:02:03 UTC 
+C:\xampp\htdocs\rotario\modelo\bitacora.php LINE 67
+C:\xampp\htdocs\rotario\controlador\administrar_empleado.php LINE 50
+C:\xampp\htdocs\rotario\index.php LINE 21
+SQLSTATE[42S22]: Column not found: 1054 Unknown column 'id_modulo' in 'field list'
+
+2024-06-12 20:02:39 UTC 
+C:\xampp\htdocs\rotario\modelo\bitacora.php LINE 67
+C:\xampp\htdocs\rotario\controlador\administrar_empleado.php LINE 50
+C:\xampp\htdocs\rotario\index.php LINE 21
+SQLSTATE[42S22]: Column not found: 1054 Unknown column 'id_modulo' in 'field list'
+
+2024-06-12 20:04:14 UTC 
+C:\xampp\htdocs\rotario\modelo\bitacora.php LINE 67
+C:\xampp\htdocs\rotario\controlador\administrar_empleado.php LINE 50
+C:\xampp\htdocs\rotario\index.php LINE 21
+SQLSTATE[42S22]: Column not found: 1054 Unknown column 'id_modulo' in 'field list'
+
+2024-06-12 20:05:52 UTC 
+C:\xampp\htdocs\rotario\modelo\bitacora.php LINE 67
+C:\xampp\htdocs\rotario\controlador\administrar_empleado.php LINE 50
+C:\xampp\htdocs\rotario\index.php LINE 21
+SQLSTATE[42S22]: Column not found: 1054 Unknown column 'id_modulo' in 'field list'
+
+2024-06-12 20:25:44 UTC 
+C:\xampp\htdocs\rotario\modelo\bitacora.php LINE 67
+C:\xampp\htdocs\rotario\controlador\administrar_empleado.php LINE 50
+C:\xampp\htdocs\rotario\index.php LINE 21
+SQLSTATE[42S22]: Column not found: 1054 Unknown column 'id_modulo' in 'field list'
+
+2024-06-12 20:26:29 UTC 
+C:\xampp\htdocs\rotario\modelo\bitacora.php LINE 67
+C:\xampp\htdocs\rotario\controlador\administrar_empleado.php LINE 50
+C:\xampp\htdocs\rotario\index.php LINE 21
+SQLSTATE[42S22]: Column not found: 1054 Unknown column 'id_modulo' in 'field list'
+
+2024-06-12 20:27:25 UTC 
+C:\xampp\htdocs\rotario\modelo\bitacora.php LINE 67
+C:\xampp\htdocs\rotario\controlador\administrar_empleado.php LINE 50
+C:\xampp\htdocs\rotario\index.php LINE 21
+SQLSTATE[42S22]: Column not found: 1054 Unknown column 'id_modulo' in 'field list'
+
+2024-06-12 20:27:45 UTC 
+C:\xampp\htdocs\rotario\modelo\bitacora.php LINE 67
+C:\xampp\htdocs\rotario\controlador\administrar_empleado.php LINE 50
+C:\xampp\htdocs\rotario\index.php LINE 21
+SQLSTATE[42S22]: Column not found: 1054 Unknown column 'id_modulo' in 'field list'
+
+2024-06-12 20:28:11 UTC 
+C:\xampp\htdocs\rotario\modelo\bitacora.php LINE 67
+C:\xampp\htdocs\rotario\controlador\administrar_empleado.php LINE 50
+C:\xampp\htdocs\rotario\index.php LINE 21
+SQLSTATE[42S22]: Column not found: 1054 Unknown column 'id_modulo' in 'field list'
+
+2024-06-12 20:28:51 UTC 
+C:\xampp\htdocs\rotario\modelo\bitacora.php LINE 67
+C:\xampp\htdocs\rotario\controlador\administrar_empleado.php LINE 50
+C:\xampp\htdocs\rotario\index.php LINE 21
+SQLSTATE[42S22]: Column not found: 1054 Unknown column 'id_modulo' in 'field list'
+
+2024-06-12 20:29:49 UTC 
+C:\xampp\htdocs\rotario\modelo\bitacora.php LINE 67
+C:\xampp\htdocs\rotario\controlador\administrar_empleado.php LINE 50
+C:\xampp\htdocs\rotario\index.php LINE 21
+SQLSTATE[42S22]: Column not found: 1054 Unknown column 'id_modulo' in 'field list'
+
+2024-06-12 20:30:28 UTC 
+C:\xampp\htdocs\rotario\modelo\bitacora.php LINE 67
+C:\xampp\htdocs\rotario\controlador\administrar_empleado.php LINE 50
+C:\xampp\htdocs\rotario\index.php LINE 21
+SQLSTATE[42S22]: Column not found: 1054 Unknown column 'id_modulo' in 'field list'
+
+2024-06-12 20:33:49 UTC 
+C:\xampp\htdocs\rotario\modelo\bitacora.php LINE 67
+C:\xampp\htdocs\rotario\controlador\administrar_empleado.php LINE 50
+C:\xampp\htdocs\rotario\index.php LINE 21
+SQLSTATE[42S22]: Column not found: 1054 Unknown column 'id_modulo' in 'field list'
+
+2024-06-12 20:36:41 UTC 
+C:\xampp\htdocs\rotario\modelo\bitacora.php LINE 67
+C:\xampp\htdocs\rotario\controlador\administrar_empleado.php LINE 50
+C:\xampp\htdocs\rotario\index.php LINE 21
+SQLSTATE[42S22]: Column not found: 1054 Unknown column 'id_modulo' in 'field list'
+
+2024-06-12 20:45:24 UTC 
+C:\xampp\htdocs\rotario\modelo\bitacora.php LINE 67
+C:\xampp\htdocs\rotario\controlador\administrar_empleado.php LINE 50
+C:\xampp\htdocs\rotario\index.php LINE 21
+SQLSTATE[42S22]: Column not found: 1054 Unknown column 'id_modulo' in 'field list'
+
+2024-06-12 20:52:16 UTC 
+C:\xampp\htdocs\rotario\modelo\bitacora.php LINE 67
+C:\xampp\htdocs\rotario\controlador\administrar_empleado.php LINE 50
+C:\xampp\htdocs\rotario\index.php LINE 21
+SQLSTATE[42S22]: Column not found: 1054 Unknown column 'id_modulo' in 'field list'
+
+2024-06-12 20:54:42 UTC 
+C:\xampp\htdocs\rotario\modelo\bitacora.php LINE 67
+C:\xampp\htdocs\rotario\controlador\administrar_empleado.php LINE 50
+C:\xampp\htdocs\rotario\index.php LINE 21
+SQLSTATE[42S22]: Column not found: 1054 Unknown column 'id_modulo' in 'field list'
+
+2024-06-12 21:00:36 UTC 
+C:\xampp\htdocs\rotario\modelo\bitacora.php LINE 67
+C:\xampp\htdocs\rotario\controlador\administrar_empleado.php LINE 50
+C:\xampp\htdocs\rotario\index.php LINE 21
+SQLSTATE[42S22]: Column not found: 1054 Unknown column 'id_modulo' in 'field list'
+
