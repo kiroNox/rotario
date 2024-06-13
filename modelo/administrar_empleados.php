@@ -5,7 +5,7 @@
  */
 class administrar_empleados extends Conexion
 {
-	PRIVATE $id, $desde, $hasta, $dias_totales, $descripcion, $tipo_reposo, $tipo_de_permiso;
+	PRIVATE $id, $desde, $hasta, $dias_totales, $descripcion, $tipo_reposo, $tipo_de_permiso, $cedula, $nombre, $apellido, $telefono, $correo, $numero_cuenta, $fecha_nacimiento, $sexo, $salario;
 
 	function __construct($con = '')
 	{
@@ -16,6 +16,22 @@ class administrar_empleados extends Conexion
 			$this->con = $this->conecta();// crea la conexion 
 		}
 
+	}
+
+	PUBLIC function registrar_trabajador($cedula, $nombre, $apellido, $telefono, $correo,$numero_cuenta, $fecha_nacimiento, $sexo, $intruccion, $salario){
+		$this->set_cedula($cedula);
+		$this->set_nombre($nombre);
+		$this->set_apellido($apellido);
+		$this->set_telefono($telefono);
+		$this->set_correo($correo);
+		$this->set_numero_cuenta($numero_cuenta);
+		$this->set_fecha_nacimiento($fecha_nacimiento);
+		$this->set_sexo($sexo);
+		$this->set_intruccion($intruccion);
+		$this->set_salario($salario);
+		
+
+		return $this->registrar_trab();
 	}
 
 	PUBLIC function registrar_vacaciones($desde, $hasta, $dias_totales, $descripcion,$id){
@@ -37,7 +53,7 @@ class administrar_empleados extends Conexion
 		return $this->modificar_usuario();
 	}
 
-	PUBLIC function registrar_reposo($desde, $hasta, $tipo_reposo, $descripcion,$id){
+	PUBLIC function registrar_reposo( $id, $tipo_reposo, $descripcion, $desde, $hasta){
 		$this->set_id($id);
 		$this->set_desde($desde);
 		$this->set_hasta($hasta);
@@ -128,11 +144,11 @@ class administrar_empleados extends Conexion
 		try {
 			$this->validar_conexion($this->con);
 			$this->con->beginTransaction();
-			$consulta = $this->con->query("SELECT p.cedula, p.nombre, p.apellido FROM trabajadores t INNER JOIN personas p ON t.id_persona = p.id_persona;")->fetchall(PDO::FETCH_NUM);
+			$consulta = $this->con->query("SELECT p.cedula, p.nombre, p.apellido, NULL as extra, t.id_trabajador FROM trabajadores t INNER JOIN personas p ON t.id_persona = p.id_persona;")->fetchall(PDO::FETCH_NUM);
 			
 
 			
-			$r['resultado'] = 'listar_usuarios';
+			$r['resultado'] = 'listar';
 			$r['titulo'] = 'Éxito';
 			$r['mensaje'] = $consulta;
 			$this->con->commit();
@@ -161,6 +177,96 @@ class administrar_empleados extends Conexion
 		}
 		finally{
 			//$this->con = null;
+		}
+		return $r;
+	}
+
+	PRIVATE function registrar_trab(){
+		try {
+			$this->validar_conexion($this->con);
+			$this->con->beginTransaction();
+
+			$consulta = $this->con->prepare("SELECT IF(u.id_persona is NULL,'null',u.id_persona) as usuario FROM personas AS p left join usuarios as u on p.id_persona = u.id_persona WHERE cedula = ?;");
+			$consulta->execute([$this->cedula]);
+			if($consulta = $consulta->fetch(PDO::FETCH_ASSOC)){
+				if($consulta["usuario"] != 'null'){
+					throw new Exception("El usuario con la cedula \"$this->cedula\" ya existe", 1);
+				}
+				else{
+					$id = $consulta["usuario"];
+
+					$consulta = $this->con->prepare("UPDATE `personas` 
+						SET 
+						`nombre`=:nombre,`apellido`=:apellido,`telefono`=:telefono,`correo`=:correo WHERE id_persona = :id_persona;");
+
+					$consulta->bindValue(":nombre",$this->nombre);
+					$consulta->bindValue(":apellido",$this->apellido);
+					$consulta->bindValue(":telefono",$this->telefono);
+					$consulta->bindValue(":correo",$this->correo);
+					$consulta->bindValue(":id_persona",$id);
+					$consulta->execute();
+
+
+					$consulta = $this->con->prepare("INSERT INTO `usuarios`(`id_persona`, `id_rol`, `clave`, `token`) VALUES (:id_persona, :id_rol, :clave, :token)");
+					$consulta->bindValue(":id_persona",$id);
+					$consulta->bindValue(":id_rol",$this->id_rol);
+					$consulta->bindValue(":clave",$this->pass);
+					$consulta->bindValue(":token","1");
+					$consulta->execute();
+				}
+				
+			}
+			else{
+
+				$consulta = $this->con->prepare("INSERT INTO `personas`( `cedula`, `nombre`, `apellido`, `telefono`, `correo`, `liquidacion`) VALUES (:cedula, :nombre, :apellido, :telefono, :correo, 0)");
+
+				$consulta->bindValue(":cedula",$this->cedula);
+				$consulta->bindValue(":nombre",$this->nombre);
+				$consulta->bindValue(":apellido",$this->apellido);
+				$consulta->bindValue(":telefono",$this->telefono);
+				$consulta->bindValue(":correo",$this->correo);
+				$consulta->execute();
+
+				$lastId = $this->con->lastInsertId();
+
+				$consulta = $this->con->prepare("INSERT INTO `trabajadores`(`id_persona`, `numero_cuenta`, `sexo`, `fecha_nacimiento`,`id_nivel_educativo`,`id_sueldos`) VALUES (:id_persona, :numero_cuenta, :sexo, :fecha_nacimiento, :intruccion, :salario)");
+				$consulta->bindValue(":id_persona",$lastId);
+				$consulta->bindValue(":numero_cuenta",$this->numero_cuenta);
+				$consulta->bindValue(":sexo",$this->sexo);
+				$consulta->bindValue(":fecha_nacimiento",$this->fecha_nacimiento);
+				$consulta->bindValue(":intruccion",$this->intruccion);
+				$consulta->bindValue(":salario",$this->salario);
+				$consulta->execute();
+
+			}
+			// code
+			
+			$r['resultado'] = 'registrar';
+			$r['titulo'] = 'Éxito';
+			$r['mensaje'] =  "";
+			$this->con->commit();
+		
+		} catch (Validaciones $e){
+			if($this->con instanceof PDO){
+				if($this->con->inTransaction()){
+					$this->con->rollBack();
+				}
+			}
+			$r['resultado'] = 'is-invalid';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+			$r['console'] =  $e->getMessage().": Code : ".$e->getLine();
+		} catch (Exception $e) {
+			if($this->con instanceof PDO){
+				if($this->con->inTransaction()){
+					$this->con->rollBack();
+				}
+			}
+		
+			$r['resultado'] = 'error';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+			//$r['mensaje'] =  $e->getMessage().": LINE : ".$e->getLine();
 		}
 		return $r;
 	}
@@ -353,9 +459,30 @@ class administrar_empleados extends Conexion
     }
 
 	
-
-	
-
+	PUBLIC function get_intruccion(){
+		return $this->intruccion;
+	}
+	PUBLIC function set_intruccion($value){
+		$this->intruccion = $value;
+	}
+	PUBLIC function get_salario(){
+		return $this->salario;
+	}
+	PUBLIC function set_salario($value){
+		$this->salario = $value;
+	}
+	PUBLIC function get_fecha_nacimiento(){
+		return $this->fecha_nacimiento;
+	}
+	PUBLIC function set_fecha_nacimiento($value){
+		$this->fecha_nacimiento = $value;
+	}
+	PUBLIC function get_sexo(){
+		return $this->sexo;
+	}
+	PUBLIC function set_sexo($value){
+		$this->sexo = $value;
+	}
 	PUBLIC function get_desde(){
 		return $this->desde;
 	}
@@ -392,9 +519,25 @@ class administrar_empleados extends Conexion
 	PUBLIC function set_tipo_de_permiso($value){
 		$this->tipo_de_permiso = $value;
 	}
+	PUBLIC function get_cedula(){
+		return $this->cedula;
+	}
+	PUBLIC function set_cedula($value){
+		$this->cedula = $value;
+	}
+	PUBLIC function get_nombre(){
+		return $this->nombre;
+	}
+	PUBLIC function set_nombre($value){
+		$value = Validaciones::removeWhiteSpace($value);
+		$this->nombre = $value;
+	}
 	PUBLIC function set_apellido($value){
 		$value = Validaciones::removeWhiteSpace($value);
 		$this->apellido = $value;
+	}
+	PUBLIC function get_apellido(){
+		return $this->apellido;
 	}
 	PUBLIC function get_telefono(){
 		return $this->telefono;
@@ -408,18 +551,19 @@ class administrar_empleados extends Conexion
 	PUBLIC function set_correo($value){
 		$this->correo = $value;
 	}
+	PUBLIC function get_numero_cuenta(){
+		return $this->numero_cuenta;
+	}
+	PUBLIC function set_numero_cuenta($value){
+		$this->numero_cuenta = $value;
+	}
 	PUBLIC function get_id_rol(){
 		return $this->id_rol;
 	}
 	PUBLIC function set_id_rol($value){
 		$this->id_rol = $value;
 	}
-	PUBLIC function get_pass(){
-		return $this->pass;
-	}
-	PUBLIC function set_pass($value){
-		$this->pass = $value;
-	}
+	
 	PUBLIC function get_con(){
 		return $this->con;
 	}

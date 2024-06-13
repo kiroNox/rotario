@@ -10,18 +10,38 @@
 			if ($accion == "registrar_vacaciones") {
 				if (isset($permisos["usuarios"]["crear"]) && $permisos["usuarios"]["crear"] == "1") {
 					$resp = $cl->registrar_vacaciones(
-						$_POST["id"],
 						$_POST["desde"],
 						$_POST["hasta"],
 						$_POST["dias_totales"],
-						$_POST["descripcion"]
+						$_POST["descripcion"],
+						$_POST["id"]
 						
 					);
 					echo json_encode($resp);
 				} else {
 					$cl->no_permision_msg();
 				}
-			} elseif ($accion == "registrar_reposo") {
+			} else if($accion == "registrar_trabajador"){
+				if(isset($permisos["usuarios"]["crear"]) and $permisos["usuarios"]["crear"] == "1"){
+					$resp = $cl->registrar_trabajador(
+						$_POST["cedula"],
+						$_POST["nombre"],
+						$_POST["apellido"],
+						$_POST["telefono"],
+						$_POST["correo"],
+						$_POST["numero_cuenta"],
+						$_POST["fecha_nacimiento"],
+						$_POST["sexo"],
+						$_POST["instruccion"],
+						$_POST["salario"]
+					);
+					echo json_encode($resp);
+				}
+				else{
+					$cl->no_permision_msg();
+				}
+
+			}elseif ($accion == "registrar_reposo") {
 				if (isset($permisos["usuarios"]["crear"]) && $permisos["usuarios"]["crear"] == "1") {
 					$resp = $cl->registrar_reposo(
 						$_POST["id"],
@@ -29,6 +49,7 @@
 						$_POST["descripcion_reposo"],
 						$_POST["fecha_inicio_reposo"],
 						$_POST["fecha_reincorporacion_reposo"]
+						
 						
 					);
 					echo json_encode($resp);
