@@ -10,7 +10,7 @@ $("#Logout_btn").on("click", (e)=>{
 	}).then((result) => {
 		if (result.isConfirmed) {
 			
-			//code
+			location.href="?p=out";
 	
 		}
 	});
