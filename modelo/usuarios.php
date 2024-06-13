@@ -307,7 +307,7 @@ class Usuarios extends Conexion
 
 			
 			$r['resultado'] = 'eliminar_usuario';
-			//$this->con->commit();
+			$this->con->commit();
 		
 		} catch (Validaciones $e){
 			if($this->con instanceof PDO){
