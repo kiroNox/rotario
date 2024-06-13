@@ -4,7 +4,6 @@
 <?php require_once 'assets/comun/head.php'; ?>
     <title>Asistente</title>
 </head>
-
 <body id="page-top">
     <div id="wrapper">
         <?php   require_once("assets/comun/menu.php"); ?>

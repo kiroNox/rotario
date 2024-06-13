@@ -17,7 +17,7 @@
 <li class="nav-item">
     <a class="nav-link" href="index.html">
         <i class="fas fa-fw fa-tachometer-alt"></i>
-        <span>Dashboard</span></a>
+        <span>Inicio</span></a>
 </li>
 
 <!-- Divider -->
@@ -25,7 +25,7 @@
 
 <!-- Heading -->
 <div class="sidebar-heading">
-    Interface
+    Recursos humanos
 </div>
 
 <!-- Nav Item - Pages Collapse Menu -->
@@ -33,14 +33,14 @@
     <a class="nav-link" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true"
         aria-controls="collapseTwo">
         <i class="fas fa-fw fa-cog"></i>
-        <span>Components</span>
+        <span>Gestion de usuarios</span>
     </a>
     <div id="collapseTwo" class="collapse show" aria-labelledby="headingTwo"
         data-parent="#accordionSidebar">
         <div class="bg-white py-2 collapse-inner rounded">
-            <h6 class="collapse-header">Custom Components:</h6>
-            <a class="collapse-item active" href="buttons.html">Buttons</a>
-            <a class="collapse-item" href="cards.html">Cards</a>
+            <a class="collapse-item active" href="#">Personal</a>
+            <a class="collapse-item" href="#">Usuarios</a>
+            <a class="collapse-item" href="#">Trabajadores</a>
         </div>
     </div>
 </li>
@@ -50,63 +50,94 @@
     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
         aria-expanded="true" aria-controls="collapseUtilities">
         <i class="fas fa-fw fa-wrench"></i>
-        <span>Utilities</span>
+        <span>Administracion</span>
     </a>
     <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
         data-parent="#accordionSidebar">
         <div class="bg-white py-2 collapse-inner rounded">
-            <h6 class="collapse-header">Custom Utilities:</h6>
-            <a class="collapse-item" href="utilities-color.html">Colors</a>
-            <a class="collapse-item" href="utilities-border.html">Borders</a>
-            <a class="collapse-item" href="utilities-animation.html">Animations</a>
-            <a class="collapse-item" href="utilities-other.html">Other</a>
+            <a class="collapse-item" href="#">Permisos</a>
+            <a class="collapse-item" href="#">Reporsos</a>
+            <a class="collapse-item" href="#">Vacaciones</a>
+            <a class="collapse-item" href="#">Nivel educativo</a>
+            <a class="collapse-item" href="#">Liquidacion</a>
         </div>
     </div>
 </li>
 
 <!-- Divider -->
-<hr class="sidebar-divider">
+
 
 <!-- Heading -->
-<div class="sidebar-heading">
-    Addons
-</div>
-
 <!-- Nav Item - Pages Collapse Menu -->
 <li class="nav-item">
     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages"
         aria-expanded="true" aria-controls="collapsePages">
         <i class="fas fa-fw fa-folder"></i>
-        <span>Pages</span>
+        <span>Areas / Asistencias</span>
     </a>
     <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
         <div class="bg-white py-2 collapse-inner rounded">
-            <h6 class="collapse-header">Login Screens:</h6>
-            <a class="collapse-item" href="login.html">Login</a>
-            <a class="collapse-item" href="register.html">Register</a>
-            <a class="collapse-item" href="forgot-password.html">Forgot Password</a>
-            <div class="collapse-divider"></div>
-            <h6 class="collapse-header">Other Pages:</h6>
-            <a class="collapse-item" href="404.html">404 Page</a>
-            <a class="collapse-item" href="blank.html">Blank Page</a>
+            <a class="collapse-item" href="#">Asistencia</a>
+            <a class="collapse-item" href="#">Areas</a>
+           
+        </div>
+    </div>
+</li>
+<hr class="sidebar-divider">
+
+<!-- Heading -->
+<div class="sidebar-heading">
+    Nomina
+</div>
+<li class="nav-item">
+    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseNomina"
+        aria-expanded="true" aria-controls="collapseNomina">
+        <i class="fas fa-fw fa-folder"></i>
+        <span>Gestio de nomina</span>
+    </a>
+    <div id="collapseNomina" class="collapse" aria-labelledby="headingNomina" data-parent="#accordionSidebar">
+        <div class="bg-white py-2 collapse-inner rounded">
+            <a class="collapse-item" href="#">Sueldos</a>
+            <a class="collapse-item" href="#">Asignaciones</a>
+            <a class="collapse-item" href="#">Deducciones</a>
+            <a class="collapse-item" href="#">Asignacion tiempo</a>
         </div>
     </div>
 </li>
 
-<!-- Nav Item - Charts -->
+
 <li class="nav-item">
-    <a class="nav-link" href="charts.html">
-        <i class="fas fa-fw fa-chart-area"></i>
-        <span>Charts</span></a>
+    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseFacturas"
+        aria-expanded="true" aria-controls="collapseFacturas">
+        <i class="fas fa-fw fa-folder"></i>
+        <span>Gestio de pagos</span>
+    </a>
+    <div id="collapseFacturas" class="collapse" aria-labelledby="headingPagos" data-parent="#accordionSidebar">
+        <div class="bg-white py-2 collapse-inner rounded">
+            <a class="collapse-item" href="#">Facturar</a>
+            
+        </div>
+    </div>
 </li>
 
-<!-- Nav Item - Tables -->
+<div class="sidebar-heading">
+    Administracion de usuario
+</div>
 <li class="nav-item">
-    <a class="nav-link" href="tables.html">
-        <i class="fas fa-fw fa-table"></i>
-        <span>Tables</span></a>
+    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseAdministracion"
+        aria-expanded="true" aria-controls="collapseAdministracion">
+        <i class="fas fa-fw fa-folder"></i>
+        <span>Configuracion</span>
+    </a>
+    <div id="collapseAdministracion" class="collapse" aria-labelledby="headingNomina" data-parent="#accordionSidebar">
+        <div class="bg-white py-2 collapse-inner rounded">
+            <a class="collapse-item" href="#">Bitacora</a>
+            <a class="collapse-item" href="#">Roles</a>
+            <a class="collapse-item" href="#">Permisos</a>
+            <a class="collapse-item" href="#">Modulos</a>
+        </div>
+    </div>
 </li>
-
 <!-- Divider -->
 <hr class="sidebar-divider d-none d-md-block">
 
