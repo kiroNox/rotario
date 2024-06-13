@@ -31,7 +31,7 @@
 			<!-- Main Content -->
 			<div id="content">
 
-				<?php require_once 'assets/comun/nav_head.php'; ?>
+				<?php require_once 'assets/comun/navar.php'; ?>
 
 				
 
@@ -122,8 +122,8 @@
 					<div class="modal fade" tabindex="-1" role="dialog" id="modal_modificar_usaurio">
 						<div class="modal-dialog modal-xl" role="document">
 							<div class="modal-content">
-								<div class="modal-header text-light bg-info">
-									<h5 class="modal-title">MODAL_TITLE</h5>
+								<div class="modal-header text-light bg-primary">
+									<h5 class="modal-title">Usuario</h5>
 									<button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
 										<span aria-hidden="true">&times;</span>
 									</button>
@@ -165,8 +165,8 @@
 												</div>
 												<span id="invalid-span-pass_modificar" class="invalid-span text-danger"></span>
 												<div class="text-center mt-4">
-													<button type="submit" class="btn btn-warning">Modificar</button>
-													<button type="button" class="btn btn-danger" onclick="alert('nop, no hace nada');">Eliminar</button>
+													<button type="submit" class="btn btn-warning text-dark" id="btn_modificar">Modificar</button>
+													<button type="button" class="btn btn-danger" id="btn_eliminar" onclick="alert('nop, no hace nada');">Eliminar</button>
 
 												</div>
 										</div>

@@ -60,6 +60,14 @@
 					$cl->no_permision_msg();
 				}
 			}
+			else if($accion == "eliminar_usuario"){
+				if(isset($permisos["usuarios"]["eliminar"]) and $permisos["usuarios"]["eliminar"] == "1"){
+					echo json_encode( $cl->eliminar_usuario_s($_POST["id"]) );
+				}
+				else{
+					$cl->no_permision_msg();
+				}
+			}
 
 			else if($accion == "get_user"){
 				echo json_encode( $cl->get_user($_POST["id"]));

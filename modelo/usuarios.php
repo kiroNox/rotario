@@ -83,6 +83,14 @@ class Usuarios extends Conexion
 		return $this->modificar_usuario();
 	}
 
+	PUBLIC function eliminar_usuario_s($id){
+		$this->set_id($id);
+
+		return $this->eliminar_usuario();
+	}
+
+
+
 	PUBLIC function valid_cedula ($cedula){
 		try {
 			Validaciones::validarCedula($cedula);
@@ -288,10 +296,17 @@ class Usuarios extends Conexion
 			
 			$consulta = $this->con->prepare("SELECT 1 FROM usuarios WHERE id_persona = ?;");
 			$consulta->execute([$this->id]);
+
+			if(!$consulta->fetch()){
+				throw new Exception("El usuario seleccionado no existe", 1);
+			}
+
+			$consulta = $this->con->prepare("DELETE FROM usuarios WHERE id_persona = ?");
+			$consulta->execute([$this->id]);
+
+
 			
-			$r['resultado'] = 'console';
-			$r['titulo'] = 'Éxito';
-			$r['mensaje'] =  "";
+			$r['resultado'] = 'eliminar_usuario';
 			//$this->con->commit();
 		
 		} catch (Validaciones $e){
@@ -313,7 +328,12 @@ class Usuarios extends Conexion
 		
 			$r['resultado'] = 'error';
 			$r['titulo'] = 'Error';
+				;
 			$r['mensaje'] =  $e->getMessage();
+			if($e->getCode() == "23000"){
+				$r['mensaje'] =  "El usuario no puede ser eliminado debido a que tiene registros relacionados";
+			}
+			
 			//$r['mensaje'] =  $e->getMessage().": LINE : ".$e->getLine();
 		}
 		finally{
