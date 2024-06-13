@@ -50,7 +50,7 @@ class Loging extends Conexion
 
 
 					// para cambiar en el futuro para el jwt 
-					$token = password_hash($consulta["id_persona"].$consulta["cedula"], PASSWORD_DEFAULT);
+					$token = password_hash($consulta["id_persona"].$consulta["cedula"].date("Y-m-d h:i:s"), PASSWORD_DEFAULT);
 					$id = $consulta["id_persona"];
 					
 					$consulta = $this->con->prepare("UPDATE usuarios SET token = ? WHERE id_persona = ?");
