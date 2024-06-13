@@ -280,6 +280,47 @@ class Usuarios extends Conexion
 		}
 		return $r;
 	}
+	PRIVATE function eliminar_usuario(){
+
+		try {
+			$this->validar_conexion($this->con);
+			$this->con->beginTransaction();
+			
+			$consulta = $this->con->prepare("SELECT 1 FROM usuarios WHERE id_persona = ?;");
+			$consulta->execute([$this->id]);
+			
+			$r['resultado'] = 'console';
+			$r['titulo'] = 'Éxito';
+			$r['mensaje'] =  "";
+			//$this->con->commit();
+		
+		} catch (Validaciones $e){
+			if($this->con instanceof PDO){
+				if($this->con->inTransaction()){
+					$this->con->rollBack();
+				}
+			}
+			$r['resultado'] = 'is-invalid';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+			$r['console'] =  $e->getMessage().": Code : ".$e->getLine();
+		} catch (Exception $e) {
+			if($this->con instanceof PDO){
+				if($this->con->inTransaction()){
+					$this->con->rollBack();
+				}
+			}
+		
+			$r['resultado'] = 'error';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+			//$r['mensaje'] =  $e->getMessage().": LINE : ".$e->getLine();
+		}
+		finally{
+			//$this->con = null;
+		}
+		return $r;
+	}
 
 	PRIVATE function registrar(){
 		try {

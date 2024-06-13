@@ -1,4 +1,6 @@
 <?php 
+
+// TODO si no esta la tabla permisos deja entrar
 if( !in_array($pagina, $excepciones_p) ){
 	if(isset($_SESSION["usuario_rotario"])){
 		$clase = new Conexion;
@@ -29,7 +31,7 @@ if( !in_array($pagina, $excepciones_p) ){
 				// guarda en la variable global "$permisos" los permisos del usuario de tal modo que
 				// $permisos["inicio"]["consultar"] me retornara el permiso de consultar en el modulo de incio
 				if($pagina == 'log'){
-					//$pagina = 'dashboard';
+					//$pagina = 'dashboard'; // TODO descomentar para quitar el login con sesion iniciada
 				}
 			}
 			else{

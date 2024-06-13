@@ -6,9 +6,6 @@
 </head>
 <body>
 
-		<?php
-			require_once("assets/comun/menu.php");
-		?>
 	<div class="container text-center">
 		<h1>SESION INICIADA</h1>
 		
