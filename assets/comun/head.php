@@ -19,7 +19,5 @@
 <!-- Custom scripts for all pages-->
 <script src="assets/js/sb-admin-2.min.js"></script>
 
-
-
 <!-- Custom styles for this template-->
 <link href="assets/css/sb-admin-2.min.css" rel="stylesheet">

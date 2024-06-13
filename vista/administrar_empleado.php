@@ -234,34 +234,103 @@
                     <h1 class="h3 mb-4 text-gray-800">Administración de Empleado</h1>
 
                     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-whatever="@mdo">Open modal for @mdo</button>
-                        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        
+                    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div class="modal-dialog modal-xl">
                             <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLabel">New message</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <form>
-                                <div class="form-group">
-                                    <label for="recipient-name" class="col-form-label">Recipient:</label>
-                                    <input type="text" class="form-control" id="recipient-name">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Resumen de empleado</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
                                 </div>
-                                <div class="form-group">
-                                    <label for="message-text" class="col-form-label">Message:</label>
-                                    <textarea class="form-control" id="message-text"></textarea>
+                                <div class="modal-body">
+                                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                                        <li class="nav-item" role="presentation">
+                                            <button class="nav-link active" id="home-tab" data-toggle="tab" data-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">Vacaciones</button>
+                                        </li>
+                                        <li class="nav-item" role="presentation">
+                                            <button class="nav-link" id="profile-tab" data-toggle="tab" data-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Reposos</button>
+                                        </li>
+                                        <li class="nav-item" role="presentation">
+                                            <button class="nav-link" id="contact-tab" data-toggle="tab" data-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false">Permisos</button>
+                                        </li>
+                                    </ul>
+                                    <div class="tab-content" id="myTabContent">
+                                        <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                                            <form class="col-4" action="" method="POST" onsubmit="return false" id="f1">
+                                                <div class="form-group">
+                                                    <label for="descripcion">Descripcion</label>
+                                                    <input type="text" class="form-control" name="descripcion" id="descripcion" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="dias_totales">Dias Totales</label>
+                                                    <input type="text" class="form-control" name="dias_totales" id="dias_totales" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="desde">Fecha de inicio</label>
+                                                    <input type="date" class="form-control" name="desde" id="desde" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="hasta">Fecha de reincorporación</label>
+                                                    <input type="date" class="form-control" name="hasta" id="hasta" required>
+                                                    <input type="text" class="form-control" name="id" id="id" value="1" required>
+                                                </div>
+                                                <button type="submit" class="btn btn-primary">Enviar</button>
+                                            </form>
+                                        </div>
+                                        <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                                            <form class="col-4" action="" method="POST" onsubmit="return false" id="f2">
+                                                <div class="form-group">
+                                                    <label for="tipo_reposo">Tipo de reposo</label>
+                                                    <input type="text" class="form-control" name="tipo_reposo" id="tipo_reposo" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="descripcion_reposo">Descripcion</label>
+                                                    <input type="text" class="form-control" name="descripcion_reposo" id="descripcion_reposo" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="fecha_inicio_reposo">Fecha de inicio</label>
+                                                    <input type="date" class="form-control" name="fecha_inicio_reposo" id="fecha_inicio_reposo" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="fecha_reincorporacion_reposo">Fecha de reincorporación</label>
+                                                    <input type="date" class="form-control" name="fecha_reincorporacion_reposo" id="fecha_reincorporacion_reposo" required>
+                                                    <input type="text" class="form-control" name="id" id="id" value="1" required>
+                                                </div>
+                                                <button type="submit" class="btn btn-primary">Enviar</button>
+                                            </form>
+                                        </div>
+                                        <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+                                            <form class="col-4" action="" method="POST" onsubmit="return false" id="f3">
+                                                <div class="form-group">
+                                                    <label for="tipo_permiso">Tipo de permiso</label>
+                                                    <input type="text" class="form-control" name="tipo_permiso" id="tipo_permiso" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="descripcion_permiso">Descripcion</label>
+                                                    <input type="text" class="form-control" name="descripcion_permiso" id="descripcion_permiso" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="fecha_inicio_permiso">Fecha de inicio</label>
+                                                    <input type="date" class="form-control" name="fecha_inicio_permiso" id="fecha_inicio_permiso" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="fecha_reincorporacion_permiso">Fecha de reincorporación</label>
+                                                    <input type="date" class="form-control" name="fecha_reincorporacion_permiso" id="fecha_reincorporacion_permiso" required>
+                                                    <input type="text" class="form-control" name="id" id="id" value="1" required>
+                                                </div>
+                                                <button type="submit" class="btn btn-primary">Enviar</button>
+                                            </form>
+                                        </div>
+                                    </div>
                                 </div>
-                                </form>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                <button type="button" class="btn btn-primary">Send message</button>
-                            </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                                </div>
                             </div>
                         </div>
-                        </div>
+                    </div>
 
                     
 
@@ -446,6 +515,9 @@
      <!-- Page level plugins -->
      <script src="vendor/datatables/jquery.dataTables.min.js"></script>
     <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
+
+    <script src="assets/js/administrar_empleado.js"></script>
+    
     
 
     <!-- Page level custom scripts -->

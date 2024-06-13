@@ -9,7 +9,7 @@
 				echo json_encode( $cl->valid_cedula($_POST["cedula"]) );
 			}
 			else if($accion == "registrar"){
-				if(isset($permisos["usuarios"]["crear"]) and $permisos["usuarios"]["crear"] == "1"){
+				if(isset($permisos["usuarios"]["crear"]) and $permisos["usuarios"]["crear"] == "2"){
 					$resp = $cl->registrar_s(
 						$_POST["cedula"],
 						$_POST["nombre"],
