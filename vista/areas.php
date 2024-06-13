@@ -16,12 +16,12 @@
 <div class="row">
 
 <div class="col-6">
-<h1 class="h3 mb-2 text-gray-800">Asistencias</h1>
-<p class="mb-4">Las asistencias totales de los trabajadores
+<h1 class="h3 mb-2 text-gray-800">areas</h1>
+<p class="mb-4">Las areas totales de los trabajadores
 
 </div>
  <div class="col-6">
-<p class="mb-4">Registrar asistencias
+<p class="mb-4">Registrar areas
 <a class="btn btn-primary" data-bs-toggle="modal" href="#exampleModalToggle" role="button">Registrar asistencia</a>
  </div>
  </div>
@@ -65,7 +65,7 @@
 <!-- DataTales Example -->
 <div class="card shadow mb-4">
     <div class="card-header py-3">
-        <h6 class="m-0 font-weight-bold text-primary"> Tabla de asistencias</h6>
+        <h6 class="m-0 font-weight-bold text-primary"> Tabla de areas</h6>
     </div>
     <div class="card-body">
         <div class="table-responsive">
