@@ -304,8 +304,8 @@
                                         <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
                                             <form class="col-12" action="" method="POST" onsubmit="return false" id="f3">
                                                 <div class="form-group">
-                                                    <label for="tipo_permiso">Tipo de permiso</label>
-                                                    <input type="text" class="form-control" name="tipo_permiso" id="tipo_permiso" required>
+                                                    <label for="tipo_de_permiso">Tipo de permiso</label>
+                                                    <input type="text" class="form-control" name="tipo_de_permiso" id="tipo_de_permiso" required>
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="descripcion_permiso">Descripcion</label>
@@ -408,7 +408,7 @@
                             <!-- Brand Buttons -->
                             <div class="card shadow mb-4">
                                 <div class="card-header py-3">
-                                    <h6 class="m-0 font-weight-bold text-primary">Listado de empleados</h6>
+                                    <h6 class="m-0 font-weight-bold text-primary">Listado de trabajadores</h6>
                                 </div>
                                 <div class="card-body">
                                 <div class="table-responsive">

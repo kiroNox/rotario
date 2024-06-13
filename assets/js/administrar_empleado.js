@@ -109,6 +109,10 @@ $(document).ready(function() {
             var datos = new FormData($('#f3')[0]);
             datos.append("accion", "registrar_permiso");
 
+            for (var pair of datos.entries()) {
+                console.log(pair[0] + " - " + pair[1]);
+              }
+
             enviaAjax(datos, function(respuesta, exito, fail) {
                 try {
                     var lee = JSON.parse(respuesta);
@@ -131,7 +135,150 @@ $(document).ready(function() {
             });
         });
     });
+
+    function load_lista_usuarios(){
+			var datos = new FormData();
+			datos.append("accion","listar_usuarios");
+			enviaAjax(datos,function(respuesta, exito, fail){
+			
+				var lee = JSON.parse(respuesta);
+				if(lee.resultado == "listar_usuarios"){
+					console.table(lee.mensaje);
+					console.log(lee);
+
+					if ($.fn.DataTable.isDataTable("#tabla_usuarios")) {
+						$("#tabla_usuarios").DataTable().destroy();
+					}
+					
+					$("#tbody_usuarios").html("");
+					
+					if (!$.fn.DataTable.isDataTable("#tabla_usuarios")) {
+						$("#tabla_usuarios").DataTable({
+							language: {
+								lengthMenu: "Mostrar _MENU_ por página",
+								zeroRecords: "No se encontraron registros de usuarios",
+								info: "Mostrando página _PAGE_ de _PAGES_",
+								infoEmpty: "No hay registros disponibles",
+								infoFiltered: "(filtrado de _MAX_ registros totales)",
+								search: "Buscar:",
+								paginate: {
+									first: "Primera",
+									last: "Última",
+									next: "Siguiente",
+									previous: "Anterior",
+								},
+							},
+							data:lee.mensaje,
+							createdRow: function(row,data){
+								console.log(row);
+								console.log(data);
+								row.dataset.id = data[0];
+							},
+							autoWidth: false
+							//searching:false,
+							//info: false,
+							//ordering: false,
+							//paging: false
+							//order: [[1, "asc"]],
+							
+						});
+					}
+
+
+
+
+
+
+					
+				}
+				else if (lee.resultado == 'is-invalid'){
+					muestraMensaje(lee.titulo, lee.mensaje,"error");
+				}
+				else if(lee.resultado == "error"){
+					muestraMensaje(lee.titulo, lee.mensaje,"error");
+					console.error(lee.mensaje);
+				}
+				else if(lee.resultado == "console"){
+					console.log(lee.mensaje);
+				}
+				else{
+					muestraMensaje(lee.titulo, lee.mensaje,"error");
+				}
+			});
+		}
 });
+
+
+function load_lista_usuarios(){
+    var datos = new FormData();
+    datos.append("accion","listar_usuarios");
+    enviaAjax(datos,function(respuesta, exito, fail){
+    
+        var lee = JSON.parse(respuesta);
+        if(lee.resultado == "listar_usuarios"){
+            console.table(lee.mensaje);
+            console.log(lee);
+
+            if ($.fn.DataTable.isDataTable("#tabla_usuarios")) {
+                $("#tabla_usuarios").DataTable().destroy();
+            }
+            
+            $("#tbody_usuarios").html("");
+            
+            if (!$.fn.DataTable.isDataTable("#tabla_usuarios")) {
+                $("#tabla_usuarios").DataTable({
+                    language: {
+                        lengthMenu: "Mostrar _MENU_ por página",
+                        zeroRecords: "No se encontraron registros de usuarios",
+                        info: "Mostrando página _PAGE_ de _PAGES_",
+                        infoEmpty: "No hay registros disponibles",
+                        infoFiltered: "(filtrado de _MAX_ registros totales)",
+                        search: "Buscar:",
+                        paginate: {
+                            first: "Primera",
+                            last: "Última",
+                            next: "Siguiente",
+                            previous: "Anterior",
+                        },
+                    },
+                    data:lee.mensaje,
+                    createdRow: function(row,data){
+                        console.log(row);
+                        console.log(data);
+                        row.dataset.id = data[0];
+                    },
+                    autoWidth: false
+                    //searching:false,
+                    //info: false,
+                    //ordering: false,
+                    //paging: false
+                    //order: [[1, "asc"]],
+                    
+                });
+            }
+
+
+
+
+
+
+            
+        }
+        else if (lee.resultado == 'is-invalid'){
+            muestraMensaje(lee.titulo, lee.mensaje,"error");
+        }
+        else if(lee.resultado == "error"){
+            muestraMensaje(lee.titulo, lee.mensaje,"error");
+            console.error(lee.mensaje);
+        }
+        else if(lee.resultado == "console"){
+            console.log(lee.mensaje);
+        }
+        else{
+            muestraMensaje(lee.titulo, lee.mensaje,"error");
+        }
+    });
+}
 
 
 function muestraMensaje(titulo, mensaje, tipo, callback) {

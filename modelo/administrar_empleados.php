@@ -56,12 +56,12 @@ class administrar_empleados extends Conexion
 		return $this->modificar_usuario();
 	}
 
-	PUBLIC function registrar_permiso($desde, $hasta, $tipo_permiso, $descripcion,$id){
+	PUBLIC function registrar_permiso($id, $tipo_permiso, $descripcion, $desde, $hasta){
 		$this->set_id($id);
-		$this->set_desde($desde);
-		$this->set_hasta($hasta);
 		$this->set_tipo_de_permiso($tipo_permiso);
 		$this->set_descripcion($descripcion);
+		$this->set_desde($desde);
+		$this->set_hasta($hasta);
 
 		return $this->registrar_perm();
 	}
@@ -128,8 +128,8 @@ class administrar_empleados extends Conexion
 		try {
 			$this->validar_conexion($this->con);
 			$this->con->beginTransaction();
-			$consulta = $this->con->query("SELECT p.id_persona,cedula,nombre,apellido,telefono,correo, r.descripcion as rol FROM personas as p join usuarios as u on u.id_persona = p.id_persona left join roles as r on r.id_rol = u.id_rol WHERE 1;")->fetchall(PDO::FETCH_NUM);
-
+			$consulta = $this->con->query("SELECT p.cedula, p.nombre, p.apellido FROM trabajadores t INNER JOIN personas p ON t.id_persona = p.id_persona;")->fetchall(PDO::FETCH_NUM);
+			
 
 			
 			$r['resultado'] = 'listar_usuarios';
