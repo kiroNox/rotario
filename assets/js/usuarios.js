@@ -146,49 +146,117 @@
 			}
 		});
 	})
-
+	$('#modal_modificar_usaurio').on('hidden.bs.modal', function () {
+		$("#f1_modificar input, #f1_modificar select").each((i,elem)=>{
+			elem.value = '';
+		});
+	})
 
 	document.getElementById('f1_modificar').onsubmit=function(e){
 		e.preventDefault();
-		if(this.sending){
-			return false;
-		}
+		if(document.getElementById('modificar_id').value != ''){
+			if(this.sending){
+				return false;
+			}
+			//TODO validar
 
+			muestraMensaje("Seguro?", "Seguro que desea modificar el usuarios", "?",(resp)=>{
+				var datos = new FormData($("#f1_modificar")[0]);
+				datos.append("accion","modificar_usuario");
+				this.sending = true;
+				document.getElementById('btn_eliminar').disabled = true;
+				document.getElementById('btn_modificar').disabled = true;
+				enviaAjax(datos,function(respuesta, exito, fail){
+				
+					var lee = JSON.parse(respuesta);
+					if(lee.resultado == "modificar_usuario"){
+						muestraMensaje("Modificación Exitosa", "El usuario ha sido modificado exitosamente", "s");
+						load_lista_usuarios();
 
-		//TODO validar
-
-		var datos = new FormData($("#f1_modificar")[0]);
-		datos.append("accion","modificar_usuario");
-		this.sending = true;
-		enviaAjax(datos,function(respuesta, exito, fail){
-		
-			var lee = JSON.parse(respuesta);
-			if(lee.resultado == "modificar_usuario"){
-				muestraMensaje("Modificación Exitosa", "El usuario ha sido modificado exitosamente", "s");
-				$("#f1_modificar input, #f1_modificar select").each((i,elem)=>{
-					elem.value = '';
+						$("#modal_modificar_usaurio").modal("hide");
+					}
+					else if (lee.resultado == 'is-invalid'){
+						muestraMensaje(lee.titulo, lee.mensaje,"error");
+					}
+					else if(lee.resultado == "error"){
+						muestraMensaje(lee.titulo, lee.mensaje,"error");
+						console.error(lee.mensaje);
+					}
+					else if(lee.resultado == "console"){
+						console.log(lee.mensaje);
+					}
+					else{
+						muestraMensaje(lee.titulo, lee.mensaje,"error");
+					}
+					document.getElementById('f1_modificar').sending = undefined;
+					document.getElementById('btn_eliminar').disabled = false;
+					document.getElementById('btn_modificar').disabled = false;
+				}).p.catch((a)=>{
+					document.getElementById('f1_modificar').sending = undefined;
+					document.getElementById('btn_eliminar').disabled = false;
+					document.getElementById('btn_modificar').disabled = false;
 				});
-				load_lista_usuarios();
+			});
+		}
+		else{
+			muestraMensaje("Error", "La acción no se puede completar", "s");
+		}
+	};
 
-				$("#modal_modificar_usaurio").modal("hide");
+	
+
+	document.getElementById('btn_eliminar').onclick=function(){
+		if(document.getElementById('modificar_id').value != ''){
+			if(this.sending){
+				return false;
 			}
-			else if (lee.resultado == 'is-invalid'){
-				muestraMensaje(lee.titulo, lee.mensaje,"error");
-			}
-			else if(lee.resultado == "error"){
-				muestraMensaje(lee.titulo, lee.mensaje,"error");
-				console.error(lee.mensaje);
-			}
-			else if(lee.resultado == "console"){
-				console.log(lee.mensaje);
-			}
-			else{
-				muestraMensaje(lee.titulo, lee.mensaje,"error");
-			}
-			document.getElementById('f1_modificar').sending = undefined;
-		}).p.catch((a)=>{
-			document.getElementById('f1_modificar').sending = undefined;
-		});
+			//TODO validar
+
+			muestraMensaje("Seguro?", "Seguro que desea eliminar el usuarios", "?",(resp)=>{
+				var datos = new FormData();
+				datos.append("accion","eliminar_usuario");
+				datos.append("id",document.getElementById('modificar_id').value);
+
+
+				this.sending = true;
+				document.getElementById('btn_eliminar').disabled = true;
+				document.getElementById('btn_modificar').disabled = true;
+				enviaAjax(datos,function(respuesta, exito, fail){
+				
+					var lee = JSON.parse(respuesta);
+					if(lee.resultado == "eliminar_usuario"){
+						muestraMensaje("Eliminación Exitosa", "El usuario ha sido eliminado exitosamente", "s");
+						
+						load_lista_usuarios();
+
+						$("#modal_modificar_usaurio").modal("hide");
+					}
+					else if (lee.resultado == 'is-invalid'){
+						muestraMensaje(lee.titulo, lee.mensaje,"error");
+					}
+					else if(lee.resultado == "error"){
+						muestraMensaje(lee.titulo, lee.mensaje,"error");
+						console.error(lee.mensaje);
+					}
+					else if(lee.resultado == "console"){
+						console.log(lee.mensaje);
+					}
+					else{
+						muestraMensaje(lee.titulo, lee.mensaje,"error");
+					}
+					document.getElementById('btn_eliminar').sending = undefined;
+					document.getElementById('btn_eliminar').disabled = false;
+					document.getElementById('btn_modificar').disabled = false;
+				}).p.catch((a)=>{
+					document.getElementById('btn_eliminar').sending = undefined;
+					document.getElementById('btn_eliminar').disabled = false;
+					document.getElementById('btn_modificar').disabled = false;
+				});
+			});
+		}
+		else{
+			muestraMensaje("Error", "La acción no se puede completar", "s");
+		}
 	};
 
 	

@@ -1,4 +1,4 @@
-$("#Logout_btn").on("click", (e)=>{
+$("#logout_btn").on("click", (e)=>{
 	Swal.fire({
 		title: "¿Estás Seguro?",
 		text: "¿Está seguro que desea Salir?",

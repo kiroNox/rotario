@@ -39,8 +39,8 @@
         data-parent="#accordionSidebar">
         <div class="bg-white py-2 collapse-inner rounded">
             <a class="collapse-item active" href="#">Personal</a>
-            <a class="collapse-item" href="#">Usuarios</a>
-            <a class="collapse-item" href="#">Trabajadores</a>
+            <a class="collapse-item" href="?p=usuarios">Usuarios</a>
+            <a class="collapse-item" href="?p=administrar_empleado">Trabajadores</a>
         </div>
     </div>
 </li>
@@ -77,7 +77,7 @@
     </a>
     <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
         <div class="bg-white py-2 collapse-inner rounded">
-            <a class="collapse-item" href="#">Asistencia</a>
+            <a class="collapse-item" href="?p=asistencia">Asistencia</a>
             <a class="collapse-item" href="#">Areas</a>
            
         </div>
