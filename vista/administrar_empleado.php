@@ -233,13 +233,13 @@
                     <!-- Page Heading -->
                     <h1 class="h3 mb-4 text-gray-800">Administración de Empleado</h1>
 
-                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-whatever="@mdo">Open modal for @mdo</button>
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-whatever="@mdo">Registro</button>
                         
                     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div class="modal-dialog modal-xl">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="exampleModalLabel">Resumen de empleado</h5>
+                                    <h5 class="modal-title" id="exampleModalLabel">Resumen de empleado2</h5>
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
@@ -258,7 +258,7 @@
                                     </ul>
                                     <div class="tab-content" id="myTabContent">
                                         <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-                                            <form class="col-4" action="" method="POST" onsubmit="return false" id="f1">
+                                            <form class="col-12" action="" method="POST" onsubmit="return false" id="f1">
                                                 <div class="form-group">
                                                     <label for="descripcion">Descripcion</label>
                                                     <input type="text" class="form-control" name="descripcion" id="descripcion" required>
@@ -280,7 +280,7 @@
                                             </form>
                                         </div>
                                         <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-                                            <form class="col-4" action="" method="POST" onsubmit="return false" id="f2">
+                                            <form class="col-12" action="" method="POST" onsubmit="return false" id="f2">
                                                 <div class="form-group">
                                                     <label for="tipo_reposo">Tipo de reposo</label>
                                                     <input type="text" class="form-control" name="tipo_reposo" id="tipo_reposo" required>
@@ -302,7 +302,7 @@
                                             </form>
                                         </div>
                                         <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
-                                            <form class="col-4" action="" method="POST" onsubmit="return false" id="f3">
+                                            <form class="col-12" action="" method="POST" onsubmit="return false" id="f3">
                                                 <div class="form-group">
                                                     <label for="tipo_permiso">Tipo de permiso</label>
                                                     <input type="text" class="form-control" name="tipo_permiso" id="tipo_permiso" required>
