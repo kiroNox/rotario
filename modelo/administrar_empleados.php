@@ -5,7 +5,7 @@
  */
 class administrar_empleados extends Conexion
 {
-	PRIVATE $id, $desde, $hasta, $dias_totales, $descripcion, $tipo_reposo, $tipo_permiso;
+	PRIVATE $id, $desde, $hasta, $dias_totales, $descripcion, $tipo_reposo, $tipo_de_permiso;
 
 	function __construct($con = '')
 	{
@@ -56,11 +56,11 @@ class administrar_empleados extends Conexion
 		return $this->modificar_usuario();
 	}
 
-	PUBLIC function registrar_permiso($desde, $hasta, $dias_totales, $descripcion,$id){
+	PUBLIC function registrar_permiso($desde, $hasta, $tipo_permiso, $descripcion,$id){
 		$this->set_id($id);
 		$this->set_desde($desde);
 		$this->set_hasta($hasta);
-		$this->set_tipo_permiso($tipo_permiso);
+		$this->set_tipo_de_permiso($tipo_permiso);
 		$this->set_descripcion($descripcion);
 
 		return $this->registrar_perm();
@@ -317,10 +317,10 @@ class administrar_empleados extends Conexion
             $this->validar_conexion($this->con);
             $this->con->beginTransaction();
             
-            $consulta = $this->con->prepare("INSERT INTO `vacaciones` (`id_trabajador`, `descripcion`, `dias_totales`, `desde`, `hasta`) VALUES (:id_trabajador, :descripcion, :dias_totales, :desde, :hasta)");
+            $consulta = $this->con->prepare("INSERT INTO `permisos_trabajador` (`id_trabajador`, `tipo_de_permiso`, `descripcion`, `desde`, `hasta`) VALUES (:id_trabajador, :tipo_de_permiso, :descripcion, :desde, :hasta)");
             $consulta->bindValue(":id_trabajador", $this->id);
+			$consulta->bindValue(":tipo_de_permiso", $this->tipo_de_permiso);
             $consulta->bindValue(":descripcion", $this->descripcion);
-            $consulta->bindValue(":dias_totales", $this->dias_totales);
             $consulta->bindValue(":desde", $this->desde);
             $consulta->bindValue(":hasta", $this->hasta);
             $consulta->execute();
@@ -386,11 +386,11 @@ class administrar_empleados extends Conexion
 	PUBLIC function set_tipo_reposo($value){
 		$this->tipo_reposo = $value;
 	}
-	PUBLIC function get_tipo_permiso(){
-		return $this->tipo_reposo;
+	PUBLIC function get_tipo_de_permiso(){
+		return $this->tipo_de_permiso;
 	}
-	PUBLIC function set_tipo_permiso($value){
-		$this->tipo_reposo = $value;
+	PUBLIC function set_tipo_de_permiso($value){
+		$this->tipo_de_permiso = $value;
 	}
 	PUBLIC function set_apellido($value){
 		$value = Validaciones::removeWhiteSpace($value);
