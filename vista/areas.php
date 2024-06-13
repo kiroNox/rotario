@@ -582,10 +582,10 @@
                 </div>
                 <div class="modal-body">
                     <div class="modal-body">
-                        <form class="col-12" action="" method="POST" onsubmit="return false" id="formularioArea">
+                        <form class="col-12" action="" method="POST" onsubmit="return false" id="f3">
                             <div class="mb-3">
-                                <label for="tipo_permiso" class="form-label">Descripcion</label>
-                                <input type="text" class="form-control" name="tipo_permiso" id="tipo_permiso" required>
+                                <label for="descripcion" class="form-label">Descripcion</label>
+                                <input type="text" class="form-control" name="descripcion" id="descripcion" required>
                             </div>
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
                             <button type="submit" class="btn btn-primary">Registro</button>

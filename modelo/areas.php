@@ -11,14 +11,11 @@ class Areas extends Conexion
         }
     }
 
-    public function registrar($descripcion, $id)
+    public function registrar($descripcion)
     {
-        $this->set_id($id);
         $this->set_descripcion($descripcion);
-
         return $this->registrar_areas();
     }
-
 
     //Metodos
 
@@ -28,8 +25,7 @@ class Areas extends Conexion
             $this->validar_conexion($this->con);
             $this->con->beginTransaction();
 
-            $consulta = $this->con->prepare("INSERT INTO `areas` (`id_areas`, `descripcion`) VALUES (:id_areas, :descripcion)");
-            $consulta->bindValue(":id_areas", $this->id);
+            $consulta = $this->con->prepare("INSERT INTO `areas` (`descripcion`) VALUES ( :descripcion)");
             $consulta->bindValue(":descripcion", $this->descripcion);
             $consulta->execute();
 
@@ -78,6 +74,7 @@ class Areas extends Conexion
     PUBLIC function set_con($value){
 		$this->con = $value;
 	}
+    
 
 }
 

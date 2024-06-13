@@ -1,31 +1,34 @@
-document.addEventListener('DOMContentLoaded', function() {
-    alert('Hola Mundo');
-});
-
-
 $(document).ready(function() {
-
-    $('#formularioArea').on('submit', function(e) {
+    $('#f3').on('submit', function(e) {
         e.preventDefault();
+
+        
         muestraMensaje("Seguro?", "", "?", function(resp) {
-            if (!resp) return; 
+            if (!resp) return; // Si el usuario cancela, no hacer nada
+
             var valido = true;
-            $("#formularioArea input").each(function(i, elem) {
+
+            $("#f3 input").each(function(i, elem) {
                 if (!$(elem).validarme()) {
                     valido = false;
                     return false;  // salir del bucle each
                 }
             });
-            if (!valido) {return;}
 
-            var datos = new FormData($('#formularioArea')[0]);
+            if (!valido) {
+                return;
+            }
+
+            var datos = new FormData($('#f3')[0]);
             datos.append("accion", "registrar_areas");
+           
+            for (var pair of datos.entries()) {console.log(pair[0] + " - " + pair[1]);}
 
             enviaAjax(datos, function(respuesta, exito, fail) {
                 try {
                     var lee = JSON.parse(respuesta);
                     if (lee.resultado === "registrar") {
-                        muestraMensaje("Exito", "Area registrada", "s");
+                        muestraMensaje("Exito", "Usuario nuevo registrado", "s");
                     } else if (lee.resultado === 'is-invalid') {
                         muestraMensaje(lee.titulo, lee.mensaje, "error");
                     } else if (lee.resultado === "error") {
@@ -43,7 +46,6 @@ $(document).ready(function() {
             });
         });
     });
-   
   
 
 function muestraMensaje(titulo, mensaje, tipo, callback) {
