@@ -35,7 +35,7 @@
         <i class="fas fa-fw fa-cog"></i>
         <span>Gestion de usuarios</span>
     </a>
-    <div id="collapseTwo" class="collapse show" aria-labelledby="headingTwo"
+    <div id="collapseTwo" class="collapse " aria-labelledby="headingTwo"
         data-parent="#accordionSidebar">
         <div class="bg-white py-2 collapse-inner rounded">
             <a class="collapse-item active" href="#">Personal</a>
@@ -78,7 +78,7 @@
     <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
         <div class="bg-white py-2 collapse-inner rounded">
             <a class="collapse-item" href="?p=asistencia">Asistencia</a>
-            <a class="collapse-item" href="#">Areas</a>
+            <a class="collapse-item" href="?p=areas">Areas</a>
            
         </div>
     </div>
