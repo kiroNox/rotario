@@ -132,8 +132,8 @@
     <div id="collapseAdministracion" class="collapse" aria-labelledby="headingNomina" data-parent="#accordionSidebar">
         <div class="bg-white py-2 collapse-inner rounded">
             <a class="collapse-item" href="#">Bitacora</a>
-            <a class="collapse-item" href="#">Roles</a>
-            <a class="collapse-item" href="#">Permisos</a>
+            <a class="collapse-item" href="?p=roles">Roles</a>
+            <a class="collapse-item" href="?p=permisos_usuario">Permisos</a>
             <a class="collapse-item" href="#">Modulos</a>
         </div>
     </div>

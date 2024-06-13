@@ -97,11 +97,14 @@ class Usuarios extends Conexion
 			$this->validar_conexion($this->con);
 			$this->con->beginTransaction();
 
-			$consulta = $this->con->prepare("SELECT 1 FROM personas WHERE cedula = ?;");
+			$consulta = $this->con->prepare("SELECT p.*,u.id_rol as rol FROM personas as p LEFT JOIN usuarios as u on u.id_persona = p.id_persona WHERE cedula = ?;");
 			$consulta->execute([$cedula]);
 
-			if($consulta->fetch()){
+			if($consulta = $consulta->fetch(PDO::FETCH_ASSOC)){
 				$r["mensaje"] = 1;//existe
+				if(!isset($consulta["rol"])){
+					$r["datos"] = $consulta;
+				}
 			}
 			else{
 				$r["mensaje"] = 0;//no existe
@@ -255,6 +258,8 @@ class Usuarios extends Conexion
 			$consulta->bindValue(":id_persona",$this->id);
 			$consulta->execute();
 
+			Bitacora::registro($this->con,2,"Modifico al usuario ($this->cedula)");
+
 
 			
 			$r['resultado'] = 'modificar_usuario';
@@ -294,17 +299,18 @@ class Usuarios extends Conexion
 			$this->validar_conexion($this->con);
 			$this->con->beginTransaction();
 			
-			$consulta = $this->con->prepare("SELECT 1 FROM usuarios WHERE id_persona = ?;");
+			$consulta = $this->con->prepare("SELECT cedula FROM usuarios JOIN personas on personas.id_persona = usuarios.id_persona WHERE usuarios.id_persona = ?;");
 			$consulta->execute([$this->id]);
 
-			if(!$consulta->fetch()){
+			if(!($consulta = $consulta->fetch())){
 				throw new Exception("El usuario seleccionado no existe", 1);
 			}
+			$cedula = $consulta["cedula"];
 
 			$consulta = $this->con->prepare("DELETE FROM usuarios WHERE id_persona = ?");
 			$consulta->execute([$this->id]);
 
-
+			Bitacora::registro($this->con, 2, "Elimino al usuario ($cedula)");
 			
 			$r['resultado'] = 'eliminar_usuario';
 			$this->con->commit();
@@ -362,14 +368,15 @@ class Usuarios extends Conexion
 				throw new Exception("El rol seleccionado no existe", 1);
 			}
 
-			$consulta = $this->con->prepare("SELECT IF(u.id_persona is NULL,'null',u.id_persona) as usuario FROM personas AS p left join usuarios as u on p.id_persona = u.id_persona WHERE cedula = ?;");
+			$consulta = $this->con->prepare("SELECT p.id_persona, u.id_persona as usuario FROM personas AS p left join usuarios as u on p.id_persona = u.id_persona WHERE cedula = ?;");
 			$consulta->execute([$this->cedula]);
 			if($consulta = $consulta->fetch(PDO::FETCH_ASSOC)){
-				if($consulta["usuario"] != 'null'){
+				if(isset($consulta["usuario"])){
 					throw new Exception("El usuario con la cedula \"$this->cedula\" ya existe", 1);
 				}
 				else{
-					$id = $consulta["usuario"];
+					
+					$id = $consulta["id_persona"];
 
 					$consulta = $this->con->prepare("UPDATE `personas` 
 						SET 
@@ -417,7 +424,9 @@ class Usuarios extends Conexion
 			
 			$r['resultado'] = 'registrar';
 			$r['titulo'] = 'Éxito';
-			$r['mensaje'] =  "";
+
+			Bitacora::registro($this->con, 2, "Registro al usuarios ($this->cedula)");
+			
 			$this->con->commit();
 		
 		} catch (Validaciones $e){
@@ -440,6 +449,7 @@ class Usuarios extends Conexion
 			$r['resultado'] = 'error';
 			$r['titulo'] = 'Error';
 			$r['mensaje'] =  $e->getMessage();
+			$r["temp"] = $e->getTrace();
 			//$r['mensaje'] =  $e->getMessage().": LINE : ".$e->getLine();
 		}
 		return $r;

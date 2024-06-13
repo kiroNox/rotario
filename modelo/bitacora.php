@@ -45,7 +45,12 @@ class Bitacora extends Conexion
 			if($user === false){
 				$user = $_SESSION["usuario_rotario"];
 			}
-			$consulta = $con->prepare("INSERT INTO bitacora (id_usuario, id_modulo, descripcion) VALUES (?, ?, ?)");
+			if(is_string($modul)){
+				$consulta = $con->prepare("INSERT INTO bitacora (id_usuario, id_modulo, descripcion) VALUES (?, (SELECT id_modulos from modulos where nombre = ?), ?)");
+			}
+			else{
+				$consulta = $con->prepare("INSERT INTO bitacora (id_usuario, id_modulo, descripcion) VALUES (?, ?, ?)");
+			}
 
 			if($modul == '') $modul = null;
 
@@ -61,11 +66,17 @@ class Bitacora extends Conexion
 		try {
 			$bitacora->validar_conexion($con);
 			$con->beginTransaction();
+			if(!is_string($modulo)){
+				$consulta = $con->prepare("INSERT INTO bitacora (id_usuario, id_modulo, descripcion) VALUES (?, ?, ?)");
 
-			$consulta = $con->prepare("INSERT INTO bitacora (id_usuario, id_modulo, descripcion) VALUES (?, ?, ?)");
+				$consulta->execute([ $_SESSION["usuario_rotario"], $modulo, "Ingreso en el modulo" ]);
+			}
+			else{
 
-			$consulta->execute([ $_SESSION["usuario_rotario"], $modulo, "Ingreso en el modulo" ]);
+				$consulta = $con->prepare("INSERT INTO bitacora (id_usuario, (id_modulo), descripcion) VALUES (?, (SELECT id_modulos from modulos where nombre = ?), ?)");
 
+				$consulta->execute([ $_SESSION["usuario_rotario"], $modulo, "Ingreso en el modulo" ]);
+			}
 			$con->commit();
 		
 		}  catch (Exception $e) {

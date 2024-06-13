@@ -152,7 +152,7 @@
 												<input required type="email" class="form-control" id="correo_modificar" name="correo" data-span="invalid-span-correo">
 												<span id="invalid-span-correo_modificar" class="invalid-span text-danger"></span>
 
-												<label for="rol">Rol</label>
+												<label for="rol" class="d-block">Rol</label>
 												<select required class="form-control" id="rol_modificar" name="rol" data-span="invalid-span-rol">
 													<option value="">Seleccione un rol</option>
 												</select>
@@ -199,10 +199,6 @@
 	 <!-- Page level plugins -->
 	<script src="vendor/datatables/jquery.dataTables.min.js"></script>
 	<script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
-	
-
-	<!-- Page level custom scripts -->
-	<script src="assets/js/datatables-demo.js"></script>
 
 </body>
 

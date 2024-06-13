@@ -18,8 +18,21 @@
 				var lee = JSON.parse(respuesta);
 				if(lee.resultado == "valid_cedula"){
 					if(lee.mensaje == '1'){
-						show_fields(false);
-						validarKeyUp(false, "cedula", "La cedula ya existe");
+						if(lee.datos !== undefined){
+
+							document.getElementById('cedula').value = lee.datos.cedula;
+							document.getElementById('nombre').value = lee.datos.nombre;
+							document.getElementById('apellido').value = lee.datos.apellido;
+							document.getElementById('telefono').value = lee.datos.telefono;
+							document.getElementById('correo').value = lee.datos.correo;
+
+							show_fields();
+
+						}
+						else{
+							show_fields(false);
+							validarKeyUp(false, "cedula", "La cedula ya existe");
+						}
 					}
 					else{
 						show_fields();
@@ -81,6 +94,11 @@
 					if(lee.resultado == "registrar"){
 
 						muestraMensaje("Exito", "Usuario nuevo registrado", "s");
+						$("#f1 input, #f1 select").each((i,elem)=>{
+							elem.value = '';
+							elem.classList.remove("is-invalid", "is-valid");
+						});
+						load_lista_usuarios();
 						
 					}
 					else if (lee.resultado == 'is-invalid'){
@@ -151,6 +169,7 @@
 			elem.value = '';
 		});
 	})
+// Modificar *********************************
 
 	document.getElementById('f1_modificar').onsubmit=function(e){
 		e.preventDefault();
@@ -203,7 +222,7 @@
 		}
 	};
 
-	
+// Eliminar
 
 	document.getElementById('btn_eliminar').onclick=function(){
 		if(document.getElementById('modificar_id').value != ''){
@@ -263,122 +282,118 @@
 
 
 
-	
-	// function *************************************
-		function load_roles(){
-			var datos = new FormData();
-			datos.append("accion","get_roles");
-			enviaAjax(datos,function(respuesta, exito, fail){
-			
-				var lee = JSON.parse(respuesta);
-				if(lee.resultado == "get_roles"){
-					for(x of lee.mensaje){
-						document.getElementById('rol').appendChild(crearElem('option',`value,${x.id}`,x.rol));
-						document.getElementById('rol_modificar').appendChild(crearElem('option',`value,${x.id}`,x.rol));
 
-					}
-				}
-				else if (lee.resultado == 'is-invalid'){
-					muestraMensaje(lee.titulo, lee.mensaje,"error");
-				}
-				else if(lee.resultado == "error"){
-					muestraMensaje(lee.titulo, lee.mensaje,"error");
-					console.error(lee.mensaje);
-				}
-				else if(lee.resultado == "console"){
-					console.log(lee.mensaje);
-				}
-				else{
-					muestraMensaje(lee.titulo, lee.mensaje,"error");
-				}
-			});
-		}
+// function *************************************
+	function load_roles(){
+		var datos = new FormData();
+		datos.append("accion","get_roles");
+		enviaAjax(datos,function(respuesta, exito, fail){
+		
+			var lee = JSON.parse(respuesta);
+			if(lee.resultado == "get_roles"){
+				for(x of lee.mensaje){
+					document.getElementById('rol').appendChild(crearElem('option',`value,${x.id}`,x.rol));
+					document.getElementById('rol_modificar').appendChild(crearElem('option',`value,${x.id}`,x.rol));
 
-		function show_fields (control = true){
-			if(control){
-				document.getElementById('fields').classList.remove("d-none");
-				var list = document.querySelectorAll("#fields input, #fields select, #fields button");
-				for (x of list){
-					x.disabled = false;
 				}
+			}
+			else if (lee.resultado == 'is-invalid'){
+				muestraMensaje(lee.titulo, lee.mensaje,"error");
+			}
+			else if(lee.resultado == "error"){
+				muestraMensaje(lee.titulo, lee.mensaje,"error");
+				console.error(lee.mensaje);
+			}
+			else if(lee.resultado == "console"){
+				console.log(lee.mensaje);
 			}
 			else{
-				document.getElementById('fields').classList.add("d-none");
-				var list = document.querySelectorAll("#fields input, #fields select, #fields button");
-				for (x of list){
-					x.disabled = true;
-				}	
+				muestraMensaje(lee.titulo, lee.mensaje,"error");
+			}
+		});
+	}
+
+	function show_fields (control = true){
+		if(control){
+			document.getElementById('fields').classList.remove("d-none");
+			var list = document.querySelectorAll("#fields input, #fields select, #fields button");
+			for (x of list){
+				x.disabled = false;
 			}
 		}
-
-		function load_lista_usuarios(){
-			var datos = new FormData();
-			datos.append("accion","listar_usuarios");
-			enviaAjax(datos,function(respuesta, exito, fail){
-			
-				var lee = JSON.parse(respuesta);
-				if(lee.resultado == "listar_usuarios"){
-					console.table(lee.mensaje);
-					console.log(lee);
-
-					if ($.fn.DataTable.isDataTable("#tabla_usuarios")) {
-						$("#tabla_usuarios").DataTable().destroy();
-					}
-					
-					$("#tbody_usuarios").html("");
-					
-					if (!$.fn.DataTable.isDataTable("#tabla_usuarios")) {
-						$("#tabla_usuarios").DataTable({
-							language: {
-								lengthMenu: "Mostrar _MENU_ por página",
-								zeroRecords: "No se encontraron registros de usuarios",
-								info: "Mostrando página _PAGE_ de _PAGES_",
-								infoEmpty: "No hay registros disponibles",
-								infoFiltered: "(filtrado de _MAX_ registros totales)",
-								search: "Buscar:",
-								paginate: {
-									first: "Primera",
-									last: "Última",
-									next: "Siguiente",
-									previous: "Anterior",
-								},
-							},
-							data:lee.mensaje,
-							createdRow: function(row,data){
-								console.log(row);
-								console.log(data);
-								row.dataset.id = data[0];
-							},
-							autoWidth: false
-							//searching:false,
-							//info: false,
-							//ordering: false,
-							//paging: false
-							//order: [[1, "asc"]],
-							
-						});
-					}
-
-
-
-
-
-
-					
-				}
-				else if (lee.resultado == 'is-invalid'){
-					muestraMensaje(lee.titulo, lee.mensaje,"error");
-				}
-				else if(lee.resultado == "error"){
-					muestraMensaje(lee.titulo, lee.mensaje,"error");
-					console.error(lee.mensaje);
-				}
-				else if(lee.resultado == "console"){
-					console.log(lee.mensaje);
-				}
-				else{
-					muestraMensaje(lee.titulo, lee.mensaje,"error");
-				}
-			});
+		else{
+			document.getElementById('fields').classList.add("d-none");
+			var list = document.querySelectorAll("#fields input, #fields select, #fields button");
+			for (x of list){
+				x.disabled = true;
+			}	
 		}
-	
+	}
+
+	function load_lista_usuarios(){
+		var datos = new FormData();
+		datos.append("accion","listar_usuarios");
+		enviaAjax(datos,function(respuesta, exito, fail){
+		
+			var lee = JSON.parse(respuesta);
+			if(lee.resultado == "listar_usuarios"){
+				console.table(lee.mensaje);
+				if ($.fn.DataTable.isDataTable("#tabla_usuarios")) {
+					$("#tabla_usuarios").DataTable().destroy();
+				}
+				
+				$("#tbody_usuarios").html("");
+				
+				if (!$.fn.DataTable.isDataTable("#tabla_usuarios")) {
+					$("#tabla_usuarios").DataTable({
+						language: {
+							lengthMenu: "Mostrar _MENU_ por página",
+							zeroRecords: "No se encontraron registros de usuarios",
+							info: "Mostrando página _PAGE_ de _PAGES_",
+							infoEmpty: "No hay registros disponibles",
+							infoFiltered: "(filtrado de _MAX_ registros totales)",
+							search: "Buscar:",
+							paginate: {
+								first: "Primera",
+								last: "Última",
+								next: "Siguiente",
+								previous: "Anterior",
+							},
+						},
+						data:lee.mensaje,
+						createdRow: function(row,data){
+							row.dataset.id = data[0];
+						},
+						autoWidth: false
+						//searching:false,
+						//info: false,
+						//ordering: false,
+						//paging: false
+						//order: [[1, "asc"]],
+						
+					});
+				}
+
+
+
+
+
+
+				
+			}
+			else if (lee.resultado == 'is-invalid'){
+				muestraMensaje(lee.titulo, lee.mensaje,"error");
+			}
+			else if(lee.resultado == "error"){
+				muestraMensaje(lee.titulo, lee.mensaje,"error");
+				console.error(lee.mensaje);
+			}
+			else if(lee.resultado == "console"){
+				console.log(lee.mensaje);
+			}
+			else{
+				muestraMensaje(lee.titulo, lee.mensaje,"error");
+			}
+		});
+	}
+
