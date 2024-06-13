@@ -568,7 +568,7 @@
             <?php require_once ("assets/comun/footer.php"); ?>
         </div>
     </div>
-                    <!-- DataTales Example -->
+                    <!-- modal -->
 
     <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog"
         aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
