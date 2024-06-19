@@ -31,7 +31,7 @@ class Loging extends Conexion
 
 			$this->con->beginTransaction();// inicia la transaccion
 
-			$consulta = $this->con->prepare("SELECT p.id_persona, p.cedula, p.correo, p.clave
+			$consulta = $this->con->prepare("SELECT p.id_trabajador, p.cedula, p.correo, p.clave
 											FROM trabajadores as p 
 											WHERE p.correo = ?");
 			//creo la consulta
@@ -48,10 +48,10 @@ class Loging extends Conexion
 
 
 					// para cambiar en el futuro para el jwt 
-					$token = password_hash($consulta["id_persona"].$consulta["cedula"].date("Y-m-d h:i:s"), PASSWORD_DEFAULT);
-					$id = $consulta["id_persona"];
+					$token = password_hash($consulta["id_trabajador"].$consulta["cedula"].date("Y-m-d h:i:s"), PASSWORD_DEFAULT);
+					$id = $consulta["id_trabajador"];
 					
-					$consulta = $this->con->prepare("UPDATE trabajadores SET token = ? WHERE id_persona = ?");
+					$consulta = $this->con->prepare("UPDATE trabajadores SET token = ? WHERE id_trabajador = ?");
 					$consulta->execute([$token, $id]);
 
 					$_SESSION["token_rotario"] = $token;

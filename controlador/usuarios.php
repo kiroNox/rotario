@@ -80,7 +80,7 @@
 
 
 		$cl->set_con(null);
-		Bitacora::ingreso_modulo(2);
+		Bitacora::ingreso_modulo("Usuarios");
 		require_once("vista/".$pagina.".php");
 	}
 	else{

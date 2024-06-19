@@ -46,7 +46,7 @@
 
 
 		$cl->set_con(null);
-		Bitacora::ingreso_modulo("roles");
+		Bitacora::ingreso_modulo("Roles");
 		require_once("vista/".$pagina.".php");
 	}
 	else{

@@ -55,7 +55,7 @@ if (is_file("vista/".$pagina.".php")) {
 	}
 
 	$claseAreas->set_con(null);
-	Bitacora::ingreso_modulo(2);
+	Bitacora::ingreso_modulo("Areas");
 	require_once ("vista/" . $pagina . ".php");
 } else {
 	require_once ("vista/404.php");

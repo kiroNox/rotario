@@ -72,7 +72,7 @@
 
 
 		$cl->set_con(null);
-		Bitacora::ingreso_modulo(2);
+		Bitacora::ingreso_modulo("Asistencias");
 		require_once("vista/".$pagina.".php");
 	}
 	else{
