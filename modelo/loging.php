@@ -31,10 +31,8 @@ class Loging extends Conexion
 
 			$this->con->beginTransaction();// inicia la transaccion
 
-			$consulta = $this->con->prepare("SELECT p.id_persona, p.cedula, p.correo, u.clave
-											FROM personas as p 
-											JOIN usuarios AS u 
-											ON u.id_persona = p.id_persona 
+			$consulta = $this->con->prepare("SELECT p.id_persona, p.cedula, p.correo, p.clave
+											FROM trabajadores as p 
 											WHERE p.correo = ?");
 			//creo la consulta
 			$consulta->execute([$correo]);// la ejecuto mandando el correo
@@ -53,7 +51,7 @@ class Loging extends Conexion
 					$token = password_hash($consulta["id_persona"].$consulta["cedula"].date("Y-m-d h:i:s"), PASSWORD_DEFAULT);
 					$id = $consulta["id_persona"];
 					
-					$consulta = $this->con->prepare("UPDATE usuarios SET token = ? WHERE id_persona = ?");
+					$consulta = $this->con->prepare("UPDATE trabajadores SET token = ? WHERE id_persona = ?");
 					$consulta->execute([$token, $id]);
 
 					$_SESSION["token_rotario"] = $token;

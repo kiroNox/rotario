@@ -9,8 +9,8 @@ if( !in_array($pagina, $excepciones_p) ){
 			$consulta = $con->prepare("SELECT 
 											m.nombre, perm.crear,perm.modificar,perm.eliminar,perm.consultar
 											FROM
-											usuarios as u
-											LEFT JOIN roles as r 
+											trabajadores as u
+											LEFT JOIN rol as r 
 											on r.id_rol = u.`id_rol`
 											LEFT JOIN permisos as perm
 											on perm.id_rol = r.id_rol
@@ -18,7 +18,7 @@ if( !in_array($pagina, $excepciones_p) ){
 											on m.id_modulos = perm.id_modulos
 
 											WHERE 
-											u.id_persona = ? AND
+											u.id_trabajador = ? AND
 											u.token = ?;");
 
 			$consulta->execute([ $_SESSION["usuario_rotario"], $_SESSION["token_rotario"] ]);
