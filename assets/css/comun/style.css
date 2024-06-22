@@ -41,3 +41,62 @@
 	-ms-user-select: none;
 	user-select: none;
 }
+
+.table-middle tbody tr td,
+.table-middle tbody tr th{
+	vertical-align: middle;
+}
+main.main-content{
+	height: 100%;
+	position:relative;
+}
+
+main .loader-main{
+	position: absolute;
+	z-index: 1000;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	background-color: rgba(0,0,0,.5);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+	color: white
+}
+
+main .loader-main:before{
+	content: "Cargando";
+	font-size: 2rem;
+	-webkit-animation: loadingText .75s linear infinite;
+	animation: loadingText .75s linear infinite;
+}
+main .loader-main:after{
+	content: "";
+	display: inline-block;
+	width: 12rem;
+	height: 12rem;
+	vertical-align: text-bottom;
+	border: 0.35em solid currentColor;
+	border-right-color: transparent;
+	border-radius: 50%;
+	-webkit-animation: spinner-border .75s linear infinite;
+	animation: spinner-border .75s linear infinite;
+	position: absolute;
+}
+
+@keyframes loadingText {
+  0%{
+  	transform: translateY(0);
+  }
+  25%{
+  	transform: translateY(5px);
+  }
+  75%{
+  	transform: translateY(-5px);
+  }
+  100%{
+  	transform: translateY(0);
+  }
+}

@@ -1,9 +1,9 @@
 <?php 
 class Validaciones extends Exception
 {
-	PUBLIC static function validarCedula($string,$type=true, $allow_empty = false){//rif y cedula (true para tipo de cedula obligatorio)
+	PUBLIC static function validarCedula(&$string,$type=true, $allow_empty = false){//rif y cedula (true para tipo de cedula obligatorio)
 
-		$cedula_1 = "/(?:(?:^[ve][-\s]?[0-9]{7,8}$)|(?:^[jg][-\s]?[0-9]{8,10}$))/i";
+		$cedula_1 = "/(?:(?:^[ve][-][0-9]{7,8}$)|(?:^[jg][-][0-9]{8,10}$))/i";
 		$cedula_2 = "/(?:(?:^[0-9]{7,8}$)|(?:^[ve][-\s]?[0-9]{7,8}$)|(?:^[jg][-\s]?[0-9]{8,10}$))/i";
 		$pattern = ($type) ? $cedula_1 : $cedula_2;
 		//$pattern = '/(?:(?:^[0-9]{7,8}$)|(?:^[ve][-\s]?[0-9]{7,8}$)|(?:^[jg][-\s]?[0-9]{8,10}$))/i';

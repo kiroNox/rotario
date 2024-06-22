@@ -20,167 +20,248 @@
 
 <body id="page-top">
 
+
 	<!-- Page Wrapper -->
 	<div id="wrapper">
 	<!-- Un require Para el menu  -->
 		<?php require_once 'assets/comun/menu.php'; ?>
 
 		<!-- Content Wrapper -->
-		<div id="content-wrapper" class="d-flex flex-column">
+		<div id="content-wrapper" class="overflow-auto vh-100 d-flex flex-column">
 
 			<!-- Main Content -->
-			<div id="content">
+			<div id="content" class="d-flex flex-column">
 
 				<?php require_once 'assets/comun/navar.php'; ?>
 
 				
 
 				<!-- Begin Page Content -->
-				<div class="container-fluid">
+				
+				<main class="main-content pt-2">
+					<div class="container-fluid">
 
-					<!-- Page Heading -->
-					<h1 class="h3 mb-4 text-gray-800">Usuarios</h1>
+						<!-- Page Heading -->
+						<h1 class="h3 mb-4 text-gray-800">Usuarios</h1>
 
-					<div class="container">
-						<nav>
-							<div class="nav nav-tabs" id="nav-tab" role="tablist">
-								<a class="nav-item nav-link active" id="nav-registrar_usuario-tab" data-toggle="tab" href="#nav-registrar_usuario" role="tab" aria-controls="nav-registrar_usuario" aria-selected="true">Registrar</a>
-								<a class="nav-item nav-link" id="nav-consultar_usuarios-tab" data-toggle="tab" href="#nav-consultar_usuarios" role="tab" aria-controls="nav-consultar_usuarios" aria-selected="false">listar</a>
+						<div class="container-fluid p-0">
+							<nav>
+								<div class="nav nav-tabs" id="nav-tab" role="tablist">
+									<a class="nav-item nav-link active" id="nav-registrar_usuario-tab" data-toggle="tab" href="#nav-registrar_usuario" role="tab" aria-controls="nav-registrar_usuario" aria-selected="true">Registrar</a>
+									<a class="nav-item nav-link" id="nav-consultar_usuarios-tab" data-toggle="tab" href="#nav-consultar_usuarios" role="tab" aria-controls="nav-consultar_usuarios" aria-selected="false">listar</a>
+								</div>
+							</nav>
+						</div>
+						<div class="container-fluid p-0">
+								
+							<div class="tab-content" id="nav-tabContent">
+								<div class="tab-pane fade show active" id="nav-registrar_usuario" role="tabpanel" aria-labelledby="nav-registrar_usuario-tab">
+									<div class="m-auto">
+										<div class="container">
+											<form action="" method="POST" onsubmit="return false" id="f1">
+												<div class="row">
+													<div class="col-lg-4 col-12">
+														<label for="cedula">Ingrese la cedula del nuevo usuario</label>
+														<input type="text" class="form-control" id="cedula" name="cedula" data-span="invalid-span-cedula" value="V-2725054">
+														<span id="invalid-span-cedula" class="invalid-span text-danger"></span>
+													</div>
+												</div>
+
+												<div class="container pl-0 pr-0" id="fields">
+
+													<div class="row">
+														<div class="col-lg-4 col-12">
+															<label class="d-block" for="nombre">Nombre</label>
+															<input required type="text" class="form-control" id="nombre" name="nombre" data-span="invalid-span-nombre">
+															<span id="invalid-span-nombre" class="invalid-span text-danger"></span>
+														</div>
+														<div class="col-lg-4 col-12">
+															<label class="d-block" for="apellido">Apellido</label>
+															<input required type="text" class="form-control" id="apellido" name="apellido" data-span="invalid-span-apellido">
+															<span id="invalid-span-apellido" class="invalid-span text-danger"></span>
+															
+														</div>
+														<div class="col-lg-4 col-12">
+															<label class="d-block" for="telefono">Teléfono</label>
+															<input type="text" class="form-control" id="telefono" name="telefono" data-span="invalid-span-telefono">
+															<span id="invalid-span-telefono" class="invalid-span text-danger"></span>
+														</div>
+														<div class="col-lg-4 col-12">
+															<label class="d-block" for="correo">Correo</label>
+															<input required type="email" class="form-control" id="correo" name="correo" data-span="invalid-span-correo">
+															<span id="invalid-span-correo" class="invalid-span text-danger"></span>
+														</div>
+														<div class="col-lg-4 col-12">
+															<label for="numero_cuenta">Numero de cuenta</label>
+															<input type="text" class="form-control" id="numero_cuenta" name="numero_cuenta" data-span="invalid-span-numero_cuenta">
+															<span id="invalid-span-numero_cuenta" class="invalid-span text-danger"></span>
+														</div>
+														<div class="col-lg-4 col-12">
+															<label for="fecha_ingreso">Fecha de Ingreso</label>
+															<input type="date" class="form-control" id="fecha_ingreso" name="fecha_ingreso" data-span="invalid-span-fecha_ingreso">
+															<span id="invalid-span-fecha_ingreso" class="invalid-span text-danger"></span>
+														</div>
+														<div class="col-lg-6 col-12">
+															<label for="nivel_educativo">Nivel Educativo</label>
+															<select required name="nivel_educativo" class="form-control" id="nivel_educativo" data-span="invalid-span-nivel_educativo">
+																	<option value="">Seleccione un nivel educativo</option>
+															</select>
+															<span id="invalid-span-nivel_educativo" class="invalid-span text-danger"></span>
+														</div>
+														<div class="col-lg-6 col-12">
+															<label for="rol">Rol</label>
+															<select required class="form-control" id="rol" name="rol" data-span="invalid-span-rol">
+																<option value="">Seleccione un rol</option>
+															</select>
+															<span id="invalid-span-rol" class="invalid-span text-danger"></span>
+															
+														</div>
+														<div class="col-lg-6 col-12">
+															<label class="d-block" for="pass">Clave</label>
+															<div class="show-password-container">
+																<input required type="password" class="form-control" id="pass" name="pass" data-span="invalid-span-pass">
+																<span class="show-password-btn" data-inputpass="pass" aria-label="show password button"></span>
+															</div>
+															<span id="invalid-span-pass" class="invalid-span text-danger"></span>
+															
+														</div>
+													</div>
+
+
+
+
+														<div class="text-center mt-4">
+															<button type="submit" class="btn btn-success">Registrar</button>
+														</div>
+												</div>
+											</form>
+										</div>
+									</div>
+								</div>
+
+
+								<div class="tab-pane fade" id="nav-consultar_usuarios" role="tabpanel" aria-labelledby="nav-consultar_usuarios-tab">
+
+									<table class="table table-bordered table-middle" id="tabla_usuarios">
+										<thead class="thead-dark w-100">
+											<tr>
+												<th>Cedula</th>
+												<th>Nombre</th>
+												<th>Apellido</th>
+												<th>Teléfono</th>
+												<th>Correo</th>
+												<th>Rol</th>
+												<th>Num. Cuenta</th>
+												<th>Acción</th>
+											</tr>
+										</thead>
+										<tbody id="tbody_usuarios" class="align-middle">
+											<tr>
+												<td colspan="9" class="text-center"> No se encontraron registros de usuarios </td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+
 							</div>
-						</nav>
-					</div>
-					<div class="container">
-							
-						<div class="tab-content" id="nav-tabContent">
-							<div class="tab-pane fade show active" id="nav-registrar_usuario" role="tabpanel" aria-labelledby="nav-registrar_usuario-tab">
-								<div style="max-width: 500px" class="m-auto">
-									<div class="container text-center">
-										<form action="" method="POST" onsubmit="return false" id="f1">
-											<label for="cedula">Ingrese la cedula del nuevo usuario</label>
-											<input type="text" class="form-control" id="cedula" name="cedula" data-span="invalid-span-cedula">
-											<span id="invalid-span-cedula" class="invalid-span text-danger"></span>
+						</div>
 
-											<div class="container pl-0 pr-0" id="fields">
+						<div class="modal fade" tabindex="-1" role="dialog" id="modal_modificar_usaurio">
+							<div class="modal-dialog modal-xl" role="document">
+								<div class="modal-content">
+									<div class="modal-header text-light bg-primary">
+										<h5 class="modal-title">Usuario</h5>
+										<button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+											<span aria-hidden="true">&times;</span>
+										</button>
+									</div>
+									<div class="container">
+
+										<form action="" method="POST" onsubmit="return false" id="f1_modificar" class="m-auto pl-3 pr-3">
+											<input type="hidden" name="id" readonly id="modificar_id">
+											<div class="row">
+												<div class="col-12 col-lg-4">
+													<label for="cedula">Cedula</label>
+													<input type="text" class="form-control" id="cedula_modificar" name="cedula" data-span="invalid-span-cedula">
+													<span id="invalid-span-cedula_modificar" class="invalid-span text-danger"></span>
+													
+												</div>
+											</div>
+											<div class="row">
+												<div class="col-lg-4 col-12">
 													<label class="d-block" for="nombre">Nombre</label>
-													<input required type="text" class="form-control" id="nombre" name="nombre" data-span="invalid-span-nombre">
-													<span id="invalid-span-nombre" class="invalid-span text-danger"></span>
-
+													<input required type="text" class="form-control" id="nombre_modificar" name="nombre" data-span="invalid-span-nombre_modificar">
+													<span id="invalid-span-nombre_modificar" class="invalid-span text-danger"></span>
+												</div>
+												<div class="col-lg-4 col-12">
 													<label class="d-block" for="apellido">Apellido</label>
-													<input required type="text" class="form-control" id="apellido" name="apellido" data-span="invalid-span-apellido">
-													<span id="invalid-span-apellido" class="invalid-span text-danger"></span>
-
+													<input required type="text" class="form-control" id="apellido_modificar" name="apellido" data-span="invalid-span-apellido_modificar">
+													<span id="invalid-span-apellido_modificar" class="invalid-span text-danger"></span>
+													
+												</div>
+												<div class="col-lg-4 col-12">
 													<label class="d-block" for="telefono">Teléfono</label>
-													<input type="text" class="form-control" id="telefono" name="telefono" data-span="invalid-span-telefono">
-													<span id="invalid-span-telefono" class="invalid-span text-danger"></span>
+													<input type="text" class="form-control" id="telefono_modificar" name="telefono" data-span="invalid-span-telefono_modificar">
+													<span id="invalid-span-telefono_modificar" class="invalid-span text-danger"></span>
+												</div>
+												<div class="col-lg-4 col-12">
 													<label class="d-block" for="correo">Correo</label>
-													<input required type="email" class="form-control" id="correo" name="correo" data-span="invalid-span-correo">
-													<span id="invalid-span-correo" class="invalid-span text-danger"></span>
-
+													<input required type="email" class="form-control" id="correo_modificar" name="correo" data-span="invalid-span-correo_modificar">
+													<span id="invalid-span-correo_modificar" class="invalid-span text-danger"></span>
+												</div>
+												<div class="col-lg-4 col-12">
+													<label for="numero_cuenta">Numero de cuenta</label>
+													<input type="text" class="form-control" id="numero_cuenta_modificar" name="numero_cuenta" data-span="invalid-span-numero_cuenta_modificar">
+													<span id="invalid-span-numero_cuenta_modificar" class="invalid-span text-danger"></span>
+												</div>
+												<div class="col-lg-4 col-12">
+													<label for="fecha_ingreso">Fecha de Ingreso</label>
+													<input type="date" class="form-control" id="fecha_ingreso_modificar" name="fecha_ingreso" data-span="invalid-span-fecha_ingreso_modificar">
+													<span id="invalid-span-fecha_ingreso_modificar" class="invalid-span text-danger"></span>
+												</div>
+												<div class="col-lg-6 col-12">
+													<label for="nivel_educativo">Nivel Educativo</label>
+													<select required name="nivel_educativo" class="form-control" id="nivel_educativo_modificar" data-span="invalid-span-nivel_educativo_modificar">
+															<option value="">Seleccione un nivel educativo</option>
+													</select>
+													<span id="invalid-span-nivel_educativo_modificar" class="invalid-span text-danger"></span>
+												</div>
+												<div class="col-lg-6 col-12">
 													<label for="rol">Rol</label>
-													<select required class="form-control" id="rol" name="rol" data-span="invalid-span-rol">
+													<select required class="form-control" id="rol_modificar" name="rol" data-span="invalid-span-rol_modificar">
 														<option value="">Seleccione un rol</option>
 													</select>
-													<span id="invalid-span-rol" class="invalid-span text-danger"></span>
-
+													<span id="invalid-span-rol_modificar" class="invalid-span text-danger"></span>
+													
+												</div>
+												<div class="col-lg-6 col-12">
 													<label class="d-block" for="pass">Clave</label>
 													<div class="show-password-container">
-														<input required type="password" class="form-control" id="pass" name="pass" data-span="invalid-span-pass">
+														<input type="password" class="form-control" id="pass_modificar" name="pass" data-span="invalid-span-pass_modificar" placeholder="Sin modificar">
 														<span class="show-password-btn" data-inputpass="pass" aria-label="show password button"></span>
 													</div>
-													<span id="invalid-span-pass" class="invalid-span text-danger"></span>
-													<div class="text-center mt-4">
-														<button type="submit" class="btn btn-success">Registrar</button>
-													</div>
+													<span id="invalid-span-pass_modificar" class="invalid-span text-danger"></span>
+													
+												</div>
+											</div>
+											<div class="row mt-3">
+												<div class="col text-center">
+													<button class="btn btn-warning text-dark" id="btn_modificar">Modificar</button>
+												</div>
 											</div>
 										</form>
+										
+									</div>
+									<div class="modal-footer bg-light">
+										<button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
 									</div>
 								</div>
 							</div>
-
-							<div class="tab-pane fade" id="nav-consultar_usuarios" role="tabpanel" aria-labelledby="nav-consultar_usuarios-tab">
-								<table class="table table-bordered table-hover" id="tabla_usuarios">
-									<thead class="thead-dark">
-										<tr>
-											<th>id</th>
-											<th>Cedula</th>
-											<th>Nombre</th>
-											<th>Apellido</th>
-											<th>Telefono</th>
-											<th>Correo</th>
-											<th>Rol</th>
-										</tr>
-									</thead>
-									<tbody id="tbody_usuarios" class="row-cursor-pointer">
-										
-									</tbody>
-								</table>
-							</div>
-
 						</div>
+						<script type="text/javascript" src="assets/js/usuarios.js"></script>
 					</div>
+				</main>
 
-					<div class="modal fade" tabindex="-1" role="dialog" id="modal_modificar_usaurio">
-						<div class="modal-dialog modal-xl" role="document">
-							<div class="modal-content">
-								<div class="modal-header text-light bg-primary">
-									<h5 class="modal-title">Usuario</h5>
-									<button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
-										<span aria-hidden="true">&times;</span>
-									</button>
-								</div>
-								<div class="container">
-
-									<form action="" method="POST" onsubmit="return false" id="f1_modificar" style="max-width: 500px" class="m-auto">
-										<input type="hidden" name="id" readonly id="modificar_id">
-										<label for="cedula">Cedula</label>
-										<input type="text" class="form-control" id="cedula_modificar" name="cedula" data-span="invalid-span-cedula">
-										<span id="invalid-span-cedula_modificar" class="invalid-span text-danger"></span>
-
-										<div class="container pl-0 pr-0" id="fields_modificar">
-												<label class="d-block" for="nombre">Nombre</label>
-												<input required type="text" class="form-control" id="nombre_modificar" name="nombre" data-span="invalid-span-nombre">
-												<span id="invalid-span-nombre_modificar" class="invalid-span text-danger"></span>
-
-												<label class="d-block" for="apellido">Apellido</label>
-												<input required type="text" class="form-control" id="apellido_modificar" name="apellido" data-span="invalid-span-apellido">
-												<span id="invalid-span-apellido_modificar" class="invalid-span text-danger"></span>
-
-												<label class="d-block" for="telefono">Teléfono</label>
-												<input type="text" class="form-control" id="telefono_modificar" name="telefono" data-span="invalid-span-telefono">
-												<span id="invalid-span-telefono_modificar" class="invalid-span text-danger"></span>
-												<label class="d-block" for="correo">Correo</label>
-												<input required type="email" class="form-control" id="correo_modificar" name="correo" data-span="invalid-span-correo">
-												<span id="invalid-span-correo_modificar" class="invalid-span text-danger"></span>
-
-												<label for="rol" class="d-block">Rol</label>
-												<select required class="form-control" id="rol_modificar" name="rol" data-span="invalid-span-rol">
-													<option value="">Seleccione un rol</option>
-												</select>
-												<span id="invalid-span-rol_modificar" class="invalid-span text-danger"></span>
-
-												<label class="d-block" for="pass">Clave</label>
-												<div class="show-password-container">
-													<input type="password" class="form-control" id="pass_modificar" name="pass" data-span="invalid-span-pass" placeholder=" Sin Modificar">
-													<span class="show-password-btn" data-inputpass="pass" aria-label="show password button"></span>
-												</div>
-												<span id="invalid-span-pass_modificar" class="invalid-span text-danger"></span>
-												<div class="text-center mt-4">
-													<button type="submit" class="btn btn-warning text-dark" id="btn_modificar">Modificar</button>
-													<button type="button" class="btn btn-danger" id="btn_eliminar" onclick="alert('nop, no hace nada');">Eliminar</button>
-
-												</div>
-										</div>
-									</form>
-									
-								</div>
-								<div class="modal-footer bg-light">
-									<button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-								</div>
-							</div>
-						</div>
-					</div>
-					<script type="text/javascript" src="assets/js/usuarios.js"></script>
-				</div>
 
 			</div>
 			<?php   require_once("assets/comun/footer.php"); ?>
@@ -199,7 +280,6 @@
 	 <!-- Page level plugins -->
 	<script src="vendor/datatables/jquery.dataTables.min.js"></script>
 	<script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
-
 </body>
 
 </html>

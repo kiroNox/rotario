@@ -73,8 +73,8 @@ function muestraMensaje(titulo, mensaje = '', icono = '', customProp = false, fu
 		Swal.fire(obj);
 	}
 }
-
-function enviaAjax(datos, func_success,func_beforesend="") {
+var ajaxCounterConsult = 0;
+function enviaAjax(datos, func_success,func_beforesend="loader_main") {
 	if(typeof func_success !== "function"){
 		console.error("falta la funcion success");
 	}
@@ -91,6 +91,10 @@ function enviaAjax(datos, func_success,func_beforesend="") {
 			beforeSend: function () {
 				if(typeof func_beforesend === "function"){
 					func_beforesend();
+				}
+				else if (func_beforesend == "loader_main"){
+					ajaxCounterConsult++;
+					loader_main(true,ajaxCounterConsult);
 				}
 			},
 			timeout: 30000,
@@ -124,6 +128,8 @@ function enviaAjax(datos, func_success,func_beforesend="") {
 					muestraMensaje("Error", request + status + err, "error");
 				}
 				if(status != 'abort'){fail(request, status, err);}
+				ajaxCounterConsult--;
+				loader_main(false,ajaxCounterConsult);
 			},
 			complete: function (xhr, status) {
 				// modalcarga(false).then(function() {
@@ -131,12 +137,35 @@ function enviaAjax(datos, func_success,func_beforesend="") {
 				// 		exito(xhr.responseText);
 				// 	}
 				// });
+				if(func_beforesend == 'loader_main' || func_beforesend == 'close_loader_main'){
+					ajaxCounterConsult--;
+					loader_main(false,ajaxCounterConsult);
+				}
 			},
 		});
 	})
 
 	return {p:promesa,xhr:xhr};
 	
+}
+
+function loader_main(control = true,counter = 0){	
+	if(document.querySelector("main.main-content")){
+		main = document.querySelector("main.main-content");
+
+		if(control){
+			if(!main.querySelector("div.loader-main")){
+				main.appendChild(crearElem("div","class,loader-main"));
+
+			}
+		}
+		else{
+			if(main.querySelector("div.loader-main") && counter <= 0){
+				main.removeChild(main.querySelector("div.loader-main"));
+			}
+		}
+
+	}
 }
 
 
@@ -266,6 +295,16 @@ function eventoMonto(etiqueta,func_afterkeyup = function(e){e.value = sepMiles(e
 
 }
 
+function eventoFecha(etiqueta,mensaje = "La fecha es invalida"){
+	if(typeof etiqueta !== "string"){console.error("la etiqueta debe ser un string con el id del formulario de monto",etiqueta); return false; }
+	eventoKeyup(etiqueta, /^[0-9]{4}[-][0-9]{2}[-][0-9]{2}$/, mensaje);
+	eventoKeypress(etiqueta, /^[0-9]$/);
+	document.getElementById(etiqueta).onchange = function(){eventoKeyup(this, /^[0-9]{4}[-][0-9]{2}[-][0-9]{2}$/, mensaje);}
+	document.getElementById(etiqueta).validarme = function(){
+		return V.fecha(this.value);
+	}
+}
+
 
 function removeSpace(cadena)// remueve espacios al final, al principio y los dobles espacios
 {
@@ -334,7 +373,7 @@ function validarKeyPress(e, er) {
 class Validaciones{
 
 	constructor(){
-		this.expCedula = /(?:(?:^[ve][-\s]?[0-9]{7,8}$)|(?:^[jg][-\s]?[0-9]{8,10}$))/i;
+		this.expCedula = /(?:(?:^[ve][-][0-9]{7,8}$)|(?:^[jg][-][0-9]{8,10}$))/i;
 		this.expCedula_opt = /(?:(?:^[0-9]{7,8}$)|(?:^[ve][-\s]?[0-9]{7,8}$)|(?:^[jg][-\s]?[0-9]{8,10}$))/i;
 		this.expHora = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/;
 		this.expTelefono = /^[0-9]{4}[-\s]?[0-9]{7}$/;
@@ -548,19 +587,16 @@ function cedulaKeypress(tag){
 		tecla = String.fromCharCode(e.keyCode);
 		var cont_tecla_letra;
 
-		if(!/^[vejg][-]?/i.test(this.value) && (!(cont_tecla_letra = /^[vejg]$/i.test(tecla)))){
-			this.value = this.value.replace(/[^0-9]/g,"");
-			this.value= "V-"+this.value;
+		if((!(cont_tecla_letra = /^[vejg]$/i.test(tecla))) && !/^[vejg][-]/i.test(this.value)){
+			var pref = this.value.replace(/[^vejg]/ig,"");
+			pref = (pref!='')?pref.toUpperCase()+'-':"V-";
+			this.value = pref + this.value.replace(/[^0-9]/g,"");
 			if(this.value.length >= this.value.maxLength){e.preventDefault();return 0;}
 			validarKeyPress(e,/^[0-9]$/);
 		}
 		else if(cont_tecla_letra){
 			this.value = this.value.replace(/[^0-9]/g,"");
 			this.value = tecla.toUpperCase()+"-"+this.value;
-			e.preventDefault();
-		}
-		else if(/^[vejg][-]?/i.test(this.value) && /^[vejg]$/i.test(tecla)){
-			this.value = this.value.replace(/^[VEJG][-]*(.{0,10}).*/, tecla.toUpperCase()+"-$1");
 			e.preventDefault();
 		}
 		else{
@@ -669,8 +705,19 @@ function rowsEvent(tbody,func,control=true){//solo permite un evento del rowsEve
 					func(elem,e.target);
 				}
 			}
-			else{//retorna el elemento donde se dio click ej un td de un talbe tr
-				func(elem);
+			else{//retorna el elemento donde se dio click ej un td de un talbe tr y la celda
+				var cell = elem;
+				while(cell.tagName!='TD'&&cell.tagName!='TH'&& cell!=this){
+					count++;
+					if(count>100)
+					{
+						console.error('se paso el while');
+						return false;
+						break
+					}
+					cell=cell.parentNode;
+				}
+				func(elem,cell);
 			}
 		}
 
