@@ -120,6 +120,15 @@
     </div>
 </li>
 
+<li class="nav-item">
+    <a class="nav-link collapsed" href="?p=calendario"  
+        aria-expanded="true" aria-controls="collapseFacturas">
+        <i class="bi bi-calendar-day"></i>
+        <span>Calendario</span>
+    </a>
+    
+</li>
+
 <div class="sidebar-heading">
     Administracion de usuario
 </div>
@@ -135,6 +144,19 @@
             <a class="collapse-item" href="?p=roles">Roles</a>
             <a class="collapse-item" href="?p=permisos_usuario">Permisos</a>
             <a class="collapse-item" href="#">Modulos</a>
+        </div>
+    </div>
+</li>
+<li class="nav-item">
+    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseMantenimiento"
+        aria-expanded="true" aria-controls="collapseMantenimiento">
+        <i class="fas fa-fw fa-folder"></i>
+        <span>Mantenimiento</span>
+    </a>
+    <div id="collapseMantenimiento" class="collapse" aria-labelledby="headingNomina" data-parent="#accordionSidebar">
+        <div class="bg-white py-2 collapse-inner rounded">
+            <a class="collapse-item" href="?p=restaurar_bd">Restaurar/Exportar BD</a>
+            
         </div>
     </div>
 </li>

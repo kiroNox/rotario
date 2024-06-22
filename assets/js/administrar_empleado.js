@@ -2,6 +2,9 @@ $(document).ready(function() {
 
     load_lista_usuarios();
 
+    $("#agg").on("click", function(){
+        $('#exampleModal').modal('show');
+    })
 
     $('#tabla_trabajadores').on('click', '.edit-btn', function() {
         var row = $(this).closest('tr')[0];
