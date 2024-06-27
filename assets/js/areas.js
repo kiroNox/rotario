@@ -1,86 +1,55 @@
 $(document).ready(function() {
-    $('#f3').on('submit', function(e) {
-        e.preventDefault();
+    $('#botonEnvio').on('click', function() {
+        alert("holamundo"); return;
+        // Mostrar alerta de confirmación
+        if (!confirm("¿Está seguro de que desea enviar el formulario?")) {
+            return; // Si el usuario cancela, no hacer nada
+        }
 
-        
-        muestraMensaje("Seguro?", "", "?", function(resp) {
-            if (!resp) return; // Si el usuario cancela, no hacer nada
+        var descripcion = $('#descripcion').val();
+        var codigo = $('#codigo').val();
 
-            var valido = true;
+        // Validar los campos
+        if (descripcion === "" || codigo === "") {
+            alert("Por favor, complete todos los campos.");
+            return;
+        }
 
-            $("#f3 input").each(function(i, elem) {
-                if (!$(elem).validarme()) {
-                    valido = false;
-                    return false;  // salir del bucle each
-                }
-            });
+        var datos = {
+            descripcion: descripcion,
+            codigo: codigo,
+            accion: "registrar_areas"
+        };
 
-            if (!valido) {
-                return;
-            }
-
-            var datos = new FormData($('#f3')[0]);
-            datos.append("accion", "registrar_areas");
-           
-            for (var pair of datos.entries()) {console.log(pair[0] + " - " + pair[1]);}
-
-            enviaAjax(datos, function(respuesta, exito, fail) {
+        $.ajax({
+            url: '../controlador/areas.php', // Cambia esta URL por la ruta real de tu controlador
+            method: 'POST',
+            data: datos,
+            success: function(respuesta) {
                 try {
-                    var lee = JSON.parse(respuesta);
-                    if (lee.resultado === "registrar") {
-                        muestraMensaje("Exito", "Usuario nuevo registrado", "s");
-                    } else if (lee.resultado === 'is-invalid') {
-                        muestraMensaje(lee.titulo, lee.mensaje, "error");
-                    } else if (lee.resultado === "error") {
-                        muestraMensaje(lee.titulo, lee.mensaje, "error");
-                        console.error(lee.mensaje);
-                    } else if (lee.resultado === "console") {
-                        console.log(lee.mensaje);
+                    var resultd = JSON.parse(respuesta);
+                    if (resultd.resultado === "registrar") {
+                        alert("Éxito: Área registrada correctamente.");
+                    } else if (resultd.resultado === 'is-invalid') {
+                        alert("Error: " + resultd.mensaje);
+                    } else if (resultd.resultado === "error") {
+                        alert("Error: " + resultd.mensaje);
+                        console.error(resultd.mensaje);
                     } else {
-                        muestraMensaje(lee.titulo, lee.mensaje, "error");
+                        alert("Error: " + resultd.mensaje);
                     }
                 } catch (error) {
                     console.error("Error al parsear la respuesta JSON:", error);
                     console.error("Respuesta recibida:", respuesta);
+                    alert("Error: Respuesta inválida del servidor.");
                 }
-            });
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.error("Error en la petición AJAX:", textStatus, errorThrown);
+                alert("Error: Hubo un problema con la solicitud. Inténtelo de nuevo más tarde.");
+            }
         });
     });
-  
-
-function muestraMensaje(titulo, mensaje, tipo, callback) {
-    // Implementación de tu función de mostrar mensajes (puede ser una ventana modal, un alert, etc.)
-    alert(`${titulo}: ${mensaje}`);
-    if (callback) callback(true);
-}
-
-function enviaAjax(datos, callback) {
-    $.ajax({
-        url: '', 
-        type: 'POST',
-        data: datos,
-        processData: false,
-        contentType: false,
-        success: function(respuesta) {
-            callback(respuesta, true, false);
-        },
-        error: function(jqXHR, textStatus, errorThrown) {
-            callback(jqXHR.responseText, false, true);
-        }
-    });
-}
-
-$.fn.validarme = function() {
-    // Implementa tu lógica de validación aquí.
-    // Por ejemplo:
-    if ($(this).val().trim() === "") {
-        $(this).addClass('is-invalid');
-        return false;
-    } else {
-        $(this).removeClass('is-invalid');
-        return true;
-    }
-    }
-
 });
+
 
