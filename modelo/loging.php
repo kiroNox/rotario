@@ -33,7 +33,7 @@ class Loging extends Conexion
 
 			$consulta = $this->con->prepare("SELECT p.id_trabajador, p.cedula, p.correo, p.clave
 											FROM trabajadores as p 
-											WHERE p.correo = ?");
+											WHERE p.correo = ? AND estado_actividad = 1");
 			//creo la consulta
 			$consulta->execute([$correo]);// la ejecuto mandando el correo
 

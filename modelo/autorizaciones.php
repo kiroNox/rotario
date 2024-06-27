@@ -41,14 +41,14 @@ class Autorizaciones extends Conexion
 
 			// TODO validaciones
 			
-			$consulta = $this->con->prepare("SELECT 1 FROM roles WHERE descripcion = ?;");
+			$consulta = $this->con->prepare("SELECT 1 FROM rol WHERE descripcion = ?;");
 			$consulta->execute([$this->nombre]);
 
 			if($consulta->fetch()){
 				throw new Exception("El rol ya existe", 1);
 			}
 
-			$consulta = $this->con->prepare("INSERT INTO roles (descripcion) values (?)");
+			$consulta = $this->con->prepare("INSERT INTO rol (descripcion) values (?)");
 			$consulta->execute([$this->nombre]);
 
 			
@@ -94,7 +94,7 @@ class Autorizaciones extends Conexion
 			$this->validar_conexion($this->con);
 			$this->con->beginTransaction();
 			
-			$consulta = $this->con->prepare("SELECT descripcion FROM roles WHERE id_rol = ?;");
+			$consulta = $this->con->prepare("SELECT descripcion FROM rol WHERE id_rol = ?;");
 			$consulta->execute([$this->id]);
 
 			if(!($consulta = $consulta->fetch(PDO::FETCH_ASSOC))){
@@ -102,7 +102,7 @@ class Autorizaciones extends Conexion
 			}
 			$this->nombre = $consulta["descripcion"];
 
-			$consulta = $this->con->prepare("DELETE FROM roles WHERE id_rol = ?");
+			$consulta = $this->con->prepare("DELETE FROM rol WHERE id_rol = ?");
 			$consulta->execute([$this->id]);
 
 			
@@ -145,7 +145,7 @@ class Autorizaciones extends Conexion
 			$this->validar_conexion($this->con);
 			$this->con->beginTransaction();
 			
-			$consulta = $this->con->prepare("SELECT * FROM roles WHERE id_rol = ?;");
+			$consulta = $this->con->prepare("SELECT * FROM rol WHERE id_rol = ?;");
 			$consulta->execute([$this->id]);
 
 			if(!($consulta = $consulta->fetch(PDO::FETCH_ASSOC))){
@@ -153,7 +153,7 @@ class Autorizaciones extends Conexion
 			}
 
 			if($consulta["descripcion"] != $this->nombre){
-				$consulta = $this->con->prepare("SELECT * FROM roles WHERE id_rol <> ? and descripcion = ?;");
+				$consulta = $this->con->prepare("SELECT * FROM rol WHERE id_rol <> ? and descripcion = ?;");
 				$consulta->execute([$this->id, $this->nombre]);
 
 				if($consulta->fetch()){
@@ -161,7 +161,7 @@ class Autorizaciones extends Conexion
 				}
 			}
 
-			$consulta = $this->con->prepare("UPDATE roles SET descripcion = ? WHERE id_rol = ?");
+			$consulta = $this->con->prepare("UPDATE rol SET descripcion = ? WHERE id_rol = ?");
 			$consulta->execute([$this->nombre, $this->id]);
 
 			Bitacora::registro($this->con,"roles","Modifico el rol ($this->nombre)");
@@ -209,7 +209,7 @@ class Autorizaciones extends Conexion
 			$this->con->beginTransaction();
 
 
-			$consulta = $this->con->prepare("SELECT r.id_rol as id, r.descripcion as rol, COUNT(u.id_usuario) as usuarios FROM `roles` AS r LEFT JOIN usuarios as u on u.id_rol = r.id_rol WHERE 1 GROUP BY r.id_rol");
+			$consulta = $this->con->prepare("SELECT r.id_rol as id, r.descripcion as rol, COUNT(u.id_trabajador) as usuarios FROM `rol` AS r LEFT JOIN trabajadores as u on u.id_rol = r.id_rol WHERE 1 GROUP BY r.id_rol");
 			$consulta->execute();
 
 
@@ -270,7 +270,7 @@ class Autorizaciones extends Conexion
 		FROM
 		    modulos AS m
 		    
-		CROSS JOIN roles as r
+		CROSS JOIN rol as r
 		LEFT JOIN permisos AS p
 		ON
 		    p.id_modulos = m.id_modulos AND

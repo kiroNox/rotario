@@ -1,0 +1,70 @@
+td {
+  height: 100px;
+  width: 100px;
+  cursor: pointer;
+  vertical-align: top;
+  position: relative;
+}
+
+td:hover {
+  background-color: #f1f1f1;
+}
+
+td .event {
+  position: absolute;
+  bottom: 5px;
+  left: 5px;
+  right: 5px;
+  background-color: #f8d7da;
+  padding: 5px;
+  border-radius: 5px;
+  font-size: 0.8em;
+}
+/* Estilos básicos para el calendario */
+#calendar-body td {
+    width: 14.28%; /* Aproximadamente un séptimo del ancho */
+    height: 100px; /* Puedes ajustar esto según tus necesidades */
+    text-align: center;
+    vertical-align: top;
+    border: 1px solid #ddd; /* Borde de las celdas */
+    position: relative;
+}
+
+/* Estilo para las celdas vacías */
+#calendar-body td.empty {
+    background-color: #f0f0f0;
+}
+
+/* Estilo para las celdas que tienen eventos */
+.has-event {
+    background-color: lightblue; /* Color de fondo para los días con eventos */
+}
+
+/* Estilos adicionales */
+#calendar-body td .event {
+    background-color: #2196F3;
+    color: white;
+    padding: 2px;
+    margin: 2px 0;
+    border-radius: 4px;
+    font-size: 12px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+/* Estilo para sábados */
+.saturday {
+  background-color: #d3d3d3; /* Color de fondo más oscuro para los sábados */
+}
+
+/* Estilo para domingos */
+.sunday {
+  background-color: #d3d3d3; /* Color de fondo más oscuro para los domingos */
+}
+
+/* Estilo para el día actual */
+.current-day {
+  background-color: lightgreen; /* Color de fondo para el día actual */
+  border: 2px solid green; /* Borde para resaltar aún más */
+}

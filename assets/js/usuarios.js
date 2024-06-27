@@ -18,21 +18,7 @@
 				var lee = JSON.parse(respuesta);
 				if(lee.resultado == "valid_cedula"){
 					if(lee.mensaje == '1'){
-						if(lee.datos !== undefined){
-
-							document.getElementById('cedula').value = lee.datos.cedula;
-							document.getElementById('nombre').value = lee.datos.nombre;
-							document.getElementById('apellido').value = lee.datos.apellido;
-							document.getElementById('telefono').value = lee.datos.telefono;
-							document.getElementById('correo').value = lee.datos.correo;
-
-							show_fields();
-
-						}
-						else{
-							show_fields(false);
-							validarKeyUp(false, "cedula", "La cedula ya existe");
-						}
+						validarKeyUp(false, "cedula", "La cedula ya existe");
 					}
 					else{
 						show_fields();
@@ -63,16 +49,25 @@
 
 
 	});
+	document.getElementById('cedula').onkeyup(); // TODO quitar esto
 	eventoKeyup("nombre", V.expTexto(50), "El nombre no es valido");
 	eventoKeyup("apellido", V.expTexto(50), "El apellido no es valido");
 	eventoKeyup("telefono", V.expTelefono, "El teléfono es invalido", undefined, (elem)=>{
 		elem.value = elem.value.replace(/^([0-9]{4})\D*([0-9]{1,7})/, "$1-$2");
 	});
+
+	eventoFecha("fecha_ingreso", "La fecha de ingreso es invalida");
+
+	eventoKeyup("numero_cuenta", /^[0-9]{20}$/, "El numero de cuenta debe tener 20 numeros");
+
+	document.getElementById('numero_cuenta').maxLength = 20;
+
 	document.getElementById('telefono').allow_empty = true;
 	eventoKeyup("correo", V.expEmail, "El correo es invalido");
 	eventoPass("pass");
 
 	load_roles();
+	load_nivel_profesionalismo();
 
 	document.getElementById('f1').onsubmit = function(e) {
 		e.preventDefault();
@@ -122,48 +117,117 @@
 // listar ***************************************
 	load_lista_usuarios();
 
-	document.getElementById('nav-consultar_usuarios-tab').click();// TODO quitar esto
-
-	rowsEvent("tbody_usuarios",(row)=>{
-		if(!row.dataset.id){
-			return false
+	rowsEvent("tbody_usuarios",(target,cell)=>{
+		if(!cell.parentNode.dataset.id){
+			return false;
 		}
+	 	//console.log(row.dataset.id);
+	 	if(cell.classList.contains("cell-action")){
+	 		while(target.tagName!='BUTTON'&&target.tagName!=cell.tagName){
+	 			count++;
+	 			if(count>100)
+	 			{
+	 				console.error('se paso el while');
+	 				return false;
+	 				break
+	 			}
+	 			target=target.parentNode;
+	 		}
+	 		if(target.tagName == "BUTTON"){
+	 			if(target.dataset.action == "eliminar"){ // ELIMINAR
 
-		var datos = new FormData();
-		datos.append("accion","get_user");
-		datos.append("id",row.dataset.id);
-		enviaAjax(datos,function(respuesta, exito, fail){
-		
-			var lee = JSON.parse(respuesta);
-			if(lee.resultado == "get_user"){
-
-				document.getElementById('modificar_id').value = lee.mensaje.id_persona;
-				document.getElementById('cedula_modificar').value = lee.mensaje.cedula;
-				document.getElementById('nombre_modificar').value = lee.mensaje.nombre;
-				document.getElementById('apellido_modificar').value = lee.mensaje.apellido;
-				document.getElementById('telefono_modificar').value = lee.mensaje.telefono;
-				document.getElementById('correo_modificar').value = lee.mensaje.correo;
-				document.getElementById('rol_modificar').value = lee.mensaje.rol;
-				document.getElementById('pass_modificar').value = "";
+	 				muestraMensaje("¿Seguro", "Esta seguro de querer eliminar el usuario", "?",(resp)=>{
+	 					if(resp){
+	 						target.disabled = true;
+	 						target.blur();
 
 
-				$("#modal_modificar_usaurio").modal("show");
-			}
-			else if (lee.resultado == 'is-invalid'){
-				muestraMensaje(lee.titulo, lee.mensaje,"error");
-			}
-			else if(lee.resultado == "error"){
-				muestraMensaje(lee.titulo, lee.mensaje,"error");
-				console.error(lee.mensaje);
-			}
-			else if(lee.resultado == "console"){
-				console.log(lee.mensaje);
-			}
-			else{
-				muestraMensaje(lee.titulo, lee.mensaje,"error");
-			}
-		});
-	})
+
+	 						var datos = new FormData();
+	 						datos.append("accion","eliminar_usuario");
+	 						datos.append("id",cell.parentNode.dataset.id);
+
+	 						enviaAjax(datos,function(respuesta, exito, fail){
+	 						
+	 							var lee = JSON.parse(respuesta);
+	 							if(lee.resultado == "eliminar_usuario"){
+	 								muestraMensaje("Eliminación Exitosa", "El usuario ha sido eliminado exitosamente", "s");
+	 								
+	 								load_lista_usuarios();
+
+	 							}
+	 							else if (lee.resultado == 'is-invalid'){
+	 								muestraMensaje(lee.titulo, lee.mensaje,"error");
+	 								fail();
+	 							}
+	 							else if(lee.resultado == "error"){
+	 								muestraMensaje(lee.titulo, lee.mensaje,"error");
+	 								console.error(lee.mensaje);
+	 								fail();
+	 							}
+	 							else if(lee.resultado == "console"){
+	 								console.log(lee.mensaje);
+	 								fail();
+	 							}
+	 							else{
+	 								muestraMensaje(lee.titulo, lee.mensaje,"error");
+	 								fail();
+	 							}
+	 						}).p.catch((a)=>{
+	 							load_lista_usuarios();
+	 						});
+
+
+
+	 					}
+	 				});
+
+	 			}
+	 			else if (target.dataset.action == 'modificar'){ // MODIFICAR
+					var datos = new FormData();
+					datos.append("accion","get_user");
+					datos.append("id",cell.parentNode.dataset.id);
+					enviaAjax(datos,function(respuesta, exito, fail){
+					
+						var lee = JSON.parse(respuesta);
+						if(lee.resultado == "get_user"){
+
+							document.getElementById('modificar_id').value = lee.mensaje.id_trabajador;
+							document.getElementById('cedula_modificar').value = lee.mensaje.cedula;
+							document.getElementById('nombre_modificar').value = lee.mensaje.nombre;
+							document.getElementById('apellido_modificar').value = lee.mensaje.apellido;
+							document.getElementById('telefono_modificar').value = lee.mensaje.telefono;
+							document.getElementById('correo_modificar').value = lee.mensaje.correo;
+							document.getElementById('rol_modificar').value = lee.mensaje.rol;
+							document.getElementById('nivel_educativo_modificar').value = lee.mensaje.id_prima_profesionalismo;
+							document.getElementById('pass_modificar').value = "";
+							document.getElementById('fecha_ingreso_modificar').value = lee.mensaje.creado;
+							document.getElementById('numero_cuenta_modificar').value = lee.mensaje.numero_cuenta;
+
+
+
+							$("#modal_modificar_usaurio").modal("show");
+						}
+						else if (lee.resultado == 'is-invalid'){
+							muestraMensaje(lee.titulo, lee.mensaje,"error");
+						}
+						else if(lee.resultado == "error"){
+							muestraMensaje(lee.titulo, lee.mensaje,"error");
+							console.error(lee.mensaje);
+						}
+						else if(lee.resultado == "console"){
+							console.log(lee.mensaje);
+						}
+						else{
+							muestraMensaje(lee.titulo, lee.mensaje,"error");
+						}
+					});
+	 			}
+	 		}
+	 	}
+	},false);
+
+
 	$('#modal_modificar_usaurio').on('hidden.bs.modal', function () {
 		$("#f1_modificar input, #f1_modificar select").each((i,elem)=>{
 			elem.value = '';
@@ -183,7 +247,6 @@
 				var datos = new FormData($("#f1_modificar")[0]);
 				datos.append("accion","modificar_usuario");
 				this.sending = true;
-				document.getElementById('btn_eliminar').disabled = true;
 				document.getElementById('btn_modificar').disabled = true;
 				enviaAjax(datos,function(respuesta, exito, fail){
 				
@@ -208,11 +271,9 @@
 						muestraMensaje(lee.titulo, lee.mensaje,"error");
 					}
 					document.getElementById('f1_modificar').sending = undefined;
-					document.getElementById('btn_eliminar').disabled = false;
 					document.getElementById('btn_modificar').disabled = false;
 				}).p.catch((a)=>{
 					document.getElementById('f1_modificar').sending = undefined;
-					document.getElementById('btn_eliminar').disabled = false;
 					document.getElementById('btn_modificar').disabled = false;
 				});
 			});
@@ -221,67 +282,6 @@
 			muestraMensaje("Error", "La acción no se puede completar", "s");
 		}
 	};
-
-// Eliminar
-
-	document.getElementById('btn_eliminar').onclick=function(){
-		if(document.getElementById('modificar_id').value != ''){
-			if(this.sending){
-				return false;
-			}
-			//TODO validar
-
-			muestraMensaje("Seguro?", "Seguro que desea eliminar el usuarios", "?",(resp)=>{
-				var datos = new FormData();
-				datos.append("accion","eliminar_usuario");
-				datos.append("id",document.getElementById('modificar_id').value);
-
-
-				this.sending = true;
-				document.getElementById('btn_eliminar').disabled = true;
-				document.getElementById('btn_modificar').disabled = true;
-				enviaAjax(datos,function(respuesta, exito, fail){
-				
-					var lee = JSON.parse(respuesta);
-					if(lee.resultado == "eliminar_usuario"){
-						muestraMensaje("Eliminación Exitosa", "El usuario ha sido eliminado exitosamente", "s");
-						
-						load_lista_usuarios();
-
-						$("#modal_modificar_usaurio").modal("hide");
-					}
-					else if (lee.resultado == 'is-invalid'){
-						muestraMensaje(lee.titulo, lee.mensaje,"error");
-					}
-					else if(lee.resultado == "error"){
-						muestraMensaje(lee.titulo, lee.mensaje,"error");
-						console.error(lee.mensaje);
-					}
-					else if(lee.resultado == "console"){
-						console.log(lee.mensaje);
-					}
-					else{
-						muestraMensaje(lee.titulo, lee.mensaje,"error");
-					}
-					document.getElementById('btn_eliminar').sending = undefined;
-					document.getElementById('btn_eliminar').disabled = false;
-					document.getElementById('btn_modificar').disabled = false;
-				}).p.catch((a)=>{
-					document.getElementById('btn_eliminar').sending = undefined;
-					document.getElementById('btn_eliminar').disabled = false;
-					document.getElementById('btn_modificar').disabled = false;
-				});
-			});
-		}
-		else{
-			muestraMensaje("Error", "La acción no se puede completar", "s");
-		}
-	};
-
-	
-
-
-
 
 // function *************************************
 	function load_roles(){
@@ -294,6 +294,34 @@
 				for(x of lee.mensaje){
 					document.getElementById('rol').appendChild(crearElem('option',`value,${x.id}`,x.rol));
 					document.getElementById('rol_modificar').appendChild(crearElem('option',`value,${x.id}`,x.rol));
+
+				}
+			}
+			else if (lee.resultado == 'is-invalid'){
+				muestraMensaje(lee.titulo, lee.mensaje,"error");
+			}
+			else if(lee.resultado == "error"){
+				muestraMensaje(lee.titulo, lee.mensaje,"error");
+				console.error(lee.mensaje);
+			}
+			else if(lee.resultado == "console"){
+				console.log(lee.mensaje);
+			}
+			else{
+				muestraMensaje(lee.titulo, lee.mensaje,"error");
+			}
+		});
+	}
+	function load_nivel_profesionalismo(){
+		var datos = new FormData();
+		datos.append("accion","nivel_profesional");
+		enviaAjax(datos,function(respuesta, exito, fail){
+		
+			var lee = JSON.parse(respuesta);
+			if(lee.resultado == "nivel_profesional"){
+				for(x of lee.mensaje){
+					document.getElementById('nivel_educativo').appendChild(crearElem('option',`value,${x.id}`,x.prof));
+					document.getElementById('nivel_educativo_modificar').appendChild(crearElem('option',`value,${x.id}`,x.prof));
 
 				}
 			}
@@ -362,7 +390,22 @@
 						},
 						data:lee.mensaje,
 						createdRow: function(row,data){
-							row.dataset.id = data[0];
+							row.dataset.id = data[8];
+							row.querySelector("td:nth-child(1)").classList.add("text-nowrap");
+							row.querySelector("td:nth-child(4)").classList.add("text-nowrap");
+							row.querySelector("td:nth-child(5)").classList.add("text-nowrap");
+							var acciones = row.querySelector("td:nth-child(8)");
+							acciones.innerHTML = '';
+
+
+
+
+							var btn = crearElem("button", "class,btn btn-warning,data-action,modificar", "<span class='bi bi-pencil-square' title='Modificar'></span>")
+							acciones.appendChild(btn);
+							btn = crearElem("button", "class,btn btn-danger ml-1,data-action,eliminar", "<span class='bi bi-trash' title='Eliminar'></span>")
+							acciones.appendChild(btn);
+							acciones.classList.add('text-nowrap','cell-action');
+							
 						},
 						autoWidth: false
 						//searching:false,
@@ -373,6 +416,8 @@
 						
 					});
 				}
+
+				$("#tabla_usuarios")[0].classList.add("table-responsive");
 
 
 

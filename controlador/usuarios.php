@@ -9,15 +9,19 @@
 				echo json_encode( $cl->valid_cedula($_POST["cedula"]) );
 			}
 			else if($accion == "registrar"){
-				if(isset($permisos["usuarios"]["crear"]) and $permisos["usuarios"]["crear"] == "2"){
-					$resp = $cl->registrar_s(
+				if(isset($permisos["usuarios"]["crear"]) and $permisos["usuarios"]["crear"] == "1"){
+
+					$resp = $cl->registrar_usuario_s(
 						$_POST["cedula"],
 						$_POST["nombre"],
 						$_POST["apellido"],
 						$_POST["telefono"],
 						$_POST["correo"],
 						$_POST["rol"],
-						$_POST["pass"]
+						$_POST["pass"],
+						$_POST["numero_cuenta"],
+						$_POST["nivel_educativo"],
+						$_POST["fecha_ingreso"]
 					);
 					echo json_encode($resp);
 				}
@@ -30,6 +34,18 @@
 
 				if(isset($permisos["usuarios"]["consultar"]) and $permisos["usuarios"]["consultar"] == "1"){
 					echo json_encode( $cl->get_roles() );
+				}
+				else{
+					$cl->no_permision_msg();
+				}
+			}
+			else if($accion == "nivel_profesional"){
+				if(isset($permisos["usuarios"]["consultar"]) and $permisos["usuarios"]["consultar"] == "1"){
+
+
+
+
+					echo json_encode( $cl->get_niveles_educativos() );
 				}
 				else{
 					$cl->no_permision_msg();
@@ -53,7 +69,10 @@
 						$_POST["telefono"],
 						$_POST["correo"],
 						$_POST["rol"],
-						$_POST["pass"]
+						$_POST["pass"],
+						$_POST["numero_cuenta"],
+						$_POST["nivel_educativo"],
+						$_POST["fecha_ingreso"]
 					) );
 				}
 				else{
