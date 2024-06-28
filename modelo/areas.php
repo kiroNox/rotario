@@ -2,59 +2,89 @@
 
 class Areas extends Conexion
 {
-    private $id, $descripcion;
+    private $id, $codigo,$descripcion,$con;
 
-    function __construct($con = '')
-    {
-        if (!($con instanceof PDO)) {// si "con" no es una instancia de PDO
-            $this->con = $this->conecta();// crea la conexion 
-        }
-    }
+    function __construct($con = ''){
+		if(!($con instanceof PDO)){
+			$this->con = $this->conecta();
+		}
+	}
 
-    public function registrar($descripcion)
+    public function registrar_areas($descripcion,$codigo)
     {
         $this->set_descripcion($descripcion);
-        return $this->registrar_areas();
+        $this->set_descripcion($codigo);
+           
+
+        return $this->registrar_area_privada($descripcion, $codigo);
     }
 
     //Metodos
+    PUBLIC function listar_areas(){
+		try {
+			$this->validar_conexion($this->con);
+			$this->con->beginTransaction();
+			$consulta = $this->con->query("SELECT p.cedula, p.nombre, p.apellido, NULL as extra, t.id_trabajador FROM trabajadores t INNER JOIN personas p ON t.id_persona = p.id_persona;")->fetchall(PDO::FETCH_NUM);
+			
 
-    private function registrar_areas()
-    {
+			
+			$r['resultado'] = 'listar';
+			$r['titulo'] = 'Éxito';
+			$r['mensaje'] = $consulta;
+			$this->con->commit();
+		
+		} catch (Validaciones $e){
+			if($this->con instanceof PDO){
+				if($this->con->inTransaction()){
+					$this->con->rollBack();
+				}
+			}
+			$r['resultado'] = 'is-invalid';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+			$r['console'] =  $e->getMessage().": Code : ".$e->getLine();
+		} catch (Exception $e) {
+			if($this->con instanceof PDO){
+				if($this->con->inTransaction()){
+					$this->con->rollBack();
+				}
+			}
+		
+			$r['resultado'] = 'error';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+			//$r['mensaje'] =  $e->getMessage().": LINE : ".$e->getLine();
+		}
+		finally{
+			//$this->con = null;
+		}
+		return $r;
+	}
+    private function registrar_area_privada($codigo, $descripcion) {
         try {
-            $this->validar_conexion($this->con);
             $this->con->beginTransaction();
-
-            $consulta = $this->con->prepare("INSERT INTO `areas` (`descripcion`) VALUES ( :descripcion)");
-            $consulta->bindValue(":descripcion", $this->descripcion);
+            // Insertar en la base de datos
+            $consulta = $this->con->prepare("INSERT INTO areas (codigo, descripcion) VALUES (:codigo, :descripcion)");
+            $consulta->bindValue(":codigo", $codigo);
+            $consulta->bindValue(":descripcion", $descripcion);
             $consulta->execute();
-
             $this->con->commit();
-            $r['resultado'] = 'registrar';
-            $r['titulo'] = 'Éxito';
-            $r['mensaje'] = "Vacaciones registradas con éxito";
-        } catch (Validaciones $e) {
-            if ($this->con instanceof PDO) {
-                if ($this->con->inTransaction()) {
-                    $this->con->rollBack();
-                }
-            }
-            $r['resultado'] = 'is-invalid';
-            $r['titulo'] = 'Error';
-            $r['mensaje'] = $e->getMessage();
-            $r['console'] = $e->getMessage() . ": Code : " . $e->getLine();
+
+            return [
+                'resultado' => 'registrar',
+                'titulo' => 'Éxito',
+                'mensaje' => 'Área registrada correctamente.'
+            ];
+
         } catch (Exception $e) {
-            if ($this->con instanceof PDO) {
-                if ($this->con->inTransaction()) {
-                    $this->con->rollBack();
-                }
+            if ($this->con instanceof PDO && $this->con->inTransaction()) {
+                $this->con->rollBack();
             }
-            $r['resultado'] = 'error';
-            $r['titulo'] = 'Error';
-            $r['mensaje'] = $e->getMessage();
+            throw $e;
         }
-        return $r;
     }
+       
+    
     public function get_descripcion()
     {
         return $this->descripcion;
@@ -71,7 +101,10 @@ class Areas extends Conexion
     {
         $this->id = $value;
     }
-    PUBLIC function set_con($value){
+    PUBLIC function get_con(){
+		return $this->con;
+	}
+	PUBLIC function set_con($value){
 		$this->con = $value;
 	}
     

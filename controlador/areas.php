@@ -2,61 +2,74 @@
 if (is_file("vista/" . $pagina . ".php")) {
     $claseAreas = new Areas;
 
-    if (!empty($_POST)) { // Si hay alguna consulta tipo POST
-        $accion = $_POST["accion"]; // Siempre se pasa un parámetro con la acción que se va a realizar
+    if (!empty($_POST)) {
+        $accion = $_POST["accion"];
 
-        if ($accion == "registrar_areas") {
-            if (isset($permisos["usuarios"]["crear"]) && $permisos["usuarios"]["crear"] == "1") {
-                $respuesta = $claseAreas->registrar(
-                    $_POST["codigo"], // Agregado para capturar el código del área
+        if (!isset($permisos["usuarios"]["crear"]) && $permisos["usuarios"]["crear"] == "0") {
+            echo json_encode([
+                'resultado' => 'error',
+                'titulo' => 'Error',
+                'mensaje' => 'No tienes permisos para realizar esta acción.'
+            ]);
+        }
+
+        switch ($accion) {
+
+            case "index":
+                //inicio
+                echo json_encode($claseAreas->listar_areas());
+                //fin
+                break;
+
+            case "create":
+                // Obtener los datos JSON enviados
+                // Obtener los datos enviados
+                $descripcion = $_POST['descripcion'] ?? null;
+                $codigo = $_POST['codigo'] ?? null;
+
+                if ($descripcion && $codigo) {
+                    $respuesta = $claseAreas->registrar_areas($descripcion, $codigo);
+                    echo json_encode($respuesta);
+                } else {
+                    echo json_encode([
+                        'resultado' => 'error',
+                        'titulo' => 'Error',
+                        'mensaje' => 'Faltan parámetros en la solicitud.'
+                    ]);
+                }
+                break;
+
+
+            case "destroy":
+                $respuesta = $claseAreas->eliminar_area($_POST["id"]);
+                echo json_encode($respuesta);
+
+                break;
+
+            case "update":
+
+                $respuesta = $claseAreas->actualizar_area(
+                    $_POST["id"],
+                    $_POST["codigo"],
                     $_POST["descripcion"]
                 );
                 echo json_encode($respuesta);
-            } else {
+
+                break;
+
+            case "list":
+
+                echo json_encode($claseAreas->listar_areas());
+
+                break;
+
+            default:
                 echo json_encode([
                     'resultado' => 'error',
                     'titulo' => 'Error',
-                    'mensaje' => 'No tienes permisos para realizar esta acción.'
+                    'mensaje' => 'Acción no reconocida.'
                 ]);
-            }
-        } elseif ($accion == "registrar_reposo") {
-            if (isset($permisos["usuarios"]["crear"]) && $permisos["usuarios"]["crear"] == "1") {
-                $resp = $claseAreas->registrar_reposo(
-                    $_POST["tipo_reposo"],
-                    $_POST["descripcion_reposo"],
-                    $_POST["fecha_inicio_reposo"],
-                    $_POST["fecha_reincorporacion_reposo"],
-                    $_POST["id"]
-                );
-                echo json_encode($resp);
-            } else {
-                echo json_encode([
-                    'resultado' => 'error',
-                    'titulo' => 'Error',
-                    'mensaje' => 'No tienes permisos para realizar esta acción.'
-                ]);
-            }
-        } elseif ($accion == "registrar_permiso") {
-            if (isset($permisos["usuarios"]["crear"]) && $permisos["usuarios"]["crear"] == "1") {
-                $resp = $claseAreas->registrar_permiso(
-                    $_POST["tipo_permiso"],
-                    $_POST["descripcion_permiso"],
-                    $_POST["fecha_inicio_permiso"],
-                    $_POST["fecha_reincorporacion_permiso"],
-                    $_POST["id"]
-                );
-                echo json_encode($resp);
-            } else {
-                echo json_encode([
-                    'resultado' => 'error',
-                    'titulo' => 'Error',
-                    'mensaje' => 'No tienes permisos para realizar esta acción.'
-                ]);
-            }
-        } elseif ($accion == "listar") {
-            if ($permisos["usuarios"]["consultar"]) {
-                echo json_encode($claseAreas->listar_usuarios());
-            }
+                break;
         }
 
         $claseAreas->set_con(null);
@@ -65,8 +78,8 @@ if (is_file("vista/" . $pagina . ".php")) {
 
     $claseAreas->set_con(null);
     Bitacora::ingreso_modulo("Areas");
-    require_once("vista/" . $pagina . ".php");
+    require_once ("vista/" . $pagina . ".php");
 } else {
-    require_once("vista/404.php");
+    require_once ("vista/404.php");
 }
 ?>
