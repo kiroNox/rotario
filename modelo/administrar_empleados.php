@@ -18,22 +18,6 @@ class administrar_empleados extends Conexion
 
 	}
 
-	PUBLIC function registrar_trabajador($cedula, $nombre, $apellido, $telefono, $correo,$numero_cuenta, $fecha_nacimiento, $sexo, $intruccion, $salario){
-		$this->set_cedula($cedula);
-		$this->set_nombre($nombre);
-		$this->set_apellido($apellido);
-		$this->set_telefono($telefono);
-		$this->set_correo($correo);
-		$this->set_numero_cuenta($numero_cuenta);
-		$this->set_fecha_nacimiento($fecha_nacimiento);
-		$this->set_sexo($sexo);
-		$this->set_intruccion($intruccion);
-		$this->set_salario($salario);
-		
-
-		return $this->registrar_trab();
-	}
-
 	PUBLIC function registrar_vacaciones($desde, $hasta, $dias_totales, $descripcion,$id){
 		$this->set_id($id);
 		$this->set_desde($desde);
@@ -44,13 +28,14 @@ class administrar_empleados extends Conexion
 		return $this->registrar_vacacion();
 	}
 
-	PUBLIC function modificar_vacaciones($desde, $hasta, $dias_totales, $descripcion ){
+	PUBLIC function modificar_vacaciones($desde, $hasta, $dias_totales, $descripcion, $id_tabla ){
 		$this->set_desde($desde);
 		$this->set_hasta($hasta);
 		$this->set_dias_totales($dias_totales);
 		$this->set_descripcion($descripcion);
+		$this->set_id_tabla($id_tabla);
 
-		return $this->modificar_usuario();
+		return $this->modificar_vacacion();
 	}
 
 	PUBLIC function registrar_reposo( $id, $tipo_reposo, $descripcion, $desde, $hasta){
@@ -144,7 +129,7 @@ class administrar_empleados extends Conexion
 		try {
 			$this->validar_conexion($this->con);
 			$this->con->beginTransaction();
-			$consulta = $this->con->query("SELECT p.cedula, p.nombre, p.apellido, NULL as extra, t.id_trabajador FROM trabajadores t INNER JOIN personas p ON t.id_persona = p.id_persona;")->fetchall(PDO::FETCH_NUM);
+			$consulta = $this->con->query("SELECT cedula,nombre,apellido,telefono,correo, r.descripcion as rol, numero_cuenta,  NULL as extra, p.id_trabajador FROM trabajadores as p left join rol as r on r.id_rol = p.id_rol WHERE estado_actividad = 1;")->fetchall(PDO::FETCH_NUM);
 			
 
 			
@@ -181,96 +166,45 @@ class administrar_empleados extends Conexion
 		return $r;
 	}
 
-	PRIVATE function registrar_trab(){
-		try {
-			$this->validar_conexion($this->con);
-			$this->con->beginTransaction();
-
-			$consulta = $this->con->prepare("SELECT IF(u.id_persona is NULL,'null',u.id_persona) as usuario FROM personas AS p left join usuarios as u on p.id_persona = u.id_persona WHERE cedula = ?;");
-			$consulta->execute([$this->cedula]);
-			if($consulta = $consulta->fetch(PDO::FETCH_ASSOC)){
-				if($consulta["usuario"] != 'null'){
-					throw new Exception("El usuario con la cedula \"$this->cedula\" ya existe", 1);
-				}
-				else{
-					$id = $consulta["usuario"];
-
-					$consulta = $this->con->prepare("UPDATE `personas` 
-						SET 
-						`nombre`=:nombre,`apellido`=:apellido,`telefono`=:telefono,`correo`=:correo WHERE id_persona = :id_persona;");
-
-					$consulta->bindValue(":nombre",$this->nombre);
-					$consulta->bindValue(":apellido",$this->apellido);
-					$consulta->bindValue(":telefono",$this->telefono);
-					$consulta->bindValue(":correo",$this->correo);
-					$consulta->bindValue(":id_persona",$id);
-					$consulta->execute();
-
-
-					$consulta = $this->con->prepare("INSERT INTO `usuarios`(`id_persona`, `id_rol`, `clave`, `token`) VALUES (:id_persona, :id_rol, :clave, :token)");
-					$consulta->bindValue(":id_persona",$id);
-					$consulta->bindValue(":id_rol",$this->id_rol);
-					$consulta->bindValue(":clave",$this->pass);
-					$consulta->bindValue(":token","1");
-					$consulta->execute();
-				}
-				
-			}
-			else{
-
-				$consulta = $this->con->prepare("INSERT INTO `personas`( `cedula`, `nombre`, `apellido`, `telefono`, `correo`, `liquidacion`) VALUES (:cedula, :nombre, :apellido, :telefono, :correo, 0)");
-
-				$consulta->bindValue(":cedula",$this->cedula);
-				$consulta->bindValue(":nombre",$this->nombre);
-				$consulta->bindValue(":apellido",$this->apellido);
-				$consulta->bindValue(":telefono",$this->telefono);
-				$consulta->bindValue(":correo",$this->correo);
-				$consulta->execute();
-
-				$lastId = $this->con->lastInsertId();
-
-				$consulta = $this->con->prepare("INSERT INTO `trabajadores`(`id_persona`, `numero_cuenta`, `sexo`, `fecha_nacimiento`,`id_nivel_educativo`,`id_sueldos`) VALUES (:id_persona, :numero_cuenta, :sexo, :fecha_nacimiento, :intruccion, :salario)");
-				$consulta->bindValue(":id_persona",$lastId);
-				$consulta->bindValue(":numero_cuenta",$this->numero_cuenta);
-				$consulta->bindValue(":sexo",$this->sexo);
-				$consulta->bindValue(":fecha_nacimiento",$this->fecha_nacimiento);
-				$consulta->bindValue(":intruccion",$this->intruccion);
-				$consulta->bindValue(":salario",$this->salario);
-				$consulta->execute();
-
-			}
-			// code
-			
-			$r['resultado'] = 'registrar';
-			$r['titulo'] = 'Éxito';
-			$r['mensaje'] =  "";
-			$this->con->commit();
-		
-		} catch (Validaciones $e){
-			if($this->con instanceof PDO){
-				if($this->con->inTransaction()){
-					$this->con->rollBack();
-				}
-			}
-			$r['resultado'] = 'is-invalid';
-			$r['titulo'] = 'Error';
-			$r['mensaje'] =  $e->getMessage();
-			$r['console'] =  $e->getMessage().": Code : ".$e->getLine();
-		} catch (Exception $e) {
-			if($this->con instanceof PDO){
-				if($this->con->inTransaction()){
-					$this->con->rollBack();
-				}
-			}
-		
-			$r['resultado'] = 'error';
-			$r['titulo'] = 'Error';
-			$r['mensaje'] =  $e->getMessage();
-			//$r['mensaje'] =  $e->getMessage().": LINE : ".$e->getLine();
-		}
-		return $r;
-	}
-
+	 private function registrar_vacacion() {
+        try {
+            $this->validar_conexion($this->con);
+            $this->con->beginTransaction();
+            
+            $consulta = $this->con->prepare("INSERT INTO `vacaciones` (`id_trabajador`, `descripcion`, `dias_totales`, `desde`, `hasta`) VALUES (:id_trabajador, :descripcion, :dias_totales, :desde, :hasta)");
+            $consulta->bindValue(":id_trabajador", $this->id);
+            $consulta->bindValue(":descripcion", $this->descripcion);
+            $consulta->bindValue(":dias_totales", $this->dias_totales);
+            $consulta->bindValue(":desde", $this->desde);
+            $consulta->bindValue(":hasta", $this->hasta);
+            $consulta->execute();
+            
+            $this->con->commit();
+            $r['resultado'] = 'registrar';
+            $r['titulo'] = 'Éxito';
+            $r['mensaje'] = "Vacaciones registradas con éxito";
+        } catch (Validaciones $e) {
+            if ($this->con instanceof PDO) {
+                if ($this->con->inTransaction()) {
+                    $this->con->rollBack();
+                }
+            }
+            $r['resultado'] = 'is-invalid';
+            $r['titulo'] = 'Error';
+            $r['mensaje'] = $e->getMessage();
+            $r['console'] = $e->getMessage() . ": Code : " . $e->getLine();
+        } catch (Exception $e) {
+            if ($this->con instanceof PDO) {
+                if ($this->con->inTransaction()) {
+                    $this->con->rollBack();
+                }
+            }
+            $r['resultado'] = 'error';
+            $r['titulo'] = 'Error';
+            $r['mensaje'] = $e->getMessage();
+        }
+        return $r;
+    }
 
 	PRIVATE function modificar_usuario(){
 		try {
@@ -338,23 +272,31 @@ class administrar_empleados extends Conexion
 		return $r;
 	}
 
-	 private function registrar_vacacion() {
+	private function modificar_vacacion() {
         try {
             $this->validar_conexion($this->con);
             $this->con->beginTransaction();
             
-            $consulta = $this->con->prepare("INSERT INTO `vacaciones` (`id_trabajador`, `descripcion`, `dias_totales`, `desde`, `hasta`) VALUES (:id_trabajador, :descripcion, :dias_totales, :desde, :hasta)");
-            $consulta->bindValue(":id_trabajador", $this->id);
-            $consulta->bindValue(":descripcion", $this->descripcion);
-            $consulta->bindValue(":dias_totales", $this->dias_totales);
-            $consulta->bindValue(":desde", $this->desde);
-            $consulta->bindValue(":hasta", $this->hasta);
-            $consulta->execute();
+            $consulta = $this->con->prepare("UPDATE `vacaciones` 
+				SET 
+				`descripcion`=:descripcion,`dias_totales`=:dias_totales,`desde`=:desde,`hasta`=:hasta WHERE id_vacaciones  = :id_vacaciones ;");
+
+			$consulta->bindValue(":descripcion",$this->descripcion);
+			$consulta->bindValue(":dias_totales",$this->dias_totales);
+			$consulta->bindValue(":desde",$this->desde);
+			$consulta->bindValue(":hasta",$this->hasta);
+			$consulta->bindValue(":id_vacaciones",$this->id_tabla);
+			$consulta->execute();
             
             $this->con->commit();
-            $r['resultado'] = 'registrar';
+            $r['resultado1'] = $this->descripcion;
+            $r['resultado2'] = $this->dias_totales;
+            $r['resultado3'] = $this->desde;
+            $r['resultado4'] = $this->hasta;
+            $r['resultado5'] = $this->id_tabla;
+            $r['resultado'] = 'modificar';
             $r['titulo'] = 'Éxito';
-            $r['mensaje'] = "Vacaciones registradas con éxito";
+            $r['mensaje'] = "Vacaciones modificadas con éxito";
         } catch (Validaciones $e) {
             if ($this->con instanceof PDO) {
                 if ($this->con->inTransaction()) {
@@ -457,6 +399,107 @@ class administrar_empleados extends Conexion
         }
         return $r;
     }
+
+	public function listar_vacaciones() {
+		try {
+			$this->validar_conexion($this->con);
+			$this->con->beginTransaction();
+			$consulta = $this->con->query("SELECT t.cedula, t.nombre, t.apellido, v.descripcion, v.desde, v.hasta FROM vacaciones AS v JOIN trabajadores AS t ON v.id_trabajador = t.id_trabajador ")->fetchAll(PDO::FETCH_NUM);
+			$r['resultado'] = 'listar';
+			$r['titulo'] = 'Éxito';
+			$r['mensaje'] = $consulta;
+			$this->con->commit();
+		} catch (Exception $e) {
+			if ($this->con instanceof PDO && $this->con->inTransaction()) {
+				$this->con->rollBack();
+			}
+			$r['resultado'] = 'error';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] = $e->getMessage();
+		}
+		return $r;
+	}
+	
+	public function listar_reposos() {
+		try {
+			$this->validar_conexion($this->con);
+			$this->con->beginTransaction();
+			$consulta = $this->con->query("SELECT t.cedula, t.nombre, t.apellido, r.tipo_reposo, r.descripcion, r.desde, r.hasta FROM reposo AS r JOIN trabajadores AS t ON r.id_trabajador = t.id_trabajador ")->fetchAll(PDO::FETCH_NUM);
+			$r['resultado'] = 'listar';
+			$r['titulo'] = 'Éxito';
+			$r['mensaje'] = $consulta;
+			$this->con->commit();
+		} catch (Exception $e) {
+			if ($this->con instanceof PDO && $this->con->inTransaction()) {
+				$this->con->rollBack();
+			}
+			$r['resultado'] = 'error';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] = $e->getMessage();
+		}
+		return $r;
+	}
+	
+	public function listar_permisos() {
+		try {
+			$this->validar_conexion($this->con);
+			$this->con->beginTransaction();
+			$consulta = $this->con->query("SELECT t.cedula, t.nombre, t.apellido, p.tipo_de_permiso, p.descripcion, p.desde, p.hasta FROM permisos_trabajador AS p JOIN trabajadores AS t ON p.id_trabajador = t.id_trabajador ")->fetchAll(PDO::FETCH_NUM);
+			$r['resultado'] = 'listar';
+			$r['titulo'] = 'Éxito';
+			$r['mensaje'] = $consulta;
+			$this->con->commit();
+		} catch (Exception $e) {
+			if ($this->con instanceof PDO && $this->con->inTransaction()) {
+				$this->con->rollBack();
+			}
+			$r['resultado'] = 'error';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] = $e->getMessage();
+		}
+		return $r;
+	}
+
+	public function obtener_detalles_vacaciones($id_trabajador){
+		try {
+			$this->validar_conexion($this->con);
+			$this->con->beginTransaction();
+			$consulta = $this->con->prepare("
+			SELECT t.cedula, t.nombre, t.apellido, v.descripcion, v.desde, v.hasta, v.id_vacaciones, v.dias_totales, v.id_trabajador FROM vacaciones AS v JOIN trabajadores AS t ON v.id_trabajador = t.id_trabajador WHERE v.id_trabajador = :id_trabajador order by v.id_trabajador desc limit 1;
+        ");
+			$consulta->bindParam(':id_trabajador', $id_trabajador, PDO::PARAM_INT);
+			$consulta->execute();
+			$resultado = $consulta->fetch(PDO::FETCH_ASSOC);
+	
+			if ($resultado) {
+				$r['resultado'] = 'listar';
+				$r['mensaje'] = $resultado;
+			} else {
+				$r['resultado'] = 'error';
+				$r['mensaje'] = 'No se encontraron vacaciones activas para este trabajador.';
+			}
+			$this->con->commit();
+		} catch (Validaciones $e){
+			if($this->con instanceof PDO){
+				if($this->con->inTransaction()){
+					$this->con->rollBack();
+				}
+			}
+			$r['resultado'] = 'is-invalid';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+		} catch (Exception $e) {
+			if($this->con instanceof PDO){
+				if($this->con->inTransaction()){
+					$this->con->rollBack();
+				}
+			}
+			$r['resultado'] = 'error';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+		}
+		return $r;
+	}
 
 	
 	PUBLIC function get_intruccion(){
@@ -576,6 +619,13 @@ class administrar_empleados extends Conexion
 	}
 	PUBLIC function set_id($value){
 		$this->id = $value;
+	}
+
+	PUBLIC function get_id_tabla(){
+		return $this->id_tabla;
+	}
+	PUBLIC function set_id_tabla($value){
+		$this->id_tabla = $value;
 	}
 }
 

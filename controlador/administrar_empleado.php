@@ -21,6 +21,20 @@
 				} else {
 					$cl->no_permision_msg();
 				}
+			}else if ($accion == "modificar_vacaciones") {
+				if (isset($permisos["usuarios"]["crear"]) && $permisos["usuarios"]["crear"] == "1") {
+					$resp = $cl->modificar_vacaciones(
+						$_POST["desde"],
+						$_POST["hasta"],
+						$_POST["dias_totales"],
+						$_POST["descripcion"],
+						$_POST["id_tabla"]
+						
+					);
+					echo json_encode($resp);
+				} else {
+					$cl->no_permision_msg();
+				}
 			} else if($accion == "registrar_trabajador"){
 				if(isset($permisos["usuarios"]["crear"]) and $permisos["usuarios"]["crear"] == "1"){
 					$resp = $cl->registrar_trabajador(
@@ -74,6 +88,25 @@
 				if ($permisos["usuarios"]["consultar"]) {
 					echo json_encode($cl->listar_usuarios());
 				}
+			}
+			elseif ($accion == "listar_vacaciones") {
+				if ($permisos["usuarios"]["consultar"]) {
+					echo json_encode($cl->listar_vacaciones());
+				}
+			}
+			elseif ($accion == "listar_reposos") {
+				if ($permisos["usuarios"]["consultar"]) {
+					echo json_encode($cl->listar_reposos());
+				}
+			}
+			elseif ($accion == "listar_permisos") {
+				if ($permisos["usuarios"]["consultar"]) {
+					echo json_encode($cl->listar_permisos());
+				}
+			}
+			elseif ($accion == "detalles_vacaciones") {
+				$id_trabajador = $_POST['id'];
+				echo json_encode($cl->obtener_detalles_vacaciones($id_trabajador));
 			}
 	
 			$cl->set_con(null);

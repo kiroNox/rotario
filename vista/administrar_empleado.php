@@ -238,103 +238,7 @@
     <h1 class="h3 mb-4 text-gray-800">Administración de Trabajador</h1>
     
     <!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-whatever="@mdo">Registro</button>-->   
-    <div class="modal fade" id="exampleModal"  data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Resumen de trabajador</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <ul class="nav nav-tabs" id="myTab" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="home-tab" data-toggle="tab" data-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">Vacaciones</button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="profile-tab" data-toggle="tab" data-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Reposos</button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="contact-tab" data-toggle="tab" data-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false">Permisos</button>
-                        </li>
-                    </ul>
-                    <div class="tab-content" id="myTabContent">
-                        <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-                            <form class="col-12" action="" method="POST" onsubmit="return false" id="f1">
-                                <div class="form-group">
-                                    <label for="descripcion">Descripcion</label>
-                                    <input type="text" class="form-control" name="descripcion" id="descripcion" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="dias_totales">Dias Totales</label>
-                                    <input type="text" class="form-control" name="dias_totales" id="dias_totales" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="desde">Fecha de inicio</label>
-                                    <input type="date" class="form-control" name="desde" id="desde" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="hasta">Fecha de reincorporación</label>
-                                    <input type="date" class="form-control" name="hasta" id="hasta" required>
-                                    <input type="text" class="form-control" name="id" id="id1" value="" >
-                                </div>
-                                <button type="submit" class="btn btn-primary">Enviar</button>
-                            </form>
-                        </div>
-                        <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-                            <form class="col-12" action="" method="POST" onsubmit="return false" id="f2">
-                                <div class="form-group">
-                                    <label for="tipo_reposo">Tipo de reposo</label>
-                                    <input type="text" class="form-control" name="tipo_reposo" id="tipo_reposo" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="descripcion_reposo">Descripcion</label>
-                                    <input type="text" class="form-control" name="descripcion_reposo" id="descripcion_reposo" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="fecha_inicio_reposo">Fecha de inicio</label>
-                                    <input type="date" class="form-control" name="fecha_inicio_reposo" id="fecha_inicio_reposo" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="fecha_reincorporacion_reposo">Fecha de reincorporación</label>
-                                    <input type="date" class="form-control" name="fecha_reincorporacion_reposo" id="fecha_reincorporacion_reposo" required>
-                                    <input type="text" class="form-control" name="id" id="id2" value="" style="display: none;">
-                                </div>
-                                <button type="submit" class="btn btn-primary">Enviar</button>
-                            </form>
-                        </div>
-                        <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
-                            <form class="col-12" action="" method="POST" onsubmit="return false" id="f3">
-                                <div class="form-group">
-                                    <label for="tipo_de_permiso">Tipo de permiso</label>
-                                    <input type="text" class="form-control" name="tipo_de_permiso" id="tipo_de_permiso" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="descripcion_permiso">Descripcion</label>
-                                    <input type="text" class="form-control" name="descripcion_permiso" id="descripcion_permiso" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="fecha_inicio_permiso">Fecha de inicio</label>
-                                    <input type="date" class="form-control" name="fecha_inicio_permiso" id="fecha_inicio_permiso" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="fecha_reincorporacion_permiso">Fecha de reincorporación</label>
-                                    <input type="date" class="form-control" name="fecha_reincorporacion_permiso" id="fecha_reincorporacion_permiso" required>
-                                    <input type="text" class="form-control" name="id" id="id3" value="" style="display: none;">
-                                </div>
-                                <button type="submit" class="btn btn-primary">Enviar</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    
+ 
   
     <div class="row">
         
@@ -350,62 +254,58 @@
                         
                         <!-- Earnings (Monthly) Card Example -->
                         <div class="col-xl-4 col-md-6 mb-4">
-                            <div class="card border-left-primary shadow h-100 py-2">
+                            <div class="card border-left-primary shadow h-100 py-2 card-vacaciones">
                                 <div class="card-body">
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                                Empleados en vacaciones</div>
-                                                <div class="h5 mb-0 font-weight-bold text-gray-800">40</div>
+                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Empleados en vacaciones</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">0</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                            
+                            <!-- Earnings (Annual) Card Example -->
+                            <div class="col-xl-4 col-md-6 mb-4">
+                                <div class="card border-left-success shadow h-100 py-2 card-reposos">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Empleados en reposo</div>
+                                                <div class="h5 mb-0 font-weight-bold text-gray-800">0</div>
                                             </div>
                                             <div class="col-auto">
-                                                <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                                                <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            
-                            <!-- Earnings (Annual) Card Example -->
+                                
+                                
+                                
+                            <!-- Pending Requests Card Example -->
                             <div class="col-xl-4 col-md-6 mb-4">
-                                <div class="card border-left-success shadow h-100 py-2">
+                                <div class="card border-left-warning shadow h-100 py-2 card-permisos">
                                     <div class="card-body">
                                         <div class="row no-gutters align-items-center">
                                             <div class="col mr-2">
-                                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                                    Empleados en reposo</div>
-                                                    <div class="h5 mb-0 font-weight-bold text-gray-800">21</div>
-                                                </div>
-                                                <div class="col-auto">
-                                                    <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
-                                                </div>
+                                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Permisos activos</div>
+                                                <div class="h5 mb-0 font-weight-bold text-gray-800">0</div>
                                             </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                
-                                
-                                <!-- Pending Requests Card Example -->
-                                <div class="col-xl-4 col-md-6 mb-4">
-                                    <div class="card border-left-warning shadow h-100 py-2">
-                                        <div class="card-body">
-                                            <div class="row no-gutters align-items-center">
-                                                <div class="col mr-2">
-                                                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                                        Permisos activos</div>
-                                                        <div class="h5 mb-0 font-weight-bold text-gray-800">18</div>
-                                                    </div>
-                                                    <div class="col-auto">
-                                                        <i class="fas fa-comments fa-2x text-gray-300"></i>
-                                                    </div>
-                                                </div>
+                                            <div class="col-auto">
+                                                <i class="fas fa-comments fa-2x text-gray-300"></i>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                    </div>
                         
                         <!-- Brand Buttons -->
                         <div class="card shadow mb-4">
@@ -414,16 +314,14 @@
                             </div>
                             <div class="card-body">
                                 <div class="tab-pane " id="nav-consultar_usuarios" role="tabpanel" aria-labelledby="nav-consultar_usuarios-tab">
-                                    <div id="custom-toolbar" class="mb-2">
-                                        <button id="myButton" class="btn btn-primary" data-toggle="modal" data-target="#staticBackdrop1">Agregar trabajador</button>
-                                    </div> 
+
                                     <table class="table table-bordered table-hover" id="tabla_trabajadores" width="100%" cellspacing="0">
                                         <thead>
                                             <tr>
                                                 <th>Cedula</th>
                                                 <th>Nombre</th>
                                                 <th>Apellido</th>
-                                                <th>Accion</th>
+                                                <th>Acciones</th>
                                             </tr>
                                         </thead>
                                         <tbody id="tbody_trabajadores" class="row-cursor-pointer">
@@ -501,6 +399,229 @@ aria-hidden="true">
 
 </body>
 
+<div class="modal fade" id="exampleModal1"  data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Vacaciones</h5>
+                    <button type="button" id="cerrar_mv" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true" >&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                
+                    <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab"  style="display: none;" >
+                        <form class="col-12" action="" method="POST" onsubmit="return false" id="f1">
+                            <div class="form-group">
+                                <label for="descripcion">Descripcion</label>
+                                <input type="text" class="form-control" name="descripcion" id="descripcion" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="dias_totales">Dias Totales</label>
+                                <input type="text" class="form-control" name="dias_totales" id="dias_totales" required>
+                            </div>  
+                            <div class="form-group">
+                                <label for="desde">Fecha de inicio</label>
+                                <input type="date" class="form-control" name="desde" id="desde" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="hasta">Fecha de reincorporación</label>
+                                <input type="date" class="form-control" name="hasta" id="hasta" required>
+                                <input type="text" class="form-control" name="id" id="id1" value="" style="display: none;"  >
+                                <input type="text" class="form-control" id="mm" value="" style="display: none;"  >
+                                <input type="text" class="form-control" id="id_tabla" name="id_tabla" value="" style="display: none;"  >
+                            </div>
+                            <button type="submit" class="btn btn-primary">Enviar</button>
+                        </form>
+                    </div>
+                    <div class="container"><p id="vacaciones_hasta"></p></div>
+                       
+                   
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="cerrar_modal" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="exampleModal2"  data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Reposos</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                  
+                    <div class="tab-content" id="myTabContent">
+                        
+                        <form class="col-12" action="" method="POST" onsubmit="return false" id="f2">
+                            <div class="form-group">
+                                <label for="tipo_reposo">Tipo de reposo</label>
+                                <input type="text" class="form-control" name="tipo_reposo" id="tipo_reposo" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="descripcion_reposo">Descripcion</label>
+                                <input type="text" class="form-control" name="descripcion_reposo" id="descripcion_reposo" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="fecha_inicio_reposo">Fecha de inicio</label>
+                                <input type="date" class="form-control" name="fecha_inicio_reposo" id="fecha_inicio_reposo" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="fecha_reincorporacion_reposo">Fecha de reincorporación</label>
+                                <input type="date" class="form-control" name="fecha_reincorporacion_reposo" id="fecha_reincorporacion_reposo" required>
+                                <input type="text" class="form-control" name="id" id="id2" value="" style="display: none;">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Enviar</button>
+                        </form>
+                        
+                        
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="exampleModal3"  data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Permisos</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                  
+                    <div class="tab-content" id="myTabContent">
+                        
+                        <form class="col-12" action="" method="POST" onsubmit="return false" id="f3">
+                            <div class="form-group">
+                                <label for="tipo_de_permiso">Tipo de permiso</label>
+                                <input type="text" class="form-control" name="tipo_de_permiso" id="tipo_de_permiso" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="descripcion_permiso">Descripcion</label>
+                                <input type="text" class="form-control" name="descripcion_permiso" id="descripcion_permiso" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="fecha_inicio_permiso">Fecha de inicio</label>
+                                <input type="date" class="form-control" name="fecha_inicio_permiso" id="fecha_inicio_permiso" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="fecha_reincorporacion_permiso">Fecha de reincorporación</label>
+                                <input type="date" class="form-control" name="fecha_reincorporacion_permiso" id="fecha_reincorporacion_permiso" required>
+                                <input type="text" class="form-control" name="id" id="id3" value="" style="display: none;">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Enviar</button>
+                        </form>
+                        
+                        
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal para Empleados en Vacaciones -->
+<div class="modal fade" id="vacacionesModal" tabindex="-1" aria-labelledby="vacacionesModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="vacacionesModalLabel">Empleados en Vacaciones</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <table class="table table-bordered table-hover" id="tabla_vacaciones" width="100%" cellspacing="0">
+          <thead>
+            <tr>
+              <th>Cedula</th>
+              <th>Nombre</th>
+              <th>Apellido</th>
+              <th>Descripción</th>
+              <th>Desde</th>
+              <th>Hasta</th>
+            </tr>
+          </thead>
+          <tbody id="tbody_vacaciones">
+            <!-- Filas generadas dinámicamente -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para Empleados en Reposo -->
+<div class="modal fade" id="reposoModal" tabindex="-1" aria-labelledby="reposoModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="reposoModalLabel">Empleados en Reposo</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <table class="table table-bordered table-hover" id="tabla_reposos" width="100%" cellspacing="0">
+          <thead>
+            <tr>
+              <th>Cedula</th>
+              <th>Nombre</th>
+              <th>Apellido</th>
+              <th>Tipo de Reposo</th>
+              <th>Descripción</th>
+              <th>Desde</th>
+              <th>Hasta</th>
+            </tr>
+          </thead>
+          <tbody id="tbody_reposos">
+            <!-- Filas generadas dinámicamente -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para Permisos Activos -->
+<div class="modal fade" id="permisosModal" tabindex="-1" aria-labelledby="permisosModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="permisosModalLabel">Permisos Activos</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <table class="table table-bordered table-hover" id="tabla_permisos" width="100%" cellspacing="0">
+          <thead>
+            <tr>
+              <th>Cedula</th>
+              <th>Nombre</th>
+              <th>Apellido</th>
+              <th>Tipo de Permiso</th>
+              <th>Descripción</th>
+              <th>Desde</th>
+              <th>Hasta</th>
+            </tr>
+          </thead>
+          <tbody id="tbody_permisos">
+            <!-- Filas generadas dinámicamente -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
 <div class="modal fade" id="staticBackdrop1" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -580,6 +701,10 @@ aria-hidden="true">
         </div>
     </div>
 </div>
+
+   
+
+
 
 
 </html>
