@@ -43,33 +43,30 @@ if (is_file("vista/" . $pagina . ".php")) {
             case "destroy":
                 $respuesta = $claseAreas->eliminar_area($_POST["id"]);
                 echo json_encode($respuesta);
-
                 break;
 
             case "update":
-
                 $respuesta = $claseAreas->actualizar_area(
                     $_POST["id"],
                     $_POST["codigo"],
                     $_POST["descripcion"]
                 );
                 echo json_encode($respuesta);
-
                 break;
 
             case "list":
-
-                echo json_encode($claseAreas->listar_areas());
-
-                break;
-
+                $areas = $claseAreas->listar_areas();
+                echo json_encode($areas);
             default:
                 echo json_encode([
                     'resultado' => 'error',
                     'titulo' => 'Error',
-                    'mensaje' => 'Acción no reconocida.'
+                    'mensaje' => 'Acción no válida.'
                 ]);
                 break;
+
+
+
         }
 
         $claseAreas->set_con(null);
