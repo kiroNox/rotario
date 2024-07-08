@@ -5,13 +5,11 @@
 	<meta name="description" content="">
 	<meta name="author" content="">
 
-	<title>Usuarios</title>
+	<title>Usuarios - Servicio Desconcentrado Hospital Rotario</title>
 
 	<!-- Custom fonts for this template-->
 	<?php require_once 'assets/comun/head.php'; ?>
-	<link
-		href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
-		rel="stylesheet">
+	<!-- <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet"> -->
 
 	<!-- Custom styles for this template-->
 	<link href="assets/css/sb-admin-2.min.css" rel="stylesheet">
@@ -27,7 +25,7 @@
 		<?php require_once 'assets/comun/menu.php'; ?>
 
 		<!-- Content Wrapper -->
-		<div id="content-wrapper" class="overflow-auto vh-100 d-flex flex-column">
+		<div id="content-wrapper" class="d-flex flex-column">
 
 			<!-- Main Content -->
 			<div id="content" class="d-flex flex-column">
@@ -42,7 +40,7 @@
 					<div class="container-fluid">
 
 						<!-- Page Heading -->
-						<h1 class="h3 mb-4 text-gray-800">Usuarios</h1>
+						<h1 class="h3 mb-4 text-gray-800">Trabajador</h1>
 
 						<div class="container-fluid p-0">
 							<nav>
@@ -62,7 +60,7 @@
 												<div class="row">
 													<div class="col-lg-4 col-12">
 														<label for="cedula">Ingrese la cedula del nuevo usuario</label>
-														<input type="text" class="form-control" id="cedula" name="cedula" data-span="invalid-span-cedula" value="V-2725054">
+														<input type="text" class="form-control" id="cedula" name="cedula" data-span="invalid-span-cedula" value="V-2725051">
 														<span id="invalid-span-cedula" class="invalid-span text-danger"></span>
 													</div>
 												</div>
@@ -101,19 +99,39 @@
 															<input type="date" class="form-control" id="fecha_ingreso" name="fecha_ingreso" data-span="invalid-span-fecha_ingreso">
 															<span id="invalid-span-fecha_ingreso" class="invalid-span text-danger"></span>
 														</div>
-														<div class="col-lg-6 col-12">
+														<div class="col-lg-4 col-12">
 															<label for="nivel_educativo">Nivel Educativo</label>
 															<select required name="nivel_educativo" class="form-control" id="nivel_educativo" data-span="invalid-span-nivel_educativo">
 																	<option value="">Seleccione un nivel educativo</option>
 															</select>
 															<span id="invalid-span-nivel_educativo" class="invalid-span text-danger"></span>
 														</div>
-														<div class="col-lg-6 col-12">
+														<div class="col-lg-4 col-12">
 															<label for="rol">Rol</label>
 															<select required class="form-control" id="rol" name="rol" data-span="invalid-span-rol">
 																<option value="">Seleccione un rol</option>
 															</select>
 															<span id="invalid-span-rol" class="invalid-span text-danger"></span>
+															
+														</div>
+														<div class="col-lg-4 col-12">
+															<label for="comision_servicios" class="d-block mb-3" >Comisión de servicios?</label>
+															<label for="comision_servicios" class="d-inline-block cursor-pointer">Si</label>
+															<input type="radio" class="form-check-inline" id="comision_servicios" name="comision_servicios" data-span="invalid-span-comision_servicios" value="true">
+															<label for="comision_servicios_no" class="d-inline-block cursor-pointer">No</label>
+															<input type="radio" class="form-check-inline" id="comision_servicios_no" name="comision_servicios" data-span="invalid-span-comision_servicios" value="false">
+															<span id="invalid-span-comision_servicios" class="invalid-span text-danger"></span>
+														</div>
+														<div class="col-lg-4 col-12">
+															<label for="discapacidad" class="d-block mb-3">Discapacidad</label>
+															<input type="checkbox" id="discapacidad" name="discapacidad" data-span="invalid-span-discapacidad">
+															<span id="invalid-span-discapacidad" class="invalid-span text-danger"></span>
+														</div>
+														<div class="col-lg-8 col-12">
+
+															<label for="discapacidad_info">Discapacidad</label>
+															<input type="text" class="form-control" id="discapacidad_info" name="discapacidad_info" data-span="invalid-span-discapacidad_info" maxlength="50">
+															<span id="invalid-span-discapacidad_info" class="invalid-span text-danger"></span>
 															
 														</div>
 														<div class="col-lg-6 col-12">
@@ -142,8 +160,8 @@
 
 								<div class="tab-pane fade" id="nav-consultar_usuarios" role="tabpanel" aria-labelledby="nav-consultar_usuarios-tab">
 
-									<table class="table table-bordered table-middle" id="tabla_usuarios">
-										<thead class="thead-dark w-100">
+									<table class="table table-bordered table-middle scroll-bar-style" id="tabla_usuarios">
+										<thead class="bg-primary text-light w-100">
 											<tr>
 												<th>Cedula</th>
 												<th>Nombre</th>
@@ -170,7 +188,7 @@
 							<div class="modal-dialog modal-xl" role="document">
 								<div class="modal-content">
 									<div class="modal-header text-light bg-primary">
-										<h5 class="modal-title">Usuario</h5>
+										<h5 class="modal-title">trabajador</h5>
 										<button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
 											<span aria-hidden="true">&times;</span>
 										</button>
@@ -181,7 +199,7 @@
 											<input type="hidden" name="id" readonly id="modificar_id">
 											<div class="row">
 												<div class="col-12 col-lg-4">
-													<label for="cedula">Cedula</label>
+													<label for="cedula_modificar">Cedula</label>
 													<input type="text" class="form-control" id="cedula_modificar" name="cedula" data-span="invalid-span-cedula">
 													<span id="invalid-span-cedula_modificar" class="invalid-span text-danger"></span>
 													
@@ -189,58 +207,83 @@
 											</div>
 											<div class="row">
 												<div class="col-lg-4 col-12">
-													<label class="d-block" for="nombre">Nombre</label>
+													<label class="d-block" for="nombre_modificar">Nombre</label>
 													<input required type="text" class="form-control" id="nombre_modificar" name="nombre" data-span="invalid-span-nombre_modificar">
 													<span id="invalid-span-nombre_modificar" class="invalid-span text-danger"></span>
 												</div>
 												<div class="col-lg-4 col-12">
-													<label class="d-block" for="apellido">Apellido</label>
+													<label class="d-block" for="apellido_modificar">Apellido</label>
 													<input required type="text" class="form-control" id="apellido_modificar" name="apellido" data-span="invalid-span-apellido_modificar">
 													<span id="invalid-span-apellido_modificar" class="invalid-span text-danger"></span>
 													
 												</div>
 												<div class="col-lg-4 col-12">
-													<label class="d-block" for="telefono">Teléfono</label>
+													<label class="d-block" for="telefono_modificar">Teléfono</label>
 													<input type="text" class="form-control" id="telefono_modificar" name="telefono" data-span="invalid-span-telefono_modificar">
 													<span id="invalid-span-telefono_modificar" class="invalid-span text-danger"></span>
 												</div>
 												<div class="col-lg-4 col-12">
-													<label class="d-block" for="correo">Correo</label>
+													<label class="d-block" for="correo_modificar">Correo</label>
 													<input required type="email" class="form-control" id="correo_modificar" name="correo" data-span="invalid-span-correo_modificar">
 													<span id="invalid-span-correo_modificar" class="invalid-span text-danger"></span>
 												</div>
 												<div class="col-lg-4 col-12">
-													<label for="numero_cuenta">Numero de cuenta</label>
+													<label for="numero_cuenta_modificar">Numero de cuenta</label>
 													<input type="text" class="form-control" id="numero_cuenta_modificar" name="numero_cuenta" data-span="invalid-span-numero_cuenta_modificar">
 													<span id="invalid-span-numero_cuenta_modificar" class="invalid-span text-danger"></span>
 												</div>
 												<div class="col-lg-4 col-12">
-													<label for="fecha_ingreso">Fecha de Ingreso</label>
+													<label for="fecha_ingreso_modificar">Fecha de Ingreso</label>
 													<input type="date" class="form-control" id="fecha_ingreso_modificar" name="fecha_ingreso" data-span="invalid-span-fecha_ingreso_modificar">
 													<span id="invalid-span-fecha_ingreso_modificar" class="invalid-span text-danger"></span>
 												</div>
-												<div class="col-lg-6 col-12">
-													<label for="nivel_educativo">Nivel Educativo</label>
+												<div class="col-lg-4 col-12">
+													<label for="nivel_educativo_modificar">Nivel Educativo</label>
 													<select required name="nivel_educativo" class="form-control" id="nivel_educativo_modificar" data-span="invalid-span-nivel_educativo_modificar">
 															<option value="">Seleccione un nivel educativo</option>
 													</select>
 													<span id="invalid-span-nivel_educativo_modificar" class="invalid-span text-danger"></span>
 												</div>
-												<div class="col-lg-6 col-12">
-													<label for="rol">Rol</label>
+												<div class="col-lg-4 col-12">
+													<label for="rol_modificar">Rol</label>
 													<select required class="form-control" id="rol_modificar" name="rol" data-span="invalid-span-rol_modificar">
 														<option value="">Seleccione un rol</option>
 													</select>
 													<span id="invalid-span-rol_modificar" class="invalid-span text-danger"></span>
 													
 												</div>
+												<div class="col-lg-4 col-12">
+													<label for="comision_servicios_modificar" class="d-block mb-3" >Comisión de servicios?</label>
+													<label for="comision_servicios_modificar" class="d-inline-block cursor-pointer">Si</label>
+													<input required type="radio" class="form-check-inline" id="comision_servicios_modificar" name="comision_servicios" data-span="invalid-span-comision_servicios_modificar" value="true">
+													<label for="comision_servicios_no" class="d-inline-block cursor-pointer">No</label>
+													<input required type="radio" class="form-check-inline" id="comision_servicios_no_modificar" name="comision_servicios" data-span="invalid-span-comision_servicios_modificar" value="false">
+													<span id="invalid-span-comision_servicios_modificar" class="invalid-span text-danger"></span>
+												</div>
+												<div class="col-lg-4 col-12">
+													<label for="discapacidad_modificar" class="d-block mb-3">Discapacidad</label>
+													<input type="checkbox" id="discapacidad_modificar" name="discapacidad" data-span="invalid-span-discapacidad_modificar">
+													<span id="invalid-span-discapacidad_modificar" class="invalid-span text-danger"></span>
+												</div>
+												<div class="col-lg-8 col-12">
+
+													<label for="discapacidad_info_modificar">Discapacidad</label>
+													<input type="text" class="form-control" id="discapacidad_info_modificar" name="discapacidad_info" data-span="invalid-span-discapacidad_info_modificar" maxlength="50">
+													<span id="invalid-span-discapacidad_info_modificar" class="invalid-span text-danger"></span>
+													
+												</div>
+
 												<div class="col-lg-6 col-12">
-													<label class="d-block" for="pass">Clave</label>
+													<label class="d-block" for="pass_modificar">Clave</label>
 													<div class="show-password-container">
 														<input type="password" class="form-control" id="pass_modificar" name="pass" data-span="invalid-span-pass_modificar" placeholder="Sin modificar">
-														<span class="show-password-btn" data-inputpass="pass" aria-label="show password button"></span>
+														<span class="show-password-btn" data-inputpass="pass_modificar" aria-label="show password button"></span>
 													</div>
 													<span id="invalid-span-pass_modificar" class="invalid-span text-danger"></span>
+
+
+
+
 													
 												</div>
 											</div>
@@ -280,6 +323,7 @@
 	 <!-- Page level plugins -->
 	<script src="vendor/datatables/jquery.dataTables.min.js"></script>
 	<script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
+	<script src="assets/js/sb-admin-2.min.js"></script>
 </body>
 
 </html>

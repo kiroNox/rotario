@@ -1,4 +1,4 @@
-<div id="wrapper">
+<div class="d-flex">
 <!-- Sidebar -->
 <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
@@ -33,14 +33,16 @@
     <a class="nav-link" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true"
         aria-controls="collapseTwo">
         <i class="fas fa-fw fa-cog"></i>
-        <span>Gestion de usuarios</span>
+        <span>Trabajadores</span>
     </a>
     <div id="collapseTwo" class="collapse " aria-labelledby="headingTwo"
         data-parent="#accordionSidebar">
         <div class="bg-white py-2 collapse-inner rounded">
-            <a class="collapse-item active" href="#">Personal</a>
-            <a class="collapse-item" href="?p=usuarios">Usuarios</a>
-            <a class="collapse-item" href="?p=administrar_empleado">Trabajadores</a>
+            <!-- <a class="collapse-item active" href="#">Personal</a> -->
+            <a class="collapse-item" href="?p=trabajadores">Trabajadores</a>
+            <!-- <a class="collapse-item" href="?p=administrar_empleado">Trabajadores</a> -->
+            <a class="collapse-item" href="?p=hijos">Hijos</a>
+
         </div>
     </div>
 </li>
@@ -56,10 +58,10 @@
         data-parent="#accordionSidebar">
         <div class="bg-white py-2 collapse-inner rounded">
             <a class="collapse-item" href="#">Permisos</a>
-            <a class="collapse-item" href="#">Reporsos</a>
+            <a class="collapse-item" href="#">Reposos</a>
             <a class="collapse-item" href="#">Vacaciones</a>
             <a class="collapse-item" href="#">Nivel educativo</a>
-            <a class="collapse-item" href="#">Liquidacion</a>
+            <a class="collapse-item" href="#">Liquidación</a>
         </div>
     </div>
 </li>
@@ -73,12 +75,12 @@
     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages"
         aria-expanded="true" aria-controls="collapsePages">
         <i class="fas fa-fw fa-folder"></i>
-        <span>Areas / Asistencias</span>
+        <span>Áreas / Asistencias</span>
     </a>
     <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
         <div class="bg-white py-2 collapse-inner rounded">
             <a class="collapse-item" href="?p=asistencia">Asistencia</a>
-            <a class="collapse-item" href="?p=areas">Areas</a>
+            <a class="collapse-item" href="?p=areas">Áreas</a>
            
         </div>
     </div>
@@ -93,14 +95,14 @@
     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseNomina"
         aria-expanded="true" aria-controls="collapseNomina">
         <i class="fas fa-fw fa-folder"></i>
-        <span>Gestio de nomina</span>
+        <span>Gestión de nomina</span>
     </a>
     <div id="collapseNomina" class="collapse" aria-labelledby="headingNomina" data-parent="#accordionSidebar">
         <div class="bg-white py-2 collapse-inner rounded">
-            <a class="collapse-item" href="#">Sueldos</a>
-            <a class="collapse-item" href="#">Asignaciones</a>
-            <a class="collapse-item" href="#">Deducciones</a>
-            <a class="collapse-item" href="#">Asignacion tiempo</a>
+            <a class="collapse-item" href="?p=sueldo">Sueldos</a>
+            <a class="collapse-item" href="?p=primas">Primas</a>
+            <a class="collapse-item" href="?p=deducciones">Deducciones</a>
+            <a class="collapse-item" href="#">Asignación tiempo</a>
         </div>
     </div>
 </li>
@@ -110,11 +112,11 @@
     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseFacturas"
         aria-expanded="true" aria-controls="collapseFacturas">
         <i class="fas fa-fw fa-folder"></i>
-        <span>Gestio de pagos</span>
+        <span>Gestión de pagos</span>
     </a>
     <div id="collapseFacturas" class="collapse" aria-labelledby="headingPagos" data-parent="#accordionSidebar">
         <div class="bg-white py-2 collapse-inner rounded">
-            <a class="collapse-item" href="#">Facturar</a>
+            <a class="collapse-item" href="?p=facturar">Facturar</a>
             
         </div>
     </div>
@@ -130,20 +132,20 @@
 </li>
 
 <div class="sidebar-heading">
-    Administracion de usuario
+    Administración de usuario
 </div>
 <li class="nav-item">
     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseAdministracion"
         aria-expanded="true" aria-controls="collapseAdministracion">
         <i class="fas fa-fw fa-folder"></i>
-        <span>Configuracion</span>
+        <span>Configuración</span>
     </a>
     <div id="collapseAdministracion" class="collapse" aria-labelledby="headingNomina" data-parent="#accordionSidebar">
         <div class="bg-white py-2 collapse-inner rounded">
-            <a class="collapse-item" href="#">Bitacora</a>
+            <a class="collapse-item" href="?p=bitacora">Bitácora</a>
             <a class="collapse-item" href="?p=roles">Roles</a>
             <a class="collapse-item" href="?p=permisos_usuario">Permisos</a>
-            <a class="collapse-item" href="#">Modulos</a>
+            <!-- <a class="collapse-item" href="#">Módulos</a> -->
         </div>
     </div>
 </li>

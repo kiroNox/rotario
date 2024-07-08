@@ -49,9 +49,10 @@
 main.main-content{
 	height: 100%;
 	position:relative;
+	min-height: calc(100vh - 10.675rem);
 }
 
-main .loader-main{
+main .loader-main, body>.loader-body{
 	position: absolute;
 	z-index: 1000;
 	width: 100%;
@@ -66,13 +67,17 @@ main .loader-main{
 	color: white
 }
 
-main .loader-main:before{
+body>.loader-body{
+	z-index: 1070;
+}
+
+main .loader-main:before, body>.loader-body:before{
 	content: "Cargando";
 	font-size: 2rem;
 	-webkit-animation: loadingText .75s linear infinite;
 	animation: loadingText .75s linear infinite;
 }
-main .loader-main:after{
+main .loader-main:after, body>.loader-body:after{
 	content: "";
 	display: inline-block;
 	width: 12rem;
@@ -100,3 +105,109 @@ main .loader-main:after{
   	transform: translateY(0);
   }
 }
+
+.scroll-bar-style{
+	--color-bar: #fff;
+	--color-bar2: #a0a8b0;
+	--color-bar3: #343a40;
+}
+
+/* Target the standard scrollbar properties (fallback for non-WebKit browsers) */
+.scroll-bar-style {
+  scrollbar-width: thin; /* Firefox, Safari (recent versions) */
+  scrollbar-color: var(--color-bar2) var(--color-bar); /* Firefox, Safari (recent versions) */
+}
+
+/* Target WebKit browsers (Chrome, Safari (older versions), Edge) for more customization */
+.scroll-bar-style::-webkit-scrollbar {
+  width: 10px;
+  height: 7.5px;
+}
+
+/* Track (WebKit browsers) */
+.scroll-bar-style::-webkit-scrollbar-track {
+  background: none;
+  background: var(--color-bar);
+  /*background-image: linear-gradient(180deg,#4e73df 10%,#224abe 100%);*/
+  border-radius: 5px;
+}
+
+.scroll-bar-style::-webkit-scrollbar-track-piece {
+  background: var(--color-bar);
+  /*background-image: linear-gradient(180deg,#4e73df 10%,#224abe 100%);*/
+  border-radius: 5px;
+}
+
+/* Handle (WebKit browsers) */
+.scroll-bar-style::-webkit-scrollbar-thumb {
+  background: var(--color-bar2);
+  border-radius: 5px;
+}
+
+/* Handle on hover (WebKit browsers) */
+.scroll-bar-style::-webkit-scrollbar-thumb:hover {
+  background: var(--color-bar3);
+}
+
+.table-cell-aling-middle td,
+.table-cell-aling-middle th
+
+{
+	vertical-align: middle !important;
+}
+
+
+
+
+
+/* dark-mode a eliminar*/
+
+
+	.dark-mode{
+		--dark-back:#1f1f1f;
+		/* me estaba quedando ciego XD
+			esto esta echo pa lante no es para producción
+		*/
+	}
+	.dark-mode .card,
+	.dark-mode .card-header,
+	.dark-mode .modal-content,
+	.dark-mode .modal-footer,
+	.dark-mode .form-control,
+	.dark-mode #wrapper,
+	.dark-mode #content-wrapper{
+		background-color: var(--dark-back) !important;
+		color: #fff;
+	}
+
+	.dark-mode .navbar{
+		background-color: var(--dark-back) !important;
+		color: #fff;
+		box-shadow: 0 0.15rem 1.75rem 0 rgb(255 255 255 / 15%) !important;
+	}
+	.dark-mode footer{
+		background-color: var(--dark-back) !important;
+	}
+
+	.dark-mode .nav-tabs>.nav-item.active{
+		background-color: #4f4f4f;
+		color: #d1d3e2;
+	}
+
+
+	.darkmode_btn-container{
+		display: block;
+		position: fixed;
+		bottom: 20px;
+		right: 20px;
+		opacity: .5;
+		border: 1px solid var(--dark);
+		z-index: 1005;
+	}
+	.darkmode_btn-container:hover{
+		background-color: #1f1f1f;
+		opacity: 1;
+	}
+/* dark-mode a eliminar*/
+
+

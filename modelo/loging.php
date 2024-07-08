@@ -31,7 +31,7 @@ class Loging extends Conexion
 
 			$this->con->beginTransaction();// inicia la transaccion
 
-			$consulta = $this->con->prepare("SELECT p.id_trabajador, p.cedula, p.correo, p.clave
+			$consulta = $this->con->prepare("SELECT p.id_trabajador, p.cedula, p.correo, p.clave, p.nombre, p.apellido
 											FROM trabajadores as p 
 											WHERE p.correo = ? AND estado_actividad = 1");
 			//creo la consulta
@@ -50,12 +50,18 @@ class Loging extends Conexion
 					// para cambiar en el futuro para el jwt 
 					$token = password_hash($consulta["id_trabajador"].$consulta["cedula"].date("Y-m-d h:i:s"), PASSWORD_DEFAULT);
 					$id = $consulta["id_trabajador"];
+
+					$nombre = preg_replace("/^\s*\b(\w+).*/", "$1", $consulta["nombre"]);
+					$nombre .= preg_replace("/^\s*\b(\w+).*/", " $1", $consulta["apellido"]);
+
+					$_SESSION["usuario_rotario_name"] = ucwords($nombre);
 					
 					$consulta = $this->con->prepare("UPDATE trabajadores SET token = ? WHERE id_trabajador = ?");
 					$consulta->execute([$token, $id]);
 
 					$_SESSION["token_rotario"] = $token;
 					$_SESSION["usuario_rotario"] = $id;
+
 
 					Bitacora::registro($this->con, NULL, "Inicio de sesión");
 					$this->con->commit();

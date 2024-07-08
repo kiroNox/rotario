@@ -17,28 +17,32 @@ class Bitacora extends Conexion
 
 	}
 
-	public function reg ($modul, $descrip, $user = false){
+	public function load_bitacora(){
 		try {
-			if($user === false){
-				$user = $_SESSION["usuario_rotario"];
-			}
-			if($temp_con instanceof PDO){
-				$con = $this->temp_con;
-			}
-			else{
-				$con = $this->conecta();
-			}
+			$this->con = $this->conecta();
+			$this->validar_conexion($this->con);
+			
+				$consulta = $this->con->prepare("SELECT t.cedula, b.fecha, b.descripcion,t.nombre,t.apellido FROM bitacora AS b LEFT JOIN trabajadores AS t ON t.id_trabajador = b.id_trabajador WHERE 1 ORDER BY fecha DESC limit 200;");
+				$consulta->execute();
+			
+			$r['resultado'] = 'load_bitacora';
+			$r["mensaje"] = $consulta->fetchall(PDO::FETCH_ASSOC);
 
-			$consulta = $con->prepare("INSERT INTO bitacora (id_trabajador, descripcion) VALUES (?, ?)");
-
-			if($modul == '') $modul = null;
-
-			$consulta->execute([$user, $modul, $descrip]);
+		
+		} catch (Exception $e) {
+		
+			$r['resultado'] = 'error';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+			//$r['mensaje'] =  $e->getMessage().": LINE : ".$e->getLine();
 		}
 		finally{
-			$con = null;
+			$this->con = null;
 		}
+		
+		return $r;
 	}
+
 
 	public static function  registro ($con, $modul, $descrip, $user = false){
 		try {
@@ -57,8 +61,22 @@ class Bitacora extends Conexion
 			$consulta->execute([$user, $descrip]);
 		}
 		finally{
-			$con = null;
+			
 		}
+	}
+	public static function reg($con,$descrip, $user = false){
+		try {
+			if($user === false){
+				$user = $_SESSION["usuario_rotario"];
+			}
+				$consulta = $con->prepare("INSERT INTO bitacora (id_trabajador, descripcion) VALUES (?, ?)");
+
+			$consulta->execute([$user, $descrip]);
+		}
+		finally{
+			
+		}
+
 	}
 	public static function ingreso_modulo($modulo){
 		$bitacora = new Bitacora;

@@ -6,6 +6,7 @@
 class Usuarios extends Conexion
 {
 	PRIVATE $numero_cuenta, $cedula, $nombre, $apellido, $telefono, $correo, $id_rol, $pass, $con, $id, $nivel_profesional, $creado;
+	PRIVATE $comision_servicios, $discapacitado, $discapacidad;
 
 	function __construct($con = '')
 	{
@@ -97,7 +98,7 @@ class Usuarios extends Conexion
 		return $r;
 	}
 
-	PUBLIC function registrar_usuario_s($cedula, $nombre, $apellido, $telefono, $correo,$id_rol, $pass, $numero_cuenta, $nivel_profesional, $creado){
+	PUBLIC function registrar_usuario_s($cedula, $nombre, $apellido, $telefono, $correo,$id_rol, $pass, $numero_cuenta, $nivel_profesional, $creado, $comision_servicios, $discapacitado, $discapacidad){
 		$this->set_cedula($cedula);
 		$this->set_nombre($nombre);
 		$this->set_apellido($apellido);
@@ -108,13 +109,16 @@ class Usuarios extends Conexion
 		$this->set_numero_cuenta($numero_cuenta);
 		$this->set_nivel_profesional($nivel_profesional);
 		$this->set_creado($creado);
+		$this->set_comision_servicios($comision_servicios);
+		$this->set_discapacitado($discapacitado);
+		$this->set_discapacidad($discapacidad);
 
 
 
 		return $this->registrar_usuario();
 	}
 
-	PUBLIC function modificar_usuario_s($modificar_id, $cedula, $nombre, $apellido, $telefono, $correo, $rol, $pass, $numero_cuenta, $nivel_profesional, $creado){
+	PUBLIC function modificar_usuario_s($modificar_id, $cedula, $nombre, $apellido, $telefono, $correo, $rol, $pass, $numero_cuenta, $nivel_profesional, $creado, $comision_servicios, $discapacitado, $discapacidad){
 		$this->set_id($modificar_id);
 		$this->set_cedula($cedula);
 		$this->set_nombre($nombre);
@@ -126,6 +130,9 @@ class Usuarios extends Conexion
 		$this->set_numero_cuenta($numero_cuenta);
 		$this->set_nivel_profesional($nivel_profesional);
 		$this->set_creado($creado);
+		$this->set_comision_servicios($comision_servicios);
+		$this->set_discapacitado($discapacitado);
+		$this->set_discapacidad($discapacidad);
 
 		return $this->modificar_usuario();
 	}
@@ -236,11 +243,14 @@ class Usuarios extends Conexion
 			$consulta = $this->con->prepare("SELECT p.*,r.id_rol as rol FROM trabajadores as p left join rol as r on r.id_rol = p.id_rol WHERE p.id_trabajador = ?;");
 			$consulta->execute([$id]);
 
+			$resp = $consulta->fetch(PDO::FETCH_ASSOC);
 
+			unset($resp["token"]);
+			unset($resp["clave"]);
 			
 			$r['resultado'] = 'get_user';
 			$r['titulo'] = 'Éxito';
-			$r['mensaje'] =  $consulta->fetch(PDO::FETCH_ASSOC);
+			$r['mensaje'] =  $resp;
 			//$this->con->commit();
 		
 		} catch (Validaciones $e){
@@ -285,6 +295,10 @@ class Usuarios extends Conexion
 			Validaciones::validarContrasena($this->pass);
 			Validaciones::numero($this->numero_cuenta,"20","El numero de cuenta no es valido");
 			Validaciones::fecha($this->creado,"Fecha de Ingreso");
+			Validaciones::alfanumerico($this->discapacidad,"0,50");
+
+			if(!preg_match("/true|false/", $this->comision_servicios)){throw new Exception("La comision servicios seleccionada no es valida", 1);}
+			else{$this->comision_servicios = (preg_match("/true/", $this->comision_servicios)?true:false);}
 
 			$this->pass = password_hash($this->pass, PASSWORD_DEFAULT);
 
@@ -300,6 +314,13 @@ class Usuarios extends Conexion
 				throw new Exception("El nivel profesional seleccionado no existe", 1);
 			}
 
+			$consulta = $this->con->prepare("SELECT 1 FROM trabajadores WHERE correo = ?;");
+			$consulta->execute([$this->correo]);
+
+			if($consulta->fetch()){
+				throw new Exception("El correo ya esta en uso por otro usuario", 1);
+			}
+
 			$consulta = $this->con->prepare("SELECT estado_actividad as status, cedula FROM trabajadores WHERE cedula = ?;");
 			$consulta->execute([$this->cedula]);
 
@@ -310,7 +331,7 @@ class Usuarios extends Conexion
 				else{
 
 
-					$consulta = $this->con->prepare("UPDATE `trabajadores` SET `id_prima_profesionalismo`=:id_prima_profesionalismo,`id_rol`=:id_rol,`numero_cuenta`=:numero_cuenta,`creado`=:creado,`nombre`=:nombre,`apellido`=:apellido,`telefono`=:telefono,`correo`=:correo,`clave`=:clave,`token`= '',`estado_actividad`= 1 WHERE cedula = :cedula");
+					$consulta = $this->con->prepare("UPDATE `trabajadores` SET `id_prima_profesionalismo`=:id_prima_profesionalismo,`id_rol`=:id_rol,`numero_cuenta`=:numero_cuenta,`creado`=:creado,`nombre`=:nombre,`apellido`=:apellido,`telefono`=:telefono,`correo`=:correo,`clave`=:clave,`token`= '',`estado_actividad`= 1 `comision_servicios` = :comision_servicios, `discapacidad` = :discapacidad, `discapacitado` = :discapacitado WHERE cedula = :cedula");
 
 					$consulta->bindValue(":id_prima_profesionalismo",$this->nivel_profesional);
 					$consulta->bindValue(":id_rol",$this->id_rol);
@@ -322,6 +343,9 @@ class Usuarios extends Conexion
 					$consulta->bindValue(":telefono",$this->telefono);
 					$consulta->bindValue(":correo",$this->correo);
 					$consulta->bindValue(":clave",$this->pass);
+					$consulta->bindValue(":comision_servicios",$this->comision_servicios);
+					$consulta->bindValue(":discapacidad",$this->discapacidad);
+					$consulta->bindValue(":discapacitado",$this->discapacitado);
 
 					$consulta->execute();
 
@@ -329,7 +353,9 @@ class Usuarios extends Conexion
 			}
 
 			$consulta = $this->con->prepare("INSERT INTO `trabajadores`
-				(`id_prima_profesionalismo`, `id_rol`, `cedula`, `numero_cuenta`, `creado`, `nombre`, `apellido`, `telefono`, `correo`, `clave`, `token`, `estado_actividad`) VALUES (:id_prima_profesionalismo, :id_rol, :cedula, :numero_cuenta, :creado, :nombre, :apellido, :telefono, :correo, :clave, :token, :estado_actividad);");
+				(`id_prima_profesionalismo`, `id_rol`, `cedula`, `numero_cuenta`, `creado`, `nombre`, `apellido`, `telefono`, `correo`, `clave`, `token`, `estado_actividad`, `comision_servicios`,`discapacidad`,`discapacitado`) 
+				VALUES 
+				(:id_prima_profesionalismo, :id_rol, :cedula, :numero_cuenta, :creado, :nombre, :apellido, :telefono, :correo, :clave, :token, :estado_actividad, :comision_servicios, :discapacidad, :discapacitado);");
 
 
 			$consulta->bindValue(":id_prima_profesionalismo",$this->nivel_profesional);
@@ -342,8 +368,11 @@ class Usuarios extends Conexion
 			$consulta->bindValue(":telefono",$this->telefono);
 			$consulta->bindValue(":correo",$this->correo);
 			$consulta->bindValue(":clave",$this->pass);
+			$consulta->bindValue(":comision_servicios",$this->comision_servicios);
 			$consulta->bindValue(":token",1);
 			$consulta->bindValue(":estado_actividad",1);
+			$consulta->bindValue(":discapacidad",$this->discapacidad);
+			$consulta->bindValue(":discapacitado",$this->discapacitado);
 
 
 			$consulta->execute();
@@ -386,7 +415,6 @@ class Usuarios extends Conexion
 	PRIVATE function modificar_usuario(){
 		try {
 
-			// TODO Validaciones
 			Validaciones::numero($this->id,"1,","El id no es valido contacte con un administrador");
 			Validaciones::validarCedula($this->cedula);
 			Validaciones::validarNombre($this->nombre);
@@ -399,10 +427,15 @@ class Usuarios extends Conexion
 			Validaciones::numero($this->numero_cuenta,"20","El numero de cuenta no es valido");
 			Validaciones::fecha($this->creado,"Fecha de Ingreso");
 
+			Validaciones::alfanumerico($this->discapacidad,"0,50");
+
 			if($this->pass!=''){
 				Validaciones::validarContrasena($this->pass);
 				$this->pass = password_hash($this->pass, PASSWORD_DEFAULT);
 			}
+
+			if(!preg_match("/true|false/", $this->comision_servicios)){throw new Exception("La comision servicios seleccionada no es valida", 1);}
+			else{$this->comision_servicios = (preg_match("/true/", $this->comision_servicios)?true:false);}
 
 			$this->validar_conexion($this->con);
 			$this->con->beginTransaction();
@@ -426,11 +459,11 @@ class Usuarios extends Conexion
 			}
 
 			if($this->pass != ''){
-				$consulta = $this->con->prepare("UPDATE `trabajadores` SET cedula = :cedula, `id_prima_profesionalismo`=:id_prima_profesionalismo,`id_rol`=:id_rol,`numero_cuenta`=:numero_cuenta,`creado`=:creado,`nombre`=:nombre,`apellido`=:apellido,`telefono`=:telefono,`correo`=:correo,`clave`=:clave,`estado_actividad`= 1 WHERE id_trabajador = :id");
+				$consulta = $this->con->prepare("UPDATE `trabajadores` SET cedula = :cedula, `id_prima_profesionalismo`=:id_prima_profesionalismo,`id_rol`=:id_rol,`numero_cuenta`=:numero_cuenta,`creado`=:creado,`nombre`=:nombre,`apellido`=:apellido,`telefono`=:telefono,`correo`=:correo,`clave`=:clave,`estado_actividad`= 1, `discapacidad` = :discapacidad, `discapacitado` = :discapacitado WHERE id_trabajador = :id");
 				$consulta->bindValue(":clave",$this->pass);
 			}
 			else{
-				$consulta = $this->con->prepare("UPDATE `trabajadores` SET cedula = :cedula, `id_prima_profesionalismo`=:id_prima_profesionalismo,`id_rol`=:id_rol,`numero_cuenta`=:numero_cuenta,`creado`=:creado,`nombre`=:nombre,`apellido`=:apellido,`telefono`=:telefono,`correo`=:correo,`estado_actividad`= 1 WHERE id_trabajador = :id");
+				$consulta = $this->con->prepare("UPDATE `trabajadores` SET cedula = :cedula, `id_prima_profesionalismo`=:id_prima_profesionalismo,`id_rol`=:id_rol,`numero_cuenta`=:numero_cuenta,`creado`=:creado,`nombre`=:nombre,`apellido`=:apellido,`telefono`=:telefono,`correo`=:correo,`estado_actividad`= 1, `discapacidad` = :discapacidad, `discapacitado` = :discapacitado WHERE id_trabajador = :id");
 			}
 			$consulta->bindValue(":id",$this->id);
 			$consulta->bindValue(":id_prima_profesionalismo",$this->nivel_profesional);
@@ -442,6 +475,8 @@ class Usuarios extends Conexion
 			$consulta->bindValue(":apellido",$this->apellido);
 			$consulta->bindValue(":telefono",$this->telefono);
 			$consulta->bindValue(":correo",$this->correo);
+			$consulta->bindValue(":discapacitado",$this->discapacitado);
+			$consulta->bindValue(":discapacidad",$this->discapacidad);
 
 			$consulta->execute();
 
@@ -512,6 +547,7 @@ class Usuarios extends Conexion
 			Bitacora::registro($this->con, 2, "Elimino al usuario ($cedula)");
 			
 			$r['resultado'] = 'eliminar_usuario';
+			$r["mensaje"] = '';
 			$this->con->commit();
 		
 		} catch (Validaciones $e){
@@ -537,7 +573,7 @@ class Usuarios extends Conexion
 			$r['mensaje'] =  $e->getMessage();
 			if($e->getCode() == "23000"){
 				if($disable == false){
-					$this->eliminar_usuario(true);
+					return $this->eliminar_usuario(true);
 				}
 				else{
 					$r['mensaje'] =  "El usuario no puede ser eliminado debido a que tiene registros relacionados";
@@ -634,6 +670,26 @@ class Usuarios extends Conexion
 	}
 	PUBLIC function set_creado($value){
 		$this->creado = $value;
+	}
+
+	PUBLIC function get_comision_servicios(){
+		return $this->comision_servicios;
+	}
+	PUBLIC function set_comision_servicios($value){
+		$this->comision_servicios = $value;
+	}
+
+	PUBLIC function get_discapacitado(){
+		return $this->discapacitado;
+	}
+	PUBLIC function set_discapacitado($value){
+		$this->discapacitado = $value;
+	}
+	PUBLIC function get_discapacidad(){
+		return $this->discapacidad;
+	}
+	PUBLIC function set_discapacidad($value){
+		$this->discapacidad = $value;
 	}
 }
 

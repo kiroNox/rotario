@@ -73,7 +73,8 @@ function muestraMensaje(titulo, mensaje = '', icono = '', customProp = false, fu
 		Swal.fire(obj);
 	}
 }
-var ajaxCounterConsult = 0;
+let ajaxCounterConsult = 0;
+let ajaxCounterConsult_body = 0;
 function enviaAjax(datos, func_success,func_beforesend="loader_main") {
 	if(typeof func_success !== "function"){
 		console.error("falta la funcion success");
@@ -95,6 +96,10 @@ function enviaAjax(datos, func_success,func_beforesend="loader_main") {
 				else if (func_beforesend == "loader_main"){
 					ajaxCounterConsult++;
 					loader_main(true,ajaxCounterConsult);
+				}
+				else if(func_beforesend == "loader_body"){
+					ajaxCounterConsult_body++;
+					loader_body(true,ajaxCounterConsult_body);
 				}
 			},
 			timeout: 30000,
@@ -128,8 +133,15 @@ function enviaAjax(datos, func_success,func_beforesend="loader_main") {
 					muestraMensaje("Error", request + status + err, "error");
 				}
 				if(status != 'abort'){fail(request, status, err);}
-				ajaxCounterConsult--;
-				loader_main(false,ajaxCounterConsult);
+
+				if (func_beforesend == "loader_main"){
+					ajaxCounterConsult--;
+					loader_main(false,ajaxCounterConsult);
+				}
+				else if(func_beforesend == "loader_body"){
+					ajaxCounterConsult_body--;
+					loader_body(false,ajaxCounterConsult_body);
+				}
 			},
 			complete: function (xhr, status) {
 				// modalcarga(false).then(function() {
@@ -140,6 +152,10 @@ function enviaAjax(datos, func_success,func_beforesend="loader_main") {
 				if(func_beforesend == 'loader_main' || func_beforesend == 'close_loader_main'){
 					ajaxCounterConsult--;
 					loader_main(false,ajaxCounterConsult);
+				}
+				else if(func_beforesend == 'loader_body' || func_beforesend == 'close_loader_body'){
+					ajaxCounterConsult_body--;
+					loader_body(false,ajaxCounterConsult_body);
 				}
 			},
 		});
@@ -162,11 +178,31 @@ function loader_main(control = true,counter = 0){
 		else{
 			if(main.querySelector("div.loader-main") && counter <= 0){
 				main.removeChild(main.querySelector("div.loader-main"));
+				ajaxCounterConsult = 0;
 			}
 		}
 
 	}
 }
+
+function loader_body(control = true,counter = 0){	
+
+	if(control){
+		if(!document.body.querySelector("div.loader-body")){
+			document.body.appendChild(crearElem("div","class,loader-body"));
+
+		}
+	}
+	else{
+		if(document.body.querySelector("div.loader-body") && counter <= 0){
+			document.body.removeChild(document.body.querySelector("div.loader-body"));
+			ajaxCounterConsult_body = 0;
+		}
+	}
+
+}
+
+
 
 
 function eventoKeypress(etiqueta,exp){
@@ -188,6 +224,7 @@ function eventoKeyup(etiqueta, exp, mensaje, etiquetamensaje, func, func2){
 		}
 		if(this.allow_empty == true && this.value == ''){
 			var resp = validarKeyUp(true, $(this), mensaje, etiquetamensaje);
+			this.classList.remove("is-valid","is-invalid");
 		}
 		else {
 			var resp = validarKeyUp(exp,$(this),mensaje,etiquetamensaje);
@@ -270,15 +307,18 @@ function sepMiles (value, cond=false, sigSepar = '.',sigDecim = ','){
 	}
 }
 
-function eventoMonto(etiqueta,func_afterkeyup = function(e){e.value = sepMiles(e.value); },mensaje = "Ingrese un monto valido"){
-	var n = 26;// decimal(20,2) 100.000.000.000.000.000,00
+function eventoMonto(etiqueta,func_afterkeyup = function(e){e.value = sepMilesMonto(e.value); },mensaje = "Ingrese un monto valido"){
+	let montoExp = /^\d{1,3}(?:[\.]\d{3})*[,]\d{2}$/;
+	var n = 16;// decimal (12,2) 1.000.000.000,00
+
+	
 	if(typeof etiqueta !== "string"){console.error("la etiqueta debe ser un string con el id del formulario de monto",etiqueta); return false; }
 	eventoKeyup(etiqueta, montoExp, mensaje, undefined, func_afterkeyup);
 	eventoKeypress(etiqueta, /^[0-9]$/);
 
 	//Si se está repitiendo, ignorar
 	document.getElementById(etiqueta).addEventListener('keydown', function(keyboardEvent) {if (keyboardEvent.repeat) keyboardEvent.preventDefault(); });
-	document.getElementById(etiqueta).onchange = function(){this.value = sepMiles(this.value); validarKeyUp(montoExp, $(this), mensaje); }
+	document.getElementById(etiqueta).onchange = function(){this.value = sepMilesMonto(this.value); validarKeyUp(montoExp, $(this), mensaje); }
 	document.getElementById(etiqueta).maxLength = n;
 	document.getElementById(etiqueta).validarme = function(){
 		if(this.allow_empty == true && this.value == ''){
@@ -327,6 +367,9 @@ function removeSpace(cadena)// remueve espacios al final, al principio y los dob
 
 function validarKeyUp(er, etiqueta, mensaje, etiquetamensaje) {
 	if(typeof etiqueta === 'string'){etiqueta = $("#"+etiqueta);}
+	else if (etiqueta.tagName){
+		etiqueta = $(etiqueta);
+	}
 	if(etiqueta.data("span")){
 		etiquetamensaje = $("#"+etiqueta.data("span"));
 	}
@@ -613,27 +656,36 @@ if(typeof tag ==='string'){
 	}
 	if(tag){
 		tag.onkeyup=function(e){
+			
 			if(this.dataset.span){
 				etiquetamensaje = $("#"+this.dataset.span);
 			}
 			else if(typeof etiquetamensaje === 'undefined'){
 				console.error("falta la etiqueta mensaje",this);
 			}
-			pass
-			if(!V.expPass.test(this.value)){
-				this.classList.remove("is-valid");
-				this.classList.add("is-invalid");
-				var mensaje = "";
-				
-				if(!/^.{6,20}$/.test(this.value)) mensaje = "entre 6 y 20 caracteres";
-				if(!/^(?=.*?[A-Z]).{1,}$/.test(this.value)) mensaje += (mensaje == '')?"una letra mayúscula": ", una letra mayúscula";
-				if(!/^(?=.*?[a-z]).{1,}$/.test(this.value)) mensaje += (mensaje == '')?"una letra minúscula": ", una letra minúscula";
-				if(!/^(?=.*?[0-9]).{1,}$/.test(this.value)) mensaje += (mensaje == '')?"un numero": " y un numero";
 
-				etiquetamensaje.text("La contraseña debe tener al menos "+mensaje);
+			if (!(this.allow_empty === true && this.value == '')) {
+				if(!V.expPass.test(this.value)){
+
+					this.classList.remove("is-valid");
+					this.classList.add("is-invalid");
+					var mensaje = "";
+					
+					if(!/^.{6,20}$/.test(this.value)) mensaje = "entre 6 y 20 caracteres";
+					if(!/^(?=.*?[A-Z]).{1,}$/.test(this.value)) mensaje += (mensaje == '')?"una letra mayúscula": ", una letra mayúscula";
+					if(!/^(?=.*?[a-z]).{1,}$/.test(this.value)) mensaje += (mensaje == '')?"una letra minúscula": ", una letra minúscula";
+					if(!/^(?=.*?[0-9]).{1,}$/.test(this.value)) mensaje += (mensaje == '')?"un numero": " y un numero";
+
+					etiquetamensaje.text("La contraseña debe tener al menos "+mensaje);
+				}
+				else{
+					this.classList.add("is-valid");
+					this.classList.remove("is-invalid");
+					etiquetamensaje.text("");
+				}
 			}
 			else{
-				this.classList.add("is-valid");
+				this.classList.remove("is-valid");
 				this.classList.remove("is-invalid");
 				etiquetamensaje.text("");
 			}
@@ -642,7 +694,12 @@ if(typeof tag ==='string'){
 
 		tag.validarme = function(){
 			this.onkeyup();
-			return V.expPass.test(this.value);
+			if(this.allow_empty === true && this.value == ''){
+				return true;
+			}
+			else{
+				return V.expPass.test(this.value);
+			}
 		}
 	}
 
@@ -745,3 +802,49 @@ function rowsEvent(tbody,func,control=true){//solo permite un evento del rowsEve
 		console.error('el segundo argumento debe ser una función que se ejecutara al hacer click en el table');
 	}
 }
+
+function rowsEventActions(tbody,func){
+	rowsEvent(tbody,(target,cell)=>{
+	 	if(!cell.parentNode.dataset.id){
+	 		return false;
+	 	}
+	 	if(cell.classList.contains("cell-action")){
+	 		while(target.tagName!='BUTTON'&&target.tagName!=cell.tagName){
+	 			count++;
+	 			if(count>100)
+	 			{
+	 				console.error('se paso el while');
+	 				return false;
+	 				break
+	 			}
+	 			target=target.parentNode;
+	 		}
+	 		if(target.tagName == "BUTTON"){
+	 			func(target.dataset.action, cell.parentNode.dataset.id ,target);
+	 		}
+
+	 	}
+	},false);
+}
+
+
+
+document.addEventListener("DOMContentLoaded", function(){
+
+	if(false){
+		if(document.querySelector("#page-top > #wrapper:first-child")){
+			
+			document.body.classList.add("dark-mode");
+
+
+			var darkmode_btn = crearElem("button","class,btn","Dark mode change");
+			darkmode_btn.onclick=function(){
+				document.body.classList.toggle("dark-mode");
+			}
+
+			document.body.appendChild(crearElem("div","class,darkmode_btn-container",darkmode_btn));
+		}
+
+	}
+	// TODO quitar esto;
+});
