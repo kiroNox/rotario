@@ -14,51 +14,19 @@ class Areas extends Conexion
     {
         $this->set_descripcion($descripcion);
         $this->set_descripcion($codigo);
-           
-
         return $this->registrar_area_privada($descripcion, $codigo);
     }
 
     //Metodos
     PUBLIC function listar_areas(){
-		try {
-			$this->validar_conexion($this->con);
-			$this->con->beginTransaction();
-			$consulta = $this->con->query("SELECT p.cedula, p.nombre, p.apellido, NULL as extra, t.id_trabajador FROM trabajadores t INNER JOIN personas p ON t.id_persona = p.id_persona;")->fetchall(PDO::FETCH_NUM);
-			
-
-			
-			$r['resultado'] = 'listar';
-			$r['titulo'] = 'Éxito';
-			$r['mensaje'] = $consulta;
-			$this->con->commit();
+            try {
+                $consulta = $this->con->prepare("SELECT * FROM areas");
+                $consulta->execute();
+                return $consulta->fetchAll(PDO::FETCH_ASSOC);
+            } catch (Exception $e) {
+                throw $e;
+            }
 		
-		} catch (Validaciones $e){
-			if($this->con instanceof PDO){
-				if($this->con->inTransaction()){
-					$this->con->rollBack();
-				}
-			}
-			$r['resultado'] = 'is-invalid';
-			$r['titulo'] = 'Error';
-			$r['mensaje'] =  $e->getMessage();
-			$r['console'] =  $e->getMessage().": Code : ".$e->getLine();
-		} catch (Exception $e) {
-			if($this->con instanceof PDO){
-				if($this->con->inTransaction()){
-					$this->con->rollBack();
-				}
-			}
-		
-			$r['resultado'] = 'error';
-			$r['titulo'] = 'Error';
-			$r['mensaje'] =  $e->getMessage();
-			//$r['mensaje'] =  $e->getMessage().": LINE : ".$e->getLine();
-		}
-		finally{
-			//$this->con = null;
-		}
-		return $r;
 	}
     private function registrar_area_privada($codigo, $descripcion) {
         try {
@@ -69,13 +37,11 @@ class Areas extends Conexion
             $consulta->bindValue(":descripcion", $descripcion);
             $consulta->execute();
             $this->con->commit();
-
             return [
                 'resultado' => 'registrar',
                 'titulo' => 'Éxito',
                 'mensaje' => 'Área registrada correctamente.'
             ];
-
         } catch (Exception $e) {
             if ($this->con instanceof PDO && $this->con->inTransaction()) {
                 $this->con->rollBack();
