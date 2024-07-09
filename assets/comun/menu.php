@@ -39,7 +39,6 @@
         data-parent="#accordionSidebar">
         <div class="bg-white py-2 collapse-inner rounded">
             <!-- <a class="collapse-item active" href="#">Personal</a> -->
-            <a class="collapse-item" href="?p=trabajadores">Trabajadores</a>
             <a class="collapse-item" href="?p=trabajadores_user">Trabajadores</a>
             <!-- <a class="collapse-item" href="?p=administrar_empleado">Trabajadores</a> -->
             <a class="collapse-item" href="?p=hijos">Hijos</a>
@@ -58,9 +57,9 @@
     <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
         data-parent="#accordionSidebar">
         <div class="bg-white py-2 collapse-inner rounded">
-            <a class="collapse-item" href="#">Permisos</a>
-            <a class="collapse-item" href="#">Reposos</a>
-            <a class="collapse-item" href="#">Vacaciones</a>
+            <a class="collapse-item" href="?p=administrar_empleado">Administrar Tiempo</a>
+           <!--  <a class="collapse-item" href="#">Reposos</a>
+            <a class="collapse-item" href="#">Vacaciones</a> -->
             <a class="collapse-item" href="#">Nivel educativo</a>
             <a class="collapse-item" href="#">Liquidación</a>
         </div>

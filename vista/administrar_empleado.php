@@ -2,7 +2,6 @@
 <html lang="en">
 
 <head>
-    
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -109,7 +108,7 @@
                     </div>
                     <div>
                         <div class="small text-gray-500">December 7, 2019</div>
-                        $290.29 has been deposited into your account!
+                        $290.29 has been a into your account!
                     </div>
                 </a>
                 <a class="dropdown-item d-flex align-items-center" href="#">
@@ -703,7 +702,7 @@ aria-hidden="true">
 </div>
 
    
-
+<script src="assets/js/sb-admin-2.min.js"></script>
 
 
 

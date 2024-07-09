@@ -1,4 +1,5 @@
 <?php
+
 	if (is_file("vista/" . $pagina . ".php")) {
 
 		$cl = new administrar_empleados;

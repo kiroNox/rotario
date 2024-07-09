@@ -627,6 +627,7 @@ class administrar_empleados extends Conexion
 	PUBLIC function set_id_tabla($value){
 		$this->id_tabla = $value;
 	}
+	
 }
 
  ?>
