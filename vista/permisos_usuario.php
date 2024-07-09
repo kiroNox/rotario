@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<?php require_once 'assets/comun/head.php'; ?>
-	<title>Permisos de Usuario</title>
+	<title>Permisos de Usuario - Servicio Desconcentrado Hospital Rotario</title>
 </head>
 <body id="page-top">
 	<div id="wrapper">
@@ -17,7 +17,7 @@
 					<div class="container-fluid">
 						<div class="container m-auto" style="max-width: 500px">
 							<table class="table table-hover table-bordered row-cursor-pointer" id="tabla_roles">
-								<thead class="thead-dark">
+								<thead class="bg-primary text-light">
 									<tr>
 										<th>Rol</th>
 										<th>Nº de usuarios</th>

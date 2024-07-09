@@ -2,7 +2,7 @@
 <html lang="en">
 	<head>
 	<?php require_once 'assets/comun/head.php'; ?>
-		<title>Roles</title>
+		<title>Roles - Servicio Desconcentrado Hospital Rotario</title>
 	</head>
 	<body id="page-top">
 		<div id="wrapper">
@@ -20,7 +20,7 @@
 						</div>
 						<div class="container m-auto" style="max-width: 500px">
 							<table class="table table-hover table-bordered row-cursor-pointer" id="tabla_roles">
-								<thead class="thead-dark">
+								<thead class="bg-primary text-light">
 									<tr>
 										<th>Rol</th>
 										<th>Nº de usuarios</th>
@@ -123,12 +123,6 @@
 				muestraMensaje("Seguro?", "", "?", (resp)=>{
 					if(resp){
 						
-						// $("#f1 input").each((i,elem)=>{
-						// 	if(!elem.validarme()){
-						// 		return false;
-						// 	}
-						// });
-
 						var datos = new FormData($("#f1")[0]);
 						datos.append("accion","registrar_roles");
 						enviaAjax(datos,function(respuesta, exito, fail){
@@ -170,12 +164,6 @@
 
 				muestraMensaje("Seguro?", "", "?", (resp)=>{
 					if(resp){
-						
-						// $("#f1 input").each((i,elem)=>{
-						// 	if(!elem.validarme()){
-						// 		return false;
-						// 	}
-						// });
 
 						var datos = new FormData($("#f2")[0]);
 						datos.append("accion","modificar_roles");

@@ -5,7 +5,7 @@
 		<?php require_once 'assets/comun/head.php'; ?>
 		<link rel="stylesheet" href="assets/general/bootstrap-icons/bootstrap-icons.min.css">
 
-		<title>Login</title>
+		<title>Login - Servicio Desconcentrado Hospital Rotario</title>
 
 		<style>
 			.bd-placeholder-img {
@@ -105,7 +105,7 @@
 		
 			var lee = JSON.parse(respuesta);
 			if(lee.resultado == "singing"){
-				location.href="?p=usuarios"; //TODO cambiar ruta
+				location.href="?p=trabajadores"; //TODO cambiar ruta
 			}
 			else if (lee.resultado == 'is-invalid'){
 				muestraMensaje(lee.titulo, lee.mensaje,"error");

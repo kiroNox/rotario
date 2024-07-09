@@ -4,7 +4,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 20-06-2024 a las 00:44:08
+-- Tiempo de generación: 08-07-2024 a las 18:05:30
 -- Versión del servidor: 10.1.38-MariaDB
 -- Versión de PHP: 7.3.2
 
@@ -24,6 +24,903 @@ SET time_zone = "+00:00";
 --
 CREATE DATABASE IF NOT EXISTS `rotario-produccion` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 USE `rotario-produccion`;
+
+DELIMITER $$
+--
+-- Procedimientos
+--
+CREATE DEFINER=`root`@`localhost` PROCEDURE `calcular_deducciones` (IN `idTrabajador` INT, IN `fecha_factura` DATE)  BEGIN
+    #idTrabajador
+    #fecha_factura
+
+    --  orden aplicado:
+    --  (sueldo integral * meses / semanas ) * [porcentaje,monto]  * numero de lunes en la quincena o mes [multi_dia]
+    DECLARE filas_encontradas int DEFAULT 0;
+    DECLARE sueldoIntegral decimal(12,2) DEFAULT 0;
+    DECLARE deduc_descrip varchar (100);
+    DECLARE deduc_monto decimal(12,2);
+    DECLARE deduc_porcentaje boolean;
+    DECLARE deduc_multi_meses int DEFAULT 0;
+    DECLARE deduc_div_sem int DEFAULT 0;
+    DECLARE deduc_quincena boolean;
+    DECLARE deduc_multi_dia boolean;
+    DECLARE deduc_sector_salud boolean;
+    DECLARE deduc_islr boolean;
+    DECLARE deduc_dedicada boolean;
+    DECLARE deduccion_total decimal(12,2);
+    DECLARE deduccion_registrar decimal(12,2) DEFAULT 0;
+    DECLARE done boolean DEFAULT FALSE;
+    DECLARE contador_quincena int DEFAULT 1;
+    DECLARE trabajador_salud boolean;
+    DECLARE apli_while boolean DEFAULT TRUE;
+    DECLARE id_factura_p int;
+
+
+    DECLARE lista_deducciones CURSOR FOR
+
+    SELECT
+        descripcion
+        ,monto
+        ,porcentaje
+        ,multi_meses
+        ,div_sem
+        ,quincena
+        ,multi_dia
+        ,sector_salud
+        ,islr
+        ,dedicada
+    FROM
+        deducciones AS d
+    LEFT JOIN trabajador_deducciones AS td
+    ON
+        td.id_deducciones = d.id_deducciones
+    WHERE
+        d.dedicada IS FALSE OR(
+            d.dedicada IS TRUE AND td.id_trabajador_deducciones = idTrabajador
+        );
+
+    OPEN lista_deducciones; # cursor con las deducciones
+
+    SET filas_encontradas = FOUND_ROWS();
+
+    IF filas_encontradas > 0 THEN
+
+        FETCH lista_deducciones INTO deduc_descrip ,deduc_monto ,deduc_porcentaje ,deduc_multi_meses ,deduc_div_sem ,deduc_quincena ,deduc_multi_dia , deduc_sector_salud , deduc_islr , deduc_dedicada;
+        # optengo si el trabajador el sueldo integral del trabajador y si pertenece al sector_salud (médicos)
+        SELECT (f.sueldo_integral + f.sueldo_base), t.sector_salud INTO sueldoIntegral, trabajador_salud  FROM factura as f LEFT JOIN sueldo_base as t on t.id_trabajador = f.id_trabajador WHERE f.id_trabajador = idTrabajador AND f.status IS FALSE LIMIT 1;
+
+        -- SELECT sueldoIntegral, "sueldo integral" as otro;
+
+        WHILE done IS NOT TRUE DO
+            SET contador_quincena = 1;
+            SET apli_while = TRUE;
+            SET deduccion_registrar = 0;
+
+
+            IF deduc_sector_salud IS TRUE AND trabajador_salud IS FALSE THEN 
+            # si la deduccion es para los medicos y no es un medico se salta la misma
+                SET apli_while = FALSE;
+            END IF;
+
+
+
+            IF apli_while IS TRUE THEN
+
+
+
+                WHILE (deduc_quincena IS TRUE AND contador_quincena <= 2 ) OR (deduc_quincena IS FALSE AND contador_quincena = 1) DO
+
+                    IF deduc_porcentaje IS TRUE THEN
+
+
+                        SET deduccion_total = sueldoIntegral;
+                        IF deduc_multi_meses > 0 THEN 
+                            # si debe multiplicar los meses por el sueldo integral
+                            SET deduccion_total = deduccion_total * deduc_multi_meses;
+
+                          --  SELECT deduccion_total,"multiplicando meses" as otro;
+                        END IF;
+
+                        IF deduc_div_sem > 0 THEN 
+                            # si debe dividir el sueldo integral 
+                            SET deduccion_total = ROUND( deduccion_total / deduc_div_sem ,2);
+                           -- SELECT deduccion_total,"Dividiendo semanas" as otro;
+                        END IF;
+
+                        IF deduc_porcentaje IS TRUE THEN
+                            # si el monto es un porcentaje o un monto neto
+                            SET deduccion_total = ROUND( (deduccion_total / 100) * deduc_monto ,2);
+                            -- SELECT deduccion_total,"aplicando porcentaje" as otro;
+                        ELSE
+                            SET deduccion_total = deduccion_total + deduc_monto;
+                        END IF;
+
+                        IF deduc_quincena IS TRUE AND deduc_multi_dia IS TRUE THEN
+                            # si la deduccion se hace por qulincena y multiplicando el numero de lunes entra en el loop y primero lo calcula por 
+                            # la primera semana y despues por la segunda en el siguiente loop
+                            SET deduccion_total = deduccion_total * f_contar_lunes(fecha_factura,contador_quincena);
+                           -- SELECT deduccion_total,CONCAT("multiplicando por lunes",f_contar_lunes(fecha_factura,contador_quincena)) as otro;
+                        ELSEIF deduc_multi_dia IS TRUE THEN
+                            # si es solo multiplicando el numero de lunes pero en este caso del mes entero
+                            SET deduccion_total = deduccion_total * f_contar_lunes(fecha_factura,3);
+                         --   SELECT deduccion_total,CONCAT("multiplicando por lunes del mes",f_contar_lunes(fecha_factura,contador_quincena)) as otro;
+                        END IF;
+
+                    ELSE
+
+                        SET deduccion_total = deduc_monto;
+
+                    END IF;
+
+                    SET contador_quincena = contador_quincena + 1;
+
+                    set deduccion_registrar = ROUND(deduccion_registrar + deduccion_total , 2);
+                   -- SELECT deduccion_registrar, "lo que guardo en cada ciclo" as otro;
+                END WHILE;
+
+
+                IF deduccion_registrar >= 0 THEN
+
+                    SELECT id_factura INTO id_factura_p FROM factura WHERE factura.status IS FALSE AND factura.id_trabajador = idTrabajador LIMIT 1;
+
+
+
+
+                    INSERT INTO detalles_factura 
+                            (id_factura, descripcion, monto, prima, islr) VALUES
+                            (
+                                id_factura_p,
+                                deduc_descrip,
+                                deduccion_registrar,
+                                FALSE,
+                                deduc_islr
+                            );
+
+                END IF;
+
+
+            END IF;
+
+
+
+
+            IF filas_encontradas <= 0 or filas_encontradas = 1 THEN
+                SET done = TRUE;
+            ELSE
+                SET filas_encontradas = filas_encontradas - 1;
+                FETCH lista_deducciones INTO deduc_descrip ,deduc_monto ,deduc_porcentaje ,deduc_multi_meses ,deduc_div_sem ,deduc_quincena ,deduc_multi_dia , deduc_sector_salud , deduc_islr , deduc_dedicada;
+            END IF;
+
+
+        END WHILE;
+
+    END IF;
+
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `calcular_escalafon` (IN `idTrabajador` INT, IN `control_insert` BOOLEAN, OUT `monto_devuelto` DECIMAL(12,2))  BEGIN
+DECLARE sueldo decimal(13,2);
+DECLARE escala varchar(45);
+DECLARE esc_porcentaje decimal(5,2);
+DECLARE id_factura_p int;
+SET monto_devuelto = 0;
+    SELECT
+        sb.sueldo_base
+        ,e.escala
+        ,e.monto as porcentaje_escalafon
+        
+        INTO
+        sueldo
+        ,escala
+        ,esc_porcentaje
+        
+    FROM
+        trabajadores AS t
+    JOIN sueldo_base AS sb
+    ON sb.id_trabajador = t.id_trabajador
+    JOIN escalafon as e on e.id_escalafon = sb.id_escalafon
+    WHERE t.id_trabajador = idTrabajador AND sb.sector_salud = TRUE LIMIT 1;
+
+    IF esc_porcentaje IS NOT NULL THEN
+    
+        SET monto_devuelto = ROUND( ((sueldo/100) * esc_porcentaje) , 2 );
+        
+        IF control_insert IS TRUE THEN
+        
+            SELECT id_factura INTO id_factura_p FROM factura WHERE factura.status IS FALSE AND factura.id_trabajador = idTrabajador LIMIT 1;
+            
+            INSERT INTO detalles_factura 
+                (id_factura, descripcion, monto, prima, islr) VALUES
+                (
+                    id_factura_p,
+                    CONCAT("Escalafon - escala ", escala ),
+                    monto_devuelto,
+                    TRUE,
+                    FALSE
+                );
+            
+        END IF;
+
+    END IF;
+    
+    
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `calcular_primas` (IN `fecha_factura` DATE)  BEGIN
+    DECLARE num_hijos INT;
+    DECLARE id INT;
+    DECLARE sueldo_trabajador DECIMAL(12,2);
+    DECLARE filas_encontradas int DEFAULT 0;
+    DECLARE done BOOLEAN DEFAULT FALSE;
+    DECLARE id_factura_p int;
+    
+    
+    # primas por hjo ---------------------------------
+    DECLARE lista_trabajadores CURSOR FOR
+        SELECT
+            t.id_trabajador,
+            sb.sueldo_base
+        FROM
+            trabajadores AS t
+        JOIN sueldo_base as sb on sb.id_trabajador = t.id_trabajador
+        WHERE
+            t.estado_actividad = TRUE GROUP BY t.id_trabajador;
+            
+            
+    
+    OPEN lista_trabajadores; # lista detrabajadores activos con hijos con hijos
+
+    set filas_encontradas = FOUND_ROWS();
+
+    IF filas_encontradas > 0 THEN
+    	SET fecha_factura = LAST_DAY(fecha_factura);
+        FETCH lista_trabajadores INTO id,sueldo_trabajador;
+
+
+WHILE done IS NOT TRUE DO
+    
+    
+    DELETE FROM factura WHERE status is false AND id_trabajador = id;
+    
+    
+    
+    INSERT INTO factura 
+    (id_trabajador,fecha , sueldo_base, sueldo_integral, sueldo_deducido, status)
+    VALUES
+    (
+        id,
+        fecha_factura,
+        sueldo_trabajador,
+        DEFAULT,
+        DEFAULT,
+        DEFAULT);
+        
+    
+
+    CALL calcular_prima_hijo(id,sueldo_trabajador);    
+    CALL calcular_escalafon(id,TRUE,@aqui_no_la_voy_a_usar_XD);
+    CALL calcular_primas_generales(id,sueldo_trabajador);
+    CALL calcular_profesionalismo(id);
+    
+    
+    IF f_antiguedad(id) > 0 THEN
+    
+    	SELECT id_factura INTO id_factura_p FROM factura WHERE factura.status IS FALSE AND factura.id_trabajador = id LIMIT 1;
+    
+        INSERT INTO detalles_factura 
+        (id_factura, descripcion, monto, prima, islr) VALUES
+        (
+            id_factura_p,
+            "Antiguedad",
+            f_antiguedad(id),
+            TRUE,
+            FALSE
+        );
+    END IF;
+    
+    
+    
+    CALL calcular_deducciones(id,fecha_factura);
+    
+    IF filas_encontradas <= 0 or filas_encontradas = 1 THEN
+        SET done = TRUE;
+    ELSE
+        set filas_encontradas = filas_encontradas - 1;
+        FETCH lista_trabajadores INTO id,sueldo_trabajador;
+    END IF;
+    
+END WHILE;
+    
+END IF;
+
+
+    
+    
+    CLOSE lista_trabajadores;
+    
+    
+    
+-- START TRANSACTION;
+-- call calcular_primas("2024-07-01");
+
+-- SELECT * FROM factura as f WHERE f.status IS false ORDER BY f.id_factura;
+
+-- SELECT t.id_trabajador,t.nombre,df.descripcion,df.monto,df.prima,df.islr FROM detalles_factura as df LEFT JOIN factura as f on f.id_factura = df.id_factura LEFT JOIN trabajadores as t on t.id_trabajador = f.id_trabajador WHERE f.status IS false ORDER BY f.id_factura, t.id_trabajador, df.prima;
+-- ROLLBACK;
+    
+    
+    
+    
+    
+    
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `calcular_primas_generales` (IN `idTrabajador` INT, IN `sueldo_base` DECIMAL(12,2))  BEGIN 
+    #sueldo_base
+    #idTrabajador
+
+    DECLARE id int;
+    DECLARE done boolean DEFAULT false;
+    DECLARE filas_encontradas_1 int DEFAULT 0;
+    DECLARE filas_encontradas_2 int DEFAULT 0;
+    DECLARE sueldo_total decimal(12,2);
+    DECLARE prima_descrip varchar(100);
+    DECLARE prima_monto decimal(12,2);
+    DECLARE prima_porcen boolean;
+    DECLARE prima_salud boolean;
+    DECLARE trabajador_salud boolean;
+    DECLARE id_factura_p int;
+
+
+    DECLARE primas_generales CURSOR FOR
+        
+        SELECT 
+            p.descripcion
+            ,p.monto
+            ,p.porcentaje
+            ,p.sector_salud 
+        from primas_generales as p WHERE p.dedicada IS false;
+    DECLARE primas_generales_dedicadas CURSOR FOR
+
+        SELECT
+            p.descripcion
+            ,p.monto
+            ,p.porcentaje
+        FROM
+            trabajador_prima_general AS tp
+        JOIN primas_generales AS p
+        ON
+            p.id_primas_generales = tp.id_primas_generales
+        WHERE tp.status = 1 AND tp.id_trabajador = idTrabajador;
+
+    OPEN primas_generales;
+
+    SET filas_encontradas_1 = FOUND_ROWS();
+
+    OPEN primas_generales_dedicadas;
+
+    SET filas_encontradas_2 = FOUND_ROWS();
+
+    IF filas_encontradas_1 > 0 THEN
+        SELECT sb.sector_salud INTO trabajador_salud FROM sueldo_base as sb WHERE sb.id_trabajador = idTrabajador;
+
+        FETCH primas_generales INTO prima_descrip, prima_monto, prima_porcen, prima_salud;
+
+        WHILE done IS NOT TRUE DO # las primas no dedicadas
+
+
+
+            IF prima_porcen IS TRUE THEN
+                set sueldo_total = (sueldo_base / 100  ) * prima_monto;
+            ELSE
+                set sueldo_total = prima_monto;
+            END IF;
+            
+            
+
+            IF prima_salud IS false OR (prima_salud IS TRUE AND trabajador_salud IS TRUE) THEN 
+            
+            
+            SELECT id_factura INTO id_factura_p FROM factura WHERE factura.status IS FALSE AND factura.id_trabajador = idTrabajador LIMIT 1;
+            
+                INSERT INTO detalles_factura 
+                    (id_factura, descripcion, monto, prima, islr) VALUES
+                    (
+                        id_factura_p,
+                        prima_descrip,
+                        sueldo_total,
+                        TRUE,
+                        FALSE
+                    );
+            END IF;
+
+
+            
+            #SELECT * FROM factura as f JOIN detalles_factura as df on df.id_factura = f.id_factura WHERE f.status is FALSE ORDER BY f.id_factura,df.descripcion;
+            
+            IF filas_encontradas_1 <= 0 or filas_encontradas_1 = 1 THEN
+                SET done = TRUE;
+            ELSE
+                set filas_encontradas_1 = filas_encontradas_1 - 1;
+                FETCH primas_generales INTO prima_descrip, prima_monto, prima_porcen, prima_salud;
+            END IF;
+            
+        END WHILE;
+
+    END IF;
+
+    set done = FALSE;
+
+
+
+
+
+    IF filas_encontradas_2 > 0 THEN
+
+        FETCH primas_generales_dedicadas INTO prima_descrip, prima_monto, prima_porcen;
+
+        WHILE done IS NOT TRUE DO # las primas no dedicadas
+
+
+            IF prima_porcen IS TRUE THEN
+                set sueldo_total = (sueldo_base / 100  ) * prima_monto;
+            ELSE
+                set sueldo_total = prima_monto;
+            END IF;
+            
+            
+            SELECT id_factura INTO id_factura_p FROM factura WHERE factura.status IS FALSE AND factura.id_trabajador = idTrabajador LIMIT 1;
+            
+            INSERT INTO detalles_factura 
+                (id_factura, descripcion, monto, prima, islr) VALUES
+                (
+                    id_factura_p,
+                    prima_descrip,
+                    sueldo_total,
+                    TRUE,
+                    FALSE
+                );
+
+
+            
+            #SELECT * FROM factura as f JOIN detalles_factura as df on df.id_factura = f.id_factura WHERE f.status is FALSE ORDER BY f.id_factura,df.descripcion;
+            
+            IF filas_encontradas_2 <= 0 or filas_encontradas_2 = 1 THEN
+                SET done = TRUE;
+            ELSE
+                set filas_encontradas_2 = filas_encontradas_2 - 1;
+                FETCH primas_generales_dedicadas INTO prima_descrip, prima_monto, prima_porcen;
+            END IF;
+            
+        END WHILE;
+
+    END IF;
+
+
+
+
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `calcular_prima_hijo` (IN `id_padre` INT, IN `sueldo` DECIMAL(12,2))  proc_Exit:BEGIN
+    DECLARE hijo INT;
+    DECLARE descrip varchar(100);
+    DECLARE porcentaje BOOLEAN;
+    DECLARE monto decimal(12,2);
+    DECLARE control_menor BOOLEAN;
+    DECLARE control_discapacidad BOOLEAN;
+    DECLARE done BOOLEAN DEFAULT FALSE;
+    DECLARE hijo_discapacidad BOOLEAN;
+    DECLARE hijo_menor BOOLEAN;
+    DECLARE control_func_var BOOLEAN DEFAULT FALSE;
+    DECLARE sueldo_total decimal(12,2) DEFAULT 0;
+    DECLARE id_factura_p int;
+
+
+    DECLARE lista_hijos_and_primas CURSOR FOR
+        SELECT 
+        
+        h.discapacidad,
+        (IF(TIMESTAMPDIFF(YEAR, h.fecha_nacimiento ,CURRENT_DATE) < 18,TRUE,FALSE)) as menor_edad,
+        ph.descripcion,
+        ph.menor_edad,
+        ph.discapacidad,
+        ph.porcentaje,
+        ph.monto,
+        h.id_hijo
+
+        FROM hijos as h 
+        CROSS JOIN primas_hijos as ph 
+        WHERE h.id_trabajador_madre = id_padre OR h.id_trabajador_padre = id_padre
+        ORDER BY h.nombre, ph.descripcion;
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+    
+    IF FOUND_ROWS() <= 0 THEN
+    LEAVE proc_Exit;
+    END IF;
+
+    OPEN lista_hijos_and_primas;
+
+    read_loop: LOOP
+        SET control_func_var = FALSE;
+        FETCH lista_hijos_and_primas INTO
+        hijo_discapacidad,
+        hijo_menor,
+        descrip,
+        control_menor,
+        control_discapacidad,
+        porcentaje,
+        monto,
+        hijo;
+
+        IF done THEN
+            LEAVE read_loop;
+        END IF;
+
+        IF control_discapacidad = hijo_discapacidad and control_menor = hijo_menor THEN
+            SET control_func_var = TRUE;
+        ELSEIF control_menor IS TRUE and hijo_menor IS TRUE and control_discapacidad IS FALSE THEN
+            SET control_func_var = TRUE;
+        ELSEIF control_discapacidad IS TRUE and hijo_discapacidad IS TRUE and control_menor IS FALSE THEN
+            SET control_func_var = TRUE;
+        ELSEIF control_discapacidad IS FALSE and control_menor IS FALSE THEN
+            SET control_func_var = TRUE;
+        END IF;
+
+        IF control_func_var IS TRUE THEN
+
+            IF porcentaje IS TRUE THEN 
+                SET sueldo_total = ((sueldo/100) * monto);
+            ELSE
+                SET sueldo_total = monto;
+            END IF;
+            
+            SELECT id_factura INTO id_factura_p FROM factura WHERE factura.status IS FALSE AND factura.id_trabajador = id_padre LIMIT 1;
+            
+
+            INSERT INTO detalles_factura 
+            (id_factura, descripcion, monto, prima, islr) VALUES
+            (
+                (id_factura_p),
+                descrip,
+                sueldo_total,
+                TRUE,
+                FALSE
+            );
+            
+      
+
+#           SELECT "hola";
+
+        END IF;
+
+    END LOOP;
+
+    CLOSE lista_hijos_and_primas;
+
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `calcular_profesionalismo` (IN `idTrabajador` INT)  BEGIN
+	# idTrabajador
+
+	DECLARE prima_descrip VARCHAR(150);
+	DECLARE prima_porcent DECIMAL(12,2);
+	DECLARE id_factura_p INT;
+
+	SELECT
+	    CONCAT('Profesionalización - ',PP.descripcion) AS descriptcion
+	    ,pp.incremento
+	    INTO
+	    prima_descrip
+	    ,prima_porcent
+	FROM
+	    trabajadores AS t
+	LEFT JOIN prima_profesionalismo AS pp
+	ON pp.id_prima_profesionalismo = t.id_prima_profesionalismo
+	WHERE
+	    t.id_trabajador = idTrabajador;
+
+
+	IF prima_porcent > 0 THEN
+
+		SELECT id_factura INTO id_factura_p FROM factura WHERE factura.status IS FALSE AND factura.id_trabajador = idTrabajador LIMIT 1;
+    
+        INSERT INTO detalles_factura 
+        (id_factura, descripcion, monto, prima, islr) VALUES
+        (
+            id_factura_p,
+            prima_descrip,
+            f_profesionalismo(idTrabajador),
+            TRUE,
+            FALSE
+        );
+
+
+
+
+	END IF;
+END$$
+
+--
+-- Funciones
+--
+CREATE DEFINER=`root`@`localhost` FUNCTION `f_antiguedad` (`idTrabajador` INT) RETURNS DECIMAL(12,2) BEGIN
+    DECLARE trabajador_antiguedad int DEFAULT 0;
+    DECLARE sueldo_base decimal(12,2);
+    DECLARE resultado decimal(12,2) DEFAULT 0;
+    DECLARE prima_monto decimal(5,2) DEFAULT 0;
+
+
+    SELECT TIMESTAMPDIFF(YEAR, t.creado ,CURRENT_DATE), sb.sueldo_base INTO trabajador_antiguedad, sueldo_base  FROM trabajadores as t JOIN sueldo_base as sb on sb.id_trabajador = t.id_trabajador WHERE t.id_trabajador = idTrabajador;
+
+    IF sueldo_base IS NOT NULL THEN
+        SELECT
+            a.monto
+            INTO
+            prima_monto
+        FROM
+            prima_antiguedad AS a
+        WHERE
+            a.anios_antiguedad <= trabajador_antiguedad
+        ORDER BY
+            a.anios_antiguedad
+        DESC
+        LIMIT 1;
+    END IF;
+    
+    SELECT (
+        ((
+            sueldo_base +
+            f_escalafon(idTrabajador) + 
+            f_compensacion_eval(idTrabajador) +
+            f_dedicacionSectorSalud(idTrabajador)
+         ) /100 ) * prima_monto
+    )
+    INTO
+    
+   	resultado;
+
+    
+
+    RETURN resultado;
+END$$
+
+CREATE DEFINER=`root`@`localhost` FUNCTION `f_compensacion_eval` (`idTrabajador` INT) RETURNS DECIMAL(12,2) BEGIN
+    DECLARE resultado decimal(12,2) DEFAULT 0;
+    DECLARE prima_monto decimal(12,2) DEFAULT 0;
+    DECLARE prima_porcen decimal(5,2);
+    DECLARE prima_salud boolean;
+    DECLARE prima_dedicada boolean;
+    DECLARE prima_id int;
+    DECLARE sueldo_base decimal(12,2);
+    DECLARE sector_salud_trabajador boolean;
+	DECLARE temp_cond int DEFAULT 0;
+    SELECT 
+    p.id_primas_generales
+    ,p.monto
+    ,p.porcentaje
+    ,p.sector_salud
+    ,p.dedicada
+    INTO
+    prima_id
+    ,prima_monto
+    ,prima_porcen
+    ,prima_salud
+    ,prima_dedicada
+    FROM primas_generales as p 
+    WHERE descripcion = 'Compensación Por Evaluación' 
+    LIMIT 1;
+
+    SELECT sb.sueldo_base, sb.sector_salud INTO sueldo_base, sector_salud_trabajador FROM sueldo_base as sb WHERE sb.id_trabajador = idTrabajador;
+
+    IF prima_id IS NOT NULL AND sueldo_base IS NOT NULL THEN
+        IF prima_dedicada = 1 THEN
+            #idTrabajador
+
+            
+            
+            
+
+            SELECT 1 INTO temp_cond FROM trabajador_prima_general WHERE id_primas_generales = prima_id AND id_trabajador = idTrabajador;
+            IF temp_cond = 1 THEN
+                IF prima_porcen IS TRUE THEN
+                    IF (prima_salud IS TRUE AND sector_salud_trabajador IS TRUE) OR prima_salud IS FALSE THEN
+                        SET resultado = ROUND( (sueldo_base / 100) * prima_monto ,2);
+                    END IF;
+                ELSE
+                    IF (prima_salud IS TRUE AND sector_salud_trabajador IS TRUE) OR prima_salud IS FALSE THEN
+                        SET resultado = prima_monto;
+                    END IF;
+
+                END IF;
+            END IF;
+        ELSE
+            IF prima_porcen IS TRUE THEN
+                IF (prima_salud IS TRUE AND sector_salud_trabajador IS TRUE) OR prima_salud IS FALSE THEN
+                    SET resultado = ROUND( (sueldo_base / 100) * prima_monto ,2);
+                END IF;
+            ELSE
+                IF (prima_salud IS TRUE AND sector_salud_trabajador IS TRUE) OR prima_salud IS FALSE THEN
+                    SET resultado = prima_monto;
+                END IF;
+
+            END IF;
+        END IF;
+    END IF;
+
+
+
+    RETURN resultado;
+END$$
+
+CREATE DEFINER=`root`@`localhost` FUNCTION `f_contar_lunes` (`fecha_lunes` DATE, `quincena` INT) RETURNS INT(11) NO SQL
+BEGIN
+
+    #fecha_lunes date
+    #quincena int => 1 = 30 dias, 2 = primeros 15 dias, 3 siguientes 15 dias
+
+    DECLARE inicio DATE;
+    DECLARE fin DATE;
+    DECLARE contador int DEFAULT 0;
+
+    SET inicio = DATE_FORMAT(fecha_lunes, '%Y-%m-01');
+
+    IF quincena = 3 THEN # cuenta los lunes del 01 al ultimo del mes
+        SET fin = LAST_DAY(inicio);
+    ELSEIF quincena = 1 THEN # al 15 del mes
+        SET fin = DATE_FORMAT(inicio, '%Y-%m-15');
+    ELSEIF quincena = 2 THEN # desde el 16 hasta el ultimo del mes
+        SET fin = LAST_DAY(inicio);
+        SET inicio = DATE_FORMAT(inicio, '%Y-%m-16');
+    ELSEIF quincena = 0 THEN
+    RETURN 1;
+    ELSE
+        SIGNAL SQLSTATE '1USER' SET MESSAGE_TEXT = 'El segundo argumento para la función f_contar_lunes no es valido (1, 2, 3)';
+    END IF;
+
+
+    WHILE inicio <= fin DO
+        IF DAYOFWEEK(inicio) = 2 THEN
+            SET contador = contador + 1;
+        END IF;
+
+        SET inicio = inicio + INTERVAL 1 DAY;
+    END WHILE;
+
+    RETURN contador;
+
+END$$
+
+CREATE DEFINER=`root`@`localhost` FUNCTION `f_dedicacionSectorSalud` (`idTrabajador` INT) RETURNS DECIMAL(12,2) BEGIN
+    DECLARE prima_id int;
+    DECLARE prima_monto decimal(12,2);
+    DECLARE prima_porcen decimal(12,2);
+    DECLARE prima_salud boolean;
+    DECLARE prima_dedicada boolean;
+    DECLARE sueldo_base decimal(12,2);
+    DECLARE sector_salud_trabajador boolean;
+    DECLARE temp_cond int DEFAULT 0;
+    DECLARE resultado decimal(12,2) DEFAULT 0;
+
+    SELECT
+        `id_primas_generales`,
+        `monto`,
+        `porcentaje`,
+        `sector_salud`,
+        `dedicada`
+        INTO
+        prima_id
+        ,prima_monto
+        ,prima_porcen
+        ,prima_salud
+        ,prima_dedicada
+    FROM
+        `primas_generales`
+    WHERE
+        descripcion = 'Dedicacion A La Actividad Del Sistema Publico Unico Nacional de salud';
+
+        SELECT sb.sueldo_base, sb.sector_salud INTO sueldo_base, sector_salud_trabajador FROM sueldo_base as sb WHERE sb.id_trabajador = idTrabajador;
+
+    IF prima_id IS NOT NULL AND sueldo_base IS NOT NULL THEN
+        IF prima_dedicada = 1 THEN
+            #idTrabajador
+
+            SET temp_cond = null;
+
+            SELECT 1 INTO temp_cond FROM trabajador_prima_general WHERE id_primas_generales = prima_id AND id_trabajador = idTrabajador;
+            IF temp_cond = 1 THEN
+                IF prima_porcen IS TRUE THEN
+                    IF (prima_salud IS TRUE AND sector_salud_trabajador IS TRUE) OR prima_salud IS FALSE THEN
+                        SET resultado = ROUND( (sueldo_base / 100) * prima_monto ,2);
+                    END IF;
+                ELSE
+                    IF (prima_salud IS TRUE AND sector_salud_trabajador IS TRUE) OR prima_salud IS FALSE THEN
+                        SET resultado = prima_monto;
+                    END IF;
+
+                END IF;
+            END IF;
+        ELSE
+            IF prima_porcen IS TRUE THEN
+                IF (prima_salud IS TRUE AND sector_salud_trabajador IS TRUE) OR prima_salud IS FALSE THEN
+                    SET resultado = ROUND( (sueldo_base / 100) * prima_monto ,2);
+                END IF;
+            ELSE
+                IF (prima_salud IS TRUE AND sector_salud_trabajador IS TRUE) OR prima_salud IS FALSE THEN
+                    SET resultado = prima_monto;
+                END IF;
+
+            END IF;
+        END IF;
+    END IF;
+
+    RETURN resultado;
+
+END$$
+
+CREATE DEFINER=`root`@`localhost` FUNCTION `f_escalafon` (`idTrabajador` INT) RETURNS DECIMAL(12,2) BEGIN
+    DECLARE sueldo decimal(13,2);
+    DECLARE esc_porcentaje decimal(5,2);
+    # idTrabajador
+    SELECT
+        sb.sueldo_base
+        ,e.monto as porcentaje_escalafon
+        
+        INTO
+        sueldo
+        ,esc_porcentaje
+        
+    FROM
+        trabajadores AS t
+    JOIN sueldo_base AS sb
+    ON sb.id_trabajador = t.id_trabajador
+    JOIN escalafon as e on e.id_escalafon = sb.id_escalafon
+    WHERE t.id_trabajador = idTrabajador AND sb.sector_salud = TRUE LIMIT 1;
+    
+    IF sueldo IS NOT NULL THEN
+    	RETURN ROUND( ((sueldo/100) * esc_porcentaje) , 2 );
+    ELSE 
+        RETURN 0.00;
+    END IF;
+
+END$$
+
+CREATE DEFINER=`root`@`localhost` FUNCTION `f_profesionalismo` (`idTrabajador` INT) RETURNS DECIMAL(12,2) BEGIN
+
+    DECLARE prima_monto decimal(12,2);
+    DECLARE sueldo_base decimal(12,2);
+    DECLARE resultado decimal(12,2) DEFAULT 0;
+
+
+    
+    
+    SELECT sb.sueldo_base,pp.incremento INTO sueldo_base, prima_monto FROM trabajadores as t JOIN sueldo_base as sb on t.id_trabajador = sb.id_trabajador LEFT JOIN prima_profesionalismo as pp on pp.id_prima_profesionalismo = t.id_prima_profesionalismo WHERE sb.id_trabajador = idTrabajador LIMIT 1;
+
+    IF sueldo_base IS NOT NULL THEN
+    
+        SELECT (
+            ((
+                sueldo_base +
+                f_escalafon(idTrabajador) + 
+                f_compensacion_eval(idTrabajador) +
+                f_dedicacionSectorSalud(idTrabajador) + 
+                f_antiguedad(idTrabajador)
+             ) /100 ) * prima_monto
+        )
+        INTO
+        
+        resultado;
+
+    END IF;
+
+
+
+
+
+    RETURN resultado;
+
+END$$
+
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -67,13 +964,631 @@ CREATE TABLE `bitacora` (
 --
 
 INSERT INTO `bitacora` (`id_trabajador`, `fecha`, `descripcion`) VALUES
-(2, '2024-06-19 22:39:56', 'Inicio de sesión'),
-(2, '2024-06-19 22:42:41', 'Inicio de sesión'),
-(2, '2024-06-19 22:42:41', 'Ingreso en el modulo (Usuarios)'),
-(2, '2024-06-19 22:43:06', 'Inicio de sesión'),
-(2, '2024-06-19 22:43:06', 'Ingreso en el modulo (Usuarios)'),
-(2, '2024-06-19 22:43:29', 'Inicio de sesión'),
-(2, '2024-06-19 22:43:29', 'Ingreso en el modulo (Usuarios)');
+(2, '2024-06-26 13:08:16', 'Inicio de sesión'),
+(2, '2024-06-26 13:08:16', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 13:11:54', 'Ingreso en el modulo (2)'),
+(2, '2024-06-26 13:12:34', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 13:13:08', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 13:13:10', 'Ingreso en el modulo (2)'),
+(2, '2024-06-26 13:14:24', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 13:16:40', 'Ingreso en el modulo (2)'),
+(2, '2024-06-26 13:16:54', 'Ingreso en el modulo (2)'),
+(2, '2024-06-26 13:17:40', 'Ingreso en el modulo (2)'),
+(2, '2024-06-26 13:19:01', 'Ingreso en el modulo (2)'),
+(2, '2024-06-26 13:19:07', 'Ingreso en el modulo (Areas)'),
+(2, '2024-06-26 13:19:15', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 13:21:09', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 13:21:21', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 13:22:27', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 13:22:37', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 13:26:27', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 13:27:13', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 13:38:21', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 13:39:03', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 13:39:35', 'Ingreso en el modulo (Asistencias)'),
+(2, '2024-06-26 13:41:27', 'Ingreso en el modulo (Asistencias)'),
+(2, '2024-06-26 13:42:17', 'Ingreso en el modulo (Asistencias)'),
+(2, '2024-06-26 13:44:15', 'Ingreso en el modulo (Asistencias)'),
+(2, '2024-06-26 14:10:31', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 14:11:36', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 14:11:57', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 14:12:31', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 14:14:43', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 14:14:55', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 14:16:32', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 14:16:43', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 14:17:27', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 14:17:37', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 14:17:50', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 14:18:18', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 15:19:47', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-06-26 15:20:54', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-06-26 15:20:57', 'cambio los permiso de un rol'),
+(2, '2024-06-26 15:20:58', 'cambio los permiso de un rol'),
+(2, '2024-06-26 15:20:59', 'cambio los permiso de un rol'),
+(2, '2024-06-26 15:21:00', 'cambio los permiso de un rol'),
+(2, '2024-06-26 16:31:35', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 17:36:10', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 17:36:50', 'Registro al usuarios (V-2725054)'),
+(2, '2024-06-26 23:52:28', 'Inicio de sesión'),
+(2, '2024-06-26 23:52:28', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 23:52:59', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 23:53:09', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 23:54:01', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 23:54:24', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 23:58:01', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 23:58:44', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 13:08:16', 'Inicio de sesión'),
+(2, '2024-06-26 13:08:16', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 13:11:54', 'Ingreso en el modulo (2)'),
+(2, '2024-06-26 13:12:34', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 13:13:08', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 13:13:10', 'Ingreso en el modulo (2)'),
+(2, '2024-06-26 13:14:24', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 13:16:40', 'Ingreso en el modulo (2)'),
+(2, '2024-06-26 13:16:54', 'Ingreso en el modulo (2)'),
+(2, '2024-06-26 13:17:40', 'Ingreso en el modulo (2)'),
+(2, '2024-06-26 13:19:01', 'Ingreso en el modulo (2)'),
+(2, '2024-06-26 13:19:07', 'Ingreso en el modulo (Areas)'),
+(2, '2024-06-26 13:19:15', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 13:21:09', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 13:21:21', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 13:22:27', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 13:22:37', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 13:26:27', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 13:27:13', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 13:38:21', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 13:39:03', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 13:39:35', 'Ingreso en el modulo (Asistencias)'),
+(2, '2024-06-26 13:41:27', 'Ingreso en el modulo (Asistencias)'),
+(2, '2024-06-26 13:42:17', 'Ingreso en el modulo (Asistencias)'),
+(2, '2024-06-26 13:44:15', 'Ingreso en el modulo (Asistencias)'),
+(2, '2024-06-26 14:10:31', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 14:11:36', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 14:11:57', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 14:12:31', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 14:14:43', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 14:14:55', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 14:16:32', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 14:16:43', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 14:17:27', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 14:17:37', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 14:17:50', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 14:18:18', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 15:19:47', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-06-26 15:20:54', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-06-26 15:20:57', 'cambio los permiso de un rol'),
+(2, '2024-06-26 15:20:58', 'cambio los permiso de un rol'),
+(2, '2024-06-26 15:20:59', 'cambio los permiso de un rol'),
+(2, '2024-06-26 15:21:00', 'cambio los permiso de un rol'),
+(2, '2024-06-26 16:31:35', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 17:36:10', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 17:36:50', 'Registro al usuarios (V-2725054)'),
+(2, '2024-06-26 23:52:28', 'Inicio de sesión'),
+(2, '2024-06-26 23:52:28', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 23:52:59', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 23:53:09', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 23:54:01', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 23:54:24', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 23:58:01', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-26 23:58:44', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-27 03:27:00', 'Inicio de sesión'),
+(2, '2024-06-27 03:27:01', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-06-27 03:28:12', 'Registro al usuarios (V-12434091)'),
+(2, '2024-07-01 15:07:43', 'Inicio de sesión'),
+(2, '2024-07-01 15:07:44', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-01 15:15:15', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-01 15:17:30', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-01 15:17:33', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-01 15:17:36', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-01 15:21:42', 'Ingreso en el modulo (Areas)'),
+(2, '2024-07-01 15:21:45', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-01 15:23:57', 'Ingreso en el modulo (Areas)'),
+(2, '2024-07-01 15:30:41', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 02:50:24', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 02:51:32', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 02:51:53', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 02:52:45', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 02:54:24', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 02:55:39', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 02:57:11', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 02:57:22', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 02:59:40', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 03:00:27', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 03:03:30', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 03:07:33', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 03:16:29', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 03:17:41', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 03:19:29', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 03:20:37', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 03:29:02', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 03:35:19', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 03:35:46', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 03:36:43', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 03:37:36', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 03:37:51', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 03:40:11', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 03:41:06', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 03:42:09', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 03:42:49', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 03:43:08', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 04:00:18', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 04:00:42', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 04:00:54', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 04:02:51', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 04:03:25', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 04:03:50', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 04:04:13', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 04:04:34', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 04:23:47', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 04:24:34', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 04:25:10', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 04:29:28', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 04:31:15', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 04:31:52', 'Registro al usuarios (V-2725051)'),
+(2, '2024-07-05 04:35:23', 'Elimino al usuario (V-2725051)'),
+(2, '2024-07-05 04:35:49', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 04:37:12', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 04:37:40', 'Registro al usuarios (V-2725051)'),
+(2, '2024-07-05 04:41:24', 'Elimino al usuario (V-2725051)'),
+(2, '2024-07-05 04:47:34', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 04:51:05', 'Registro al usuarios (V-2725051)'),
+(2, '2024-07-05 05:01:16', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 05:03:30', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 05:09:44', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 05:13:52', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 05:21:28', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 05:22:53', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 05:23:07', 'Modifico al usuario (V-12434091)'),
+(2, '2024-07-05 05:24:23', 'Modifico al usuario (V-12434091)'),
+(2, '2024-07-05 05:25:21', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 05:25:29', 'Modifico al usuario (V-12434091)'),
+(2, '2024-07-05 05:25:34', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 05:25:44', 'Modifico al usuario (V-12434091)'),
+(2, '2024-07-05 05:27:20', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 05:27:28', 'Modifico al usuario (V-12434091)'),
+(2, '2024-07-05 05:31:10', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 05:31:57', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 05:33:11', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 05:34:16', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 05:35:27', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 05:36:24', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 05:37:07', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 05:38:17', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 05:45:19', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 05:45:30', 'Modifico al usuario (V-12434091)'),
+(2, '2024-07-05 05:45:42', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 05:45:52', 'Modifico al usuario (V-12434091)'),
+(2, '2024-07-05 05:47:36', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 05:47:49', 'Modifico al usuario (V-12434091)'),
+(2, '2024-07-05 05:47:58', 'Modifico al usuario (V-12434091)'),
+(2, '2024-07-05 05:48:32', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 05:48:40', 'Modifico al usuario (V-12434091)'),
+(2, '2024-07-05 05:51:30', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 05:51:40', 'Modifico al usuario (V-12434091)'),
+(2, '2024-07-05 05:51:49', 'Modifico al usuario (V-12434091)'),
+(2, '2024-07-05 05:55:37', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 05:56:37', 'Modifico al usuario (V-12434091)'),
+(2, '2024-07-05 05:57:11', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 05:57:27', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 05:58:05', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 05:58:20', 'Modifico al usuario (V-12434091)'),
+(2, '2024-07-05 05:59:56', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 06:00:23', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 06:00:41', 'Modifico al usuario (V-12434091)'),
+(2, '2024-07-05 06:00:59', 'Modifico al usuario (V-2725051)'),
+(2, '2024-07-05 06:01:41', 'Modifico al usuario (V-12434091)'),
+(2, '2024-07-05 06:02:16', 'Modifico al usuario (V-2725051)'),
+(2, '2024-07-05 06:03:08', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 06:03:26', 'Modifico al usuario (V-2725051)'),
+(2, '2024-07-05 06:07:48', 'Modifico al usuario (V-2725051)'),
+(2, '2024-07-05 06:07:55', 'Modifico al usuario (V-2725051)'),
+(2, '2024-07-05 06:08:21', 'Modifico al usuario (V-2725051)'),
+(2, '2024-07-05 06:08:40', 'Modifico al usuario (V-12434091)'),
+(2, '2024-07-05 06:15:32', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 06:19:27', 'Modifico al usuario (V-2725051)'),
+(2, '2024-07-05 06:19:36', 'Modifico al usuario (V-2725051)'),
+(2, '2024-07-05 06:19:42', 'Modifico al usuario (V-2725051)'),
+(2, '2024-07-05 06:20:26', 'Elimino al usuario (V-2725051)'),
+(2, '2024-07-05 06:20:35', 'Elimino al usuario (V-2725054)'),
+(2, '2024-07-05 06:20:47', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 06:23:00', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 06:23:07', 'Elimino al usuario (V-2725054)'),
+(2, '2024-07-05 06:25:23', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 06:25:30', 'Elimino al usuario (V-2725054)'),
+(2, '2024-07-05 06:33:52', 'Ingreso en el modulo (Areas)'),
+(2, '2024-07-05 06:33:56', 'Ingreso en el modulo (Areas)'),
+(2, '2024-07-05 06:34:06', 'Ingreso en el modulo (Areas)'),
+(2, '2024-07-05 06:34:11', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-05 06:51:33', 'Ingreso en el modulo (Roles)'),
+(2, '2024-07-05 06:52:04', 'Ingreso en el modulo (Roles)'),
+(2, '2024-07-05 06:53:01', 'Ingreso en el modulo (Roles)'),
+(2, '2024-07-05 06:53:36', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-07-05 06:56:36', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-07-05 06:56:41', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 07:11:56', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 07:12:31', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 07:12:59', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 07:13:47', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 07:36:38', 'Ingreso en el modulo (Hijos)'),
+(2, '2024-07-05 07:37:13', 'Ingreso en el modulo (Hijos)'),
+(2, '2024-07-05 07:37:55', 'Ingreso en el modulo (Hijos)'),
+(2, '2024-07-05 07:38:10', 'Ingreso en el modulo (Hijos)'),
+(2, '2024-07-05 07:39:37', 'Ingreso en el modulo (Hijos)'),
+(2, '2024-07-05 07:40:08', 'registro un hijo para V-2725054'),
+(2, '2024-07-05 07:40:08', 'registro un hijo para V-27250544'),
+(2, '2024-07-05 07:42:00', 'registro un hijo para V-2725054'),
+(2, '2024-07-05 07:42:00', 'registro un hijo para V-27250544'),
+(2, '2024-07-05 07:42:28', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 07:42:50', 'Elimino un hijo del registro'),
+(2, '2024-07-05 07:42:53', 'Elimino un hijo del registro'),
+(2, '2024-07-05 07:43:13', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 07:43:52', 'Ingreso en el modulo (Hijos)'),
+(2, '2024-07-05 07:43:54', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 07:44:20', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 07:48:21', 'Ingreso en el modulo (Hijos)'),
+(2, '2024-07-05 07:48:28', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 07:48:33', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 08:10:46', 'Ingreso en el modulo (Hijos)'),
+(2, '2024-07-05 08:11:22', 'Ingreso en el modulo (Hijos)'),
+(2, '2024-07-05 08:11:32', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 08:12:10', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 08:12:49', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 08:15:43', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 08:16:03', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 08:16:23', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 08:17:44', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 08:19:24', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 08:19:43', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 08:21:21', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 08:25:16', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 08:31:44', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 08:34:46', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 08:35:59', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 08:40:32', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 08:44:54', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 08:45:50', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 08:45:53', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 08:49:31', 'Ingreso en el modulo (Hijos)'),
+(2, '2024-07-05 08:55:13', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 08:55:47', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 09:21:51', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 09:22:51', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 09:25:05', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 09:25:35', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 09:27:48', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 09:28:22', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 09:29:30', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 09:32:42', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 09:33:26', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 09:34:08', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 09:35:58', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 09:38:49', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 09:40:11', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 09:41:00', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 09:41:17', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 09:42:23', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 09:43:46', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 09:44:19', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 09:44:41', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 09:45:28', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 09:45:39', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 09:46:20', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 09:46:55', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 09:49:54', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 09:51:28', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 09:51:48', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 09:52:34', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 09:52:53', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 09:56:33', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 09:56:46', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 09:57:07', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 10:00:04', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 10:00:36', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 10:02:13', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 10:03:17', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 10:04:26', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 10:05:09', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 10:07:33', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 10:10:03', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 10:11:56', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 10:13:12', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 10:14:24', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 10:15:27', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 10:15:58', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 10:18:08', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 10:19:28', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 10:20:23', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 10:23:43', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 10:25:39', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 10:27:21', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 10:30:03', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 10:33:00', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 10:34:14', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 10:35:10', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 10:35:46', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 10:37:12', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 10:38:54', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 10:39:10', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 11:30:53', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 11:36:29', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 11:37:17', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 11:38:08', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 11:38:40', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 12:25:33', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 12:49:11', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 12:50:17', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 12:50:52', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 12:51:29', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 12:53:12', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 12:53:18', 'Asigno el sueldo del trabajador Array'),
+(2, '2024-07-05 12:55:06', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 12:55:13', 'Asigno el sueldo del trabajador V-27250544'),
+(2, '2024-07-05 12:56:27', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 12:57:17', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 12:57:24', 'Asigno el sueldo del trabajador V-27250544'),
+(2, '2024-07-05 12:58:13', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 12:58:20', 'Asigno el sueldo del trabajador V-27250544'),
+(2, '2024-07-05 12:58:40', 'Asigno el sueldo del trabajador V-12434091'),
+(2, '2024-07-05 13:01:19', 'Borro el sueldo del trabajador V-12434091'),
+(2, '2024-07-05 13:03:52', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 13:04:52', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 13:04:57', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 13:05:16', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-05 13:05:41', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-06 01:14:42', 'Asigno el sueldo del trabajador V-12434091'),
+(2, '2024-07-06 01:23:46', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-06 01:24:10', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-06 01:36:47', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-06 01:36:52', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-06 01:38:55', 'Ingreso en el modulo (Asignaciones)'),
+(2, '2024-07-06 01:40:40', 'Ingreso en el modulo (Asignaciones)'),
+(2, '2024-07-06 01:40:47', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-07-06 01:42:17', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-07-06 01:42:33', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-07-06 01:43:53', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-07-06 01:44:48', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-07-06 01:45:59', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-07-06 01:46:25', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-07-06 01:46:54', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-07-06 01:47:32', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-07-06 01:51:43', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-07-06 01:52:17', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-07-06 02:19:18', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-06 02:19:21', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-06 02:20:20', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-06 02:24:51', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-07-06 02:27:15', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-07-06 04:52:43', 'Inicio de sesión'),
+(2, '2024-07-06 04:54:18', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-06 04:54:25', 'Inicio de sesión'),
+(2, '2024-07-06 04:54:30', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-06 04:54:38', 'Inicio de sesión'),
+(2, '2024-07-06 04:54:45', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-06 04:54:52', 'Inicio de sesión'),
+(2, '2024-07-06 04:54:52', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-06 04:54:58', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-07-06 04:55:24', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-07-06 04:55:30', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-07-06 04:55:55', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-07-06 04:56:53', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-07-06 04:57:17', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-07-06 05:00:17', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-07-06 05:00:56', 'Ingreso en el modulo (Asignaciones)'),
+(2, '2024-07-06 05:06:57', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-07-06 05:09:39', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-06 05:16:43', 'Ingreso en el modulo (Asignaciones)'),
+(2, '2024-07-06 05:22:43', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-06 05:31:38', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-06 05:33:30', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-06 05:34:53', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-06 06:04:47', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-06 06:04:58', 'Asigno el sueldo del trabajador V-2725054'),
+(2, '2024-07-06 06:14:26', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-07-06 20:13:38', 'Inicio de sesión'),
+(2, '2024-07-06 20:13:38', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-06 20:14:16', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-07-06 20:18:53', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-07-06 20:18:56', 'Ingreso en el modulo (Asignaciones)'),
+(2, '2024-07-06 20:27:22', 'Ingreso en el modulo (Asignaciones)'),
+(2, '2024-07-06 20:27:52', 'Ingreso en el modulo (Asignaciones)'),
+(2, '2024-07-06 20:28:33', 'Ingreso en el modulo (Asignaciones)'),
+(2, '2024-07-06 20:29:02', 'Ingreso en el modulo (Asignaciones)'),
+(2, '2024-07-06 20:32:12', 'Ingreso en el modulo (Asignaciones)'),
+(2, '2024-07-06 20:32:27', 'Ingreso en el modulo (Asignaciones)'),
+(2, '2024-07-06 20:32:35', 'Ingreso en el modulo (Asignaciones)'),
+(2, '2024-07-06 20:33:00', 'Ingreso en el modulo (Asignaciones)'),
+(2, '2024-07-06 20:37:25', 'Ingreso en el modulo (Asignaciones)'),
+(2, '2024-07-06 20:37:33', 'Ingreso en el modulo (Asignaciones)'),
+(2, '2024-07-06 20:43:06', 'Ingreso en el modulo (Asignaciones)'),
+(2, '2024-07-06 20:43:48', 'Ingreso en el modulo (Asignaciones)'),
+(2, '2024-07-06 20:45:17', 'Ingreso en el modulo (Asignaciones)'),
+(2, '2024-07-06 20:47:10', 'Ingreso en el modulo (Asignaciones)'),
+(2, '2024-07-06 20:48:46', 'Ingreso en el modulo (Asignaciones)'),
+(2, '2024-07-06 20:49:10', 'Ingreso en el modulo (Asignaciones)'),
+(2, '2024-07-06 20:49:59', 'Ingreso en el modulo (Asignaciones)'),
+(2, '2024-07-06 21:20:44', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-06 21:21:44', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-06 21:23:12', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-06 21:24:16', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-06 21:25:12', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-06 21:25:48', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-06 21:26:33', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-06 21:26:55', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-06 21:28:04', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-06 21:28:53', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-06 21:29:26', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-06 21:41:44', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-06 21:43:52', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-06 21:44:40', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-06 21:45:22', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-06 21:45:35', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-06 21:45:57', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-06 21:52:56', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-06 21:53:12', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-06 22:16:38', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-06 22:17:28', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-06 22:18:32', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-06 22:19:22', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-06 22:20:20', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-06 22:22:24', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-06 22:22:28', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-06 22:48:41', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-06 22:49:09', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-06 22:49:43', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-06 22:50:38', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-06 22:52:19', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-06 22:55:07', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-06 22:55:35', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-06 22:56:28', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-06 22:59:13', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-06 23:29:01', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-06 23:34:19', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-06 23:35:04', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-06 23:41:32', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-06 23:41:56', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-06 23:42:25', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-06 23:42:47', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-06 23:50:22', 'Inicio de sesión'),
+(2, '2024-07-06 23:50:22', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-06 23:51:49', 'Inicio de sesión'),
+(2, '2024-07-06 23:51:49', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-06 23:51:58', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-06 23:54:55', 'Inicio de sesión'),
+(2, '2024-07-06 23:54:56', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-06 23:55:24', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 00:14:40', 'Inicio de sesión'),
+(2, '2024-07-07 00:14:40', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-07 00:15:58', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-07 00:16:08', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-07 00:16:27', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-07 00:16:31', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-07 00:17:40', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-07 00:18:12', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-07 00:23:46', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-07 00:25:35', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-07 00:26:00', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-07 00:29:23', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-07 00:35:21', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-07 00:35:34', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-07 00:42:58', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-07 00:46:12', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-07 00:46:29', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-07 00:47:18', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-07 00:47:28', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-07 00:47:34', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-07 00:48:34', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-07 00:54:05', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-07 00:54:29', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-07 00:55:18', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-07 00:57:32', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-07 00:57:49', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-07 00:57:52', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-07 00:58:23', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-07 01:03:10', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-07 01:08:50', 'Inicio de sesión'),
+(2, '2024-07-07 01:08:50', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-07-07 01:08:56', 'Ingreso en el modulo (Roles)'),
+(2, '2024-07-07 01:09:02', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-07-07 01:10:00', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 01:27:11', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 01:27:44', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 01:28:27', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 01:29:23', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 01:29:36', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 01:39:52', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 02:41:05', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 02:42:53', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 02:43:04', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 02:45:59', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 02:46:05', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 02:46:34', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 02:46:58', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 02:47:06', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 02:47:18', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 02:47:38', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 02:50:55', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 02:51:00', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 02:51:20', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 02:52:41', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 02:53:47', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 02:55:50', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 02:56:46', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 02:57:51', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 03:03:54', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 03:11:33', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 03:12:11', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 03:22:17', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-07 03:22:58', 'Asigno el sueldo del trabajador V-2725054'),
+(2, '2024-07-07 03:23:22', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-07 03:23:32', 'Asigno el sueldo del trabajador V-2725054'),
+(2, '2024-07-07 03:23:48', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-07 03:24:11', 'Asigno el sueldo del trabajador V-2725054'),
+(2, '2024-07-07 03:26:15', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-07 03:26:22', 'Asigno el sueldo del trabajador V-2725054'),
+(2, '2024-07-07 03:27:58', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-07-07 03:46:18', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 03:47:49', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 03:57:51', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 03:59:07', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 04:03:08', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 04:06:27', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 04:06:58', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 04:19:34', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 04:29:53', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 04:29:59', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 04:32:44', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 04:42:00', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 04:45:57', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 04:46:13', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 05:03:18', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 05:03:30', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 05:03:36', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 05:32:04', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 05:32:29', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 05:33:40', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 05:50:15', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 05:53:14', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 05:55:00', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 05:55:37', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 06:00:46', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 06:06:13', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 06:07:15', 'Registro la prima por hijo (Prima por hijo)'),
+(2, '2024-07-07 06:07:37', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 06:08:17', 'Registro la prima por hijo (Prima por hijo)'),
+(2, '2024-07-07 06:08:39', 'Registro la prima por hijo (Prima por hijo)'),
+(2, '2024-07-07 06:19:17', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 06:20:12', 'Ingreso en el modulo (Primas)'),
+(2, '2024-07-07 06:20:21', 'Elimino la prima (Prima por hijo)'),
+(2, '2024-07-07 06:20:25', 'Elimino la prima (Prima por hijo)');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `calendario`
+--
+
+CREATE TABLE `calendario` (
+  `id` int(5) NOT NULL,
+  `descripcion` text COLLATE utf8_spanish_ci NOT NULL,
+  `fecha` date NOT NULL,
+  `recurrente` int(2) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+
+--
+-- Volcado de datos para la tabla `calendario`
+--
+
+INSERT INTO `calendario` (`id`, `descripcion`, `fecha`, `recurrente`) VALUES
+(1, 'Hola wapo1', '2026-09-19', 0),
+(2, 'Hola wwww', '0000-09-04', 0),
+(3, 'Un dia como hoy mi cassas', '2024-05-09', 0),
+(18, '9rywe89rhwe98hrwe', '2024-06-11', 0),
+(19, 'Dia de la raza', '2024-06-07', 1),
+(22, 'Dia de la raza', '2024-06-07', 1),
+(25, '31312312', '2024-06-10', 0),
+(26, 'Dia de la madre', '2024-05-10', 0),
+(27, 'aass', '2025-06-09', 0);
 
 -- --------------------------------------------------------
 
@@ -84,27 +1599,121 @@ INSERT INTO `bitacora` (`id_trabajador`, `fecha`, `descripcion`) VALUES
 CREATE TABLE `deducciones` (
   `id_deducciones` int(11) NOT NULL,
   `descripcion` varchar(45) NOT NULL,
-  `nombre` varchar(45) NOT NULL,
-  `monto` decimal(13,2) NOT NULL
+  `monto` decimal(12,2) NOT NULL,
+  `porcentaje` tinyint(1) NOT NULL,
+  `multi_meses` int(11) NOT NULL,
+  `div_sem` int(11) NOT NULL,
+  `quincena` tinyint(1) NOT NULL,
+  `multi_dia` tinyint(1) NOT NULL,
+  `sector_salud` tinyint(1) NOT NULL,
+  `islr` tinyint(1) NOT NULL,
+  `dedicada` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Volcado de datos para la tabla `deducciones`
+--
+
+INSERT INTO `deducciones` (`id_deducciones`, `descripcion`, `monto`, `porcentaje`, `multi_meses`, `div_sem`, `quincena`, `multi_dia`, `sector_salud`, `islr`, `dedicada`) VALUES
+(1, 'Perdida involuntaria de empleo', '0.50', 1, 12, 52, 1, 1, 0, 0, 0),
+(2, 'prueva dedicadas', '125.00', 0, 0, 0, 0, 0, 0, 0, 1);
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `detalle_factura`
+-- Estructura de tabla para la tabla `detalles_factura`
 --
 
-CREATE TABLE `detalle_factura` (
-  `id_detalle_factura` int(11) NOT NULL,
-  `id_trabajador` int(11) NOT NULL,
-  `fecha` date NOT NULL,
-  `descripcion` varchar(45) NOT NULL,
-  `sueldo_base` decimal(13,2) NOT NULL,
-  `prima_antiguedad` decimal(13,2) NOT NULL,
-  `prima_familiar` decimal(13,2) NOT NULL,
-  `escalafon` decimal(13,2) NOT NULL,
-  `total_primas` decimal(13,2) NOT NULL
+CREATE TABLE `detalles_factura` (
+  `id_factura` int(11) NOT NULL,
+  `descripcion` varchar(150) NOT NULL,
+  `monto` decimal(12,2) NOT NULL,
+  `prima` tinyint(1) NOT NULL,
+  `islr` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Disparadores `detalles_factura`
+--
+DELIMITER $$
+CREATE TRIGGER `BD_detalles_factura` BEFORE DELETE ON `detalles_factura` FOR EACH ROW BEGIN 
+    IF OLD.prima IS TRUE THEN
+        UPDATE factura 
+        SET sueldo_integral = sueldo_integral - OLD.monto
+        WHERE factura.id_factura = OLD.id_factura;
+    ELSE
+        UPDATE factura 
+        SET sueldo_deducido = sueldo_deducido - OLD.monto
+        WHERE factura.id_factura = OLD.id_factura;
+    END IF;
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `BI_detalles_factura` BEFORE INSERT ON `detalles_factura` FOR EACH ROW BEGIN
+	IF NEW.prima IS TRUE THEN
+    	UPDATE factura
+        SET sueldo_integral = sueldo_integral + NEW.monto 
+        WHERE factura.id_factura = NEW.id_factura;
+	ELSE 
+    	UPDATE factura
+        SET sueldo_deducido = sueldo_deducido + NEW.monto 
+        WHERE factura.id_factura = NEW.id_factura;
+    END IF;
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `BU_detalles_factura` BEFORE UPDATE ON `detalles_factura` FOR EACH ROW BEGIN
+    IF OLD.prima <> NEW.prima THEN
+        IF OLD.prima IS TRUE THEN
+            -- significa que paso de prima a deduccion
+            # restar sueldo_integral
+            # sumar sueldo deduccion
+            UPDATE factura
+            SET sueldo_integral = sueldo_integral - OLD.monto ,
+            sueldo_deducido = sueldo_deducido + NEW.monto
+            WHERE factura.id_factura = OLD.id_factura;
+        ELSE
+            -- significa que paso de deduccio a prima
+            # sumar sueldo integral
+            # restar sueldo deduccion
+
+            UPDATE factura
+            SET sueldo_integral = sueldo_integral + NEW.monto ,
+            sueldo_deducido = sueldo_deducido - OLD.monto
+            WHERE factura.id_factura = OLD.id_factura;
+
+        
+        END IF;
+    ELSEIF OLD.monto <> NEW.monto THEN
+        IF OLD.prima IS TRUE THEN
+            -- si no cambio el tipo sino el monto y era una prima
+            # resto el monto anterior y sumo el nuevo al sueldo integral
+
+            UPDATE factura
+            SET sueldo_integral = (sueldo_integral - OLD.monto) + NEW.monto 
+            WHERE factura.id_factura = OLD.id_factura;
+
+
+
+
+        ELSE
+            -- si no cambio el tipo sino el monto y era una deduccion
+            # resto el monto anterior y sumo el nuevo al sueldo deduccion
+
+            UPDATE factura
+            SET sueldo_deducido = (sueldo_deducido - OLD.monto) + NEW.monto
+            WHERE factura.id_factura = OLD.id_factura;
+        END IF;
+    ELSEIF OLD.id_factura <> NEW.id_factura THEN
+        SIGNAL SQLSTATE '1USER' SET MESSAGE_TEXT = 'No se puede modificar el id de detalles_factura causara problemas de integridad se recomienda eliminar y crear uno nuevo';
+    END IF;
+
+
+END
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -114,11 +1723,85 @@ CREATE TABLE `detalle_factura` (
 
 CREATE TABLE `escalafon` (
   `id_escalafon` int(11) NOT NULL,
-  `id_trabajador` int(11) NOT NULL,
   `anios_servicio` varchar(45) NOT NULL,
   `escala` varchar(45) NOT NULL,
-  `propuesto` decimal(13,2) NOT NULL
+  `monto` decimal(5,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Volcado de datos para la tabla `escalafon`
+--
+
+INSERT INTO `escalafon` (`id_escalafon`, `anios_servicio`, `escala`, `monto`) VALUES
+(1, '1 - 2', 'I', '4.67'),
+(2, '3 - 5', 'II', '9.33'),
+(3, '6 - 8', 'III', '14.00'),
+(4, '9 - 11', 'IV', '18.66'),
+(5, '12 - 14', 'V', '23.33'),
+(6, '15 - 17', 'VI', '28.00'),
+(7, '18 - 20', 'VII', '32.66'),
+(8, '21 - 23', 'VIII', '37.33'),
+(9, '24 - 26', 'IX', '42.00'),
+(10, '27 - 29', 'X', '46.66'),
+(11, '30 - 32', 'XI', '51.33'),
+(12, '33 En Adelante', 'XII', '55.99');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `factura`
+--
+
+CREATE TABLE `factura` (
+  `id_factura` int(11) NOT NULL,
+  `id_trabajador` int(11) NOT NULL,
+  `fecha` date NOT NULL,
+  `sueldo_base` decimal(12,2) NOT NULL DEFAULT '0.00',
+  `sueldo_integral` decimal(12,2) NOT NULL DEFAULT '0.00',
+  `sueldo_deducido` decimal(12,2) NOT NULL DEFAULT '0.00',
+  `status` tinyint(1) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Volcado de datos para la tabla `factura`
+--
+
+INSERT INTO `factura` (`id_factura`, `id_trabajador`, `fecha`, `sueldo_base`, `sueldo_integral`, `sueldo_deducido`, `status`) VALUES
+(13, 3, '2024-07-01', '0.00', '0.00', '0.00', 0);
+
+--
+-- Disparadores `factura`
+--
+DELIMITER $$
+CREATE TRIGGER `BI_factura` BEFORE INSERT ON `factura` FOR EACH ROW BEGIN
+END
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `hijos`
+--
+
+CREATE TABLE `hijos` (
+  `id_hijo` int(11) NOT NULL,
+  `id_trabajador_madre` int(11) DEFAULT NULL,
+  `id_trabajador_padre` int(11) DEFAULT NULL,
+  `nombre` varchar(60) NOT NULL,
+  `fecha_nacimiento` date NOT NULL,
+  `genero` enum('F','M') NOT NULL,
+  `discapacidad` tinyint(1) NOT NULL,
+  `observacion` varchar(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Volcado de datos para la tabla `hijos`
+--
+
+INSERT INTO `hijos` (`id_hijo`, `id_trabajador_madre`, `id_trabajador_padre`, `nombre`, `fecha_nacimiento`, `genero`, `discapacidad`, `observacion`) VALUES
+(7, 2, 3, 'Anabel Teresa', '2024-05-30', 'F', 0, ''),
+(8, 2, NULL, 'José Luis', '2024-06-06', 'M', 1, 'mocho');
 
 -- --------------------------------------------------------
 
@@ -153,7 +1836,13 @@ INSERT INTO `modulos` (`id_modulos`, `nombre`) VALUES
 (1, 'usuarios'),
 (2, 'areas'),
 (3, 'permisos'),
-(4, 'asistencias');
+(4, 'asistencias'),
+(5, 'hijos'),
+(6, 'bitacora'),
+(7, 'roles'),
+(8, 'sueldo'),
+(9, 'deducciones'),
+(10, 'primas');
 
 -- --------------------------------------------------------
 
@@ -178,7 +1867,36 @@ INSERT INTO `permisos` (`id_rol`, `id_modulos`, `crear`, `modificar`, `eliminar`
 (1, 1, 1, 1, 1, 1),
 (1, 2, 1, 1, 1, 1),
 (1, 3, 1, 1, 1, 1),
-(1, 4, 1, 1, 1, 1);
+(1, 4, 1, 1, 1, 1),
+(1, 5, 1, 1, 1, 1),
+(1, 6, 1, 1, 1, 1),
+(1, 7, 1, 1, 1, 1),
+(1, 8, 1, 1, 1, 1),
+(1, 9, 1, 1, 1, 1),
+(1, 10, 1, 1, 1, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `permisos_trabajador`
+--
+
+CREATE TABLE `permisos_trabajador` (
+  `id_permisos` int(11) NOT NULL,
+  `id_trabajador` int(11) NOT NULL,
+  `tipo_de_permiso` varchar(45) COLLATE utf8_spanish_ci NOT NULL,
+  `descripcion` varchar(45) COLLATE utf8_spanish_ci NOT NULL,
+  `desde` date NOT NULL,
+  `hasta` date NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+
+--
+-- Volcado de datos para la tabla `permisos_trabajador`
+--
+
+INSERT INTO `permisos_trabajador` (`id_permisos`, `id_trabajador`, `tipo_de_permiso`, `descripcion`, `desde`, `hasta`) VALUES
+(13, 2, 'Holaq2121', 'eqweq', '2020-03-03', '2322-03-12'),
+(14, 2, 'tucantumom', 'Jejeje', '2020-04-23', '3554-02-04');
 
 -- --------------------------------------------------------
 
@@ -188,10 +1906,48 @@ INSERT INTO `permisos` (`id_rol`, `id_modulos`, `crear`, `modificar`, `eliminar`
 
 CREATE TABLE `primas_generales` (
   `id_primas_generales` int(11) NOT NULL,
-  `descripcion` varchar(45) NOT NULL,
+  `descripcion` varchar(100) NOT NULL,
   `monto` decimal(13,2) NOT NULL,
-  `porcentaje` tinyint(4) NOT NULL
+  `porcentaje` tinyint(1) NOT NULL,
+  `sector_salud` tinyint(1) NOT NULL,
+  `dedicada` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Volcado de datos para la tabla `primas_generales`
+--
+
+INSERT INTO `primas_generales` (`id_primas_generales`, `descripcion`, `monto`, `porcentaje`, `sector_salud`, `dedicada`) VALUES
+(1, 'Dedicacion A La Actividad Del Sistema Publico Unico Nacional de salud', '10.00', 1, 1, 0),
+(2, 'Compensación Por Evaluación', '25.00', 1, 1, 0),
+(3, 'prueba dedicada', '15.00', 1, 0, 1),
+(4, 'dia del padre', '12.50', 0, 0, 1),
+(5, 'dia de la madre', '12.50', 0, 0, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `primas_hijos`
+--
+
+CREATE TABLE `primas_hijos` (
+  `id_prima_hijos` int(11) NOT NULL,
+  `descripcion` varchar(100) NOT NULL,
+  `menor_edad` tinyint(1) NOT NULL,
+  `porcentaje` tinyint(1) NOT NULL,
+  `monto` decimal(12,2) NOT NULL,
+  `discapacidad` tinyint(1) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Volcado de datos para la tabla `primas_hijos`
+--
+
+INSERT INTO `primas_hijos` (`id_prima_hijos`, `descripcion`, `menor_edad`, `porcentaje`, `monto`, `discapacidad`) VALUES
+(1, 'prima hijos 1', 1, 0, '20.00', 1),
+(2, 'prima hijos 2', 1, 0, '21.00', 0),
+(3, 'prima hijos 3', 0, 0, '22.00', 1),
+(4, 'prima hijos 4', 0, 0, '23.00', 0);
 
 -- --------------------------------------------------------
 
@@ -201,22 +1957,38 @@ CREATE TABLE `primas_generales` (
 
 CREATE TABLE `prima_antiguedad` (
   `id_prima_antiguedad` int(11) NOT NULL,
-  `id_trabajador` int(11) NOT NULL,
   `anios_antiguedad` int(11) NOT NULL,
-  `monto` decimal(13,2) DEFAULT NULL
+  `monto` decimal(5,2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- --------------------------------------------------------
-
 --
--- Estructura de tabla para la tabla `prima_familiar`
+-- Volcado de datos para la tabla `prima_antiguedad`
 --
 
-CREATE TABLE `prima_familiar` (
-  `id_prima_familiar` int(11) NOT NULL,
-  `monto` decimal(13,2) NOT NULL,
-  `descripcion` varchar(45) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+INSERT INTO `prima_antiguedad` (`id_prima_antiguedad`, `anios_antiguedad`, `monto`) VALUES
+(1, 1, '1.00'),
+(2, 2, '2.00'),
+(3, 3, '3.00'),
+(4, 4, '4.00'),
+(5, 5, '5.00'),
+(6, 6, '6.20'),
+(7, 7, '7.40'),
+(8, 8, '8.60'),
+(9, 9, '9.80'),
+(10, 10, '11.00'),
+(11, 11, '12.40'),
+(12, 12, '13.80'),
+(13, 13, '15.20'),
+(14, 14, '16.60'),
+(15, 15, '18.00'),
+(16, 16, '19.60'),
+(17, 17, '21.20'),
+(18, 18, '22.80'),
+(19, 19, '24.40'),
+(20, 20, '26.00'),
+(21, 21, '27.80'),
+(22, 22, '29.60'),
+(23, 23, '30.00');
 
 -- --------------------------------------------------------
 
@@ -235,7 +2007,12 @@ CREATE TABLE `prima_profesionalismo` (
 --
 
 INSERT INTO `prima_profesionalismo` (`id_prima_profesionalismo`, `descripcion`, `incremento`) VALUES
-(1, 'prueva', '0.00');
+(1, 'prueva', '0.00'),
+(2, 'Técnico Superior Universitario', '20.00'),
+(3, 'Profesional', '25.00'),
+(4, 'Especialista', '30.00'),
+(5, 'Maestria', '35.00'),
+(6, 'Doctorado', '40.00');
 
 -- --------------------------------------------------------
 
@@ -273,14 +2050,80 @@ INSERT INTO `rol` (`id_rol`, `descripcion`) VALUES
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla ` sueldo_base`
+-- Estructura de tabla para la tabla `sueldo_base`
 --
 
-CREATE TABLE ` sueldo_base` (
-  `id sueldo_base` int(11) NOT NULL,
+CREATE TABLE `sueldo_base` (
+  `id_sueldo_base` int(11) NOT NULL,
   `id_trabajador` int(11) NOT NULL,
-  ` sueldo_base` decimal(13,2) DEFAULT NULL
+  `sueldo_base` decimal(12,2) DEFAULT NULL,
+  `cargo` varchar(50) NOT NULL,
+  `sector_salud` tinyint(1) NOT NULL,
+  `id_escalafon` int(11) DEFAULT NULL,
+  `tipo_nomina` enum('Alto Nivel','Contratado','Obrero fijo','Comisión de Servicios') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Volcado de datos para la tabla `sueldo_base`
+--
+
+INSERT INTO `sueldo_base` (`id_sueldo_base`, `id_trabajador`, `sueldo_base`, `cargo`, `sector_salud`, `id_escalafon`, `tipo_nomina`) VALUES
+(1, 2, '150.00', 'Enfermero', 1, 1, 'Alto Nivel'),
+(2, 3, '100.00', 'Enfermero', 1, 2, 'Alto Nivel'),
+(12, 4, '250.00', 'Enfermero', 1, 6, 'Contratado');
+
+--
+-- Disparadores `sueldo_base`
+--
+DELIMITER $$
+CREATE TRIGGER `AI_sueldo_base` AFTER INSERT ON `sueldo_base` FOR EACH ROW BEGIN
+
+INSERT INTO sueldo_base_historial 
+VALUES 
+(NEW.id_sueldo_base, NEW.sueldo_base, NEW.cargo, NEW.sector_salud, NEW.tipo_nomina, DEFAULT);
+
+
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `BU_sueldo_base` BEFORE UPDATE ON `sueldo_base` FOR EACH ROW BEGIN
+
+	IF OLD.sueldo_base <> NEW.sueldo_base or OLD.cargo <> NEW.cargo or OLD.sector_salud <> NEW.sector_salud or OLD.id_escalafon <> NEW.id_escalafon or OLD.tipo_nomina <> NEW.tipo_nomina THEN
+
+		insert into sueldo_base_historial values (OLD.id_sueldo_base, NEW.sueldo_base, NEW.cargo, new.sector_salud, new.tipo_nomina, DEFAULT);
+	END IF;
+
+END
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `sueldo_base_historial`
+--
+
+CREATE TABLE `sueldo_base_historial` (
+  `id_sueldo_base` int(11) NOT NULL,
+  `sueldo_base` decimal(12,2) NOT NULL,
+  `cargo` varchar(50) NOT NULL,
+  `sector_salud` tinyint(1) NOT NULL,
+  `tipo_nomina` enum('Alto Nivel','Contratado','Obrero fijo','Comisión de Servicios') NOT NULL,
+  `fecha` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Volcado de datos para la tabla `sueldo_base_historial`
+--
+
+INSERT INTO `sueldo_base_historial` (`id_sueldo_base`, `sueldo_base`, `cargo`, `sector_salud`, `tipo_nomina`, `fecha`) VALUES
+(1, '100.00', 'Enfermero', 1, 'Alto Nivel', '2024-06-27 02:54:29'),
+(2, '100.00', 'Enfermero', 1, 'Alto Nivel', '2024-06-27 17:31:40'),
+(1, '150.00', 'Enfermero', 1, 'Alto Nivel', '2024-06-28 18:32:30'),
+(12, '250.00', 'Enfermero', 1, 'Contratado', '2024-07-06 01:14:42'),
+(2, '100.00', 'Enfermero', 0, 'Alto Nivel', '2024-07-06 06:04:58'),
+(2, '100.00', 'Enfermero', 1, 'Alto Nivel', '2024-07-07 03:22:57');
 
 -- --------------------------------------------------------
 
@@ -301,27 +2144,20 @@ CREATE TABLE `trabajadores` (
   `correo` varchar(45) NOT NULL,
   `clave` varchar(255) NOT NULL,
   `token` varchar(255) NOT NULL,
-  `estado_actividad` tinyint(4) DEFAULT NULL
+  `estado_actividad` tinyint(4) DEFAULT NULL,
+  `comision_servicios` tinyint(1) NOT NULL,
+  `discapacitado` tinyint(1) NOT NULL,
+  `discapacidad` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Volcado de datos para la tabla `trabajadores`
 --
 
-INSERT INTO `trabajadores` (`id_trabajador`, `id_prima_profesionalismo`, `id_rol`, `cedula`, `numero_cuenta`, `creado`, `nombre`, `apellido`, `telefono`, `correo`, `clave`, `token`, `estado_actividad`) VALUES
-(2, 1, 1, 'V-27250544', '00000000000000000000', '2024-06-19', 'Xavier David', 'Suarez Sanchez', '0414-5555555', 'uptaebxavier@gmail.com', '$2y$10$T2pA0Ie3aXtjmUoecSo1C.R6A94Y74A3NX9oe0lEaX8WWJjSTQ6/a', '$2y$10$qBADS1LGMZcpS4AkbPC1FuM3WWXvf3KITv/ALVSbKBwBdXFCFKck2', 1);
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `trabajadores_prima_familiar`
---
-
-CREATE TABLE `trabajadores_prima_familiar` (
-  `id_trabajadores_prima_familiar` int(11) NOT NULL,
-  `id_trabajador` int(11) NOT NULL,
-  `id_prima_familiar` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+INSERT INTO `trabajadores` (`id_trabajador`, `id_prima_profesionalismo`, `id_rol`, `cedula`, `numero_cuenta`, `creado`, `nombre`, `apellido`, `telefono`, `correo`, `clave`, `token`, `estado_actividad`, `comision_servicios`, `discapacitado`, `discapacidad`) VALUES
+(2, 2, 1, 'V-27250544', '00000000000000000000', '2020-06-19', 'Xavier David', 'Suarez Sanchez', '0414-5555555', 'uptaebxavier@gmail.com', '$2y$10$RMrtnT5gpHIhIKQDfAThFerj/4yU.S3PABZj.AxnALU2yFAsyrbjC', '$2y$10$lybTKCEegzAt7NqLA/I30e1stQsphoxMgO6cl/m2zaUnrh0kOJv9i', 1, 0, 0, ''),
+(3, 5, 1, 'V-2725054', '00000000000000000000', '2024-06-27', 'Anabel Teresa', 'Alberto Nuñes', '0414-5555555', 'david40ene@hotmail.com', '$2y$10$Mh5AEfPtMwS4x7cQq7mGX.nEWmSEJyVIFPMgXIWycKpZHGh/Cw1MO', '1', 1, 0, 0, ''),
+(4, 6, 1, 'V-12434091', '00000000000000000000', '2024-06-26', 'Valeria Valentina', 'Camacaro Sanchez', '0414-5555555', 'xavier@gmail.com', '$2y$10$TSJZitcQrUt2BiYRNw1Cmu9O4I2zFYIsQINVQweInmJzH1POHZx8K', '1', 1, 0, 0, '');
 
 -- --------------------------------------------------------
 
@@ -344,8 +2180,18 @@ CREATE TABLE `trabajador_area` (
 CREATE TABLE `trabajador_deducciones` (
   `id_trabajador_deducciones` int(11) NOT NULL,
   `id_deducciones` int(11) NOT NULL,
-  `id_trabajador` int(11) NOT NULL
+  `id_trabajador` int(11) NOT NULL,
+  `mensual` tinyint(1) NOT NULL,
+  `status` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Volcado de datos para la tabla `trabajador_deducciones`
+--
+
+INSERT INTO `trabajador_deducciones` (`id_trabajador_deducciones`, `id_deducciones`, `id_trabajador`, `mensual`, `status`) VALUES
+(1, 2, 2, 1, 1),
+(2, 2, 4, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -355,9 +2201,21 @@ CREATE TABLE `trabajador_deducciones` (
 
 CREATE TABLE `trabajador_prima_general` (
   `id_trabajador_prima_general` int(11) NOT NULL,
-  `iid_primas_generales` int(11) NOT NULL,
-  `iid_trabajador` int(11) NOT NULL
+  `id_primas_generales` int(11) NOT NULL,
+  `id_trabajador` int(11) NOT NULL,
+  `mensual` tinyint(1) NOT NULL,
+  `status` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Volcado de datos para la tabla `trabajador_prima_general`
+--
+
+INSERT INTO `trabajador_prima_general` (`id_trabajador_prima_general`, `id_primas_generales`, `id_trabajador`, `mensual`, `status`) VALUES
+(1, 3, 2, 1, 1),
+(2, 4, 2, 0, 1),
+(3, 4, 2, 0, 0),
+(4, 5, 3, 0, 1);
 
 -- --------------------------------------------------------
 
@@ -405,18 +2263,31 @@ ALTER TABLE `deducciones`
   ADD PRIMARY KEY (`id_deducciones`);
 
 --
--- Indices de la tabla `detalle_factura`
+-- Indices de la tabla `detalles_factura`
 --
-ALTER TABLE `detalle_factura`
-  ADD PRIMARY KEY (`id_detalle_factura`),
-  ADD KEY `fk_detalle_factura_Trabajadores1_idx` (`id_trabajador`);
+ALTER TABLE `detalles_factura`
+  ADD KEY `id_factura` (`id_factura`);
 
 --
 -- Indices de la tabla `escalafon`
 --
 ALTER TABLE `escalafon`
-  ADD PRIMARY KEY (`id_escalafon`),
-  ADD KEY `fk_escalafon_Trabajadores1_idx` (`id_trabajador`);
+  ADD PRIMARY KEY (`id_escalafon`);
+
+--
+-- Indices de la tabla `factura`
+--
+ALTER TABLE `factura`
+  ADD PRIMARY KEY (`id_factura`),
+  ADD KEY `id_trabajador` (`id_trabajador`);
+
+--
+-- Indices de la tabla `hijos`
+--
+ALTER TABLE `hijos`
+  ADD PRIMARY KEY (`id_hijo`),
+  ADD KEY `id_trabajador_madre` (`id_trabajador_madre`),
+  ADD KEY `id_trabajador_padre` (`id_trabajador_padre`);
 
 --
 -- Indices de la tabla `liquidacion`
@@ -440,23 +2311,30 @@ ALTER TABLE `permisos`
   ADD KEY `fk_Permisos_modulos1_idx` (`id_modulos`);
 
 --
+-- Indices de la tabla `permisos_trabajador`
+--
+ALTER TABLE `permisos_trabajador`
+  ADD PRIMARY KEY (`id_permisos`),
+  ADD KEY `fk_Permisos_trabajadores1_idx` (`id_trabajador`);
+
+--
 -- Indices de la tabla `primas_generales`
 --
 ALTER TABLE `primas_generales`
   ADD PRIMARY KEY (`id_primas_generales`);
 
 --
+-- Indices de la tabla `primas_hijos`
+--
+ALTER TABLE `primas_hijos`
+  ADD PRIMARY KEY (`id_prima_hijos`);
+
+--
 -- Indices de la tabla `prima_antiguedad`
 --
 ALTER TABLE `prima_antiguedad`
   ADD PRIMARY KEY (`id_prima_antiguedad`),
-  ADD KEY `fk_prima_antiguedad_Trabajadores1_idx` (`id_trabajador`);
-
---
--- Indices de la tabla `prima_familiar`
---
-ALTER TABLE `prima_familiar`
-  ADD PRIMARY KEY (`id_prima_familiar`);
+  ADD UNIQUE KEY `anios_antiguedad` (`anios_antiguedad`);
 
 --
 -- Indices de la tabla `prima_profesionalismo`
@@ -478,11 +2356,19 @@ ALTER TABLE `rol`
   ADD PRIMARY KEY (`id_rol`);
 
 --
--- Indices de la tabla ` sueldo_base`
+-- Indices de la tabla `sueldo_base`
 --
-ALTER TABLE ` sueldo_base`
-  ADD PRIMARY KEY (`id sueldo_base`),
-  ADD KEY `fk_ sueldo_base_Trabajadores1_idx` (`id_trabajador`);
+ALTER TABLE `sueldo_base`
+  ADD PRIMARY KEY (`id_sueldo_base`),
+  ADD UNIQUE KEY `id_trabajador` (`id_trabajador`),
+  ADD KEY `fk_ sueldo_base_Trabajadores1_idx` (`id_trabajador`),
+  ADD KEY `id_escalafon` (`id_escalafon`);
+
+--
+-- Indices de la tabla `sueldo_base_historial`
+--
+ALTER TABLE `sueldo_base_historial`
+  ADD KEY `id_sueldo_base` (`id_sueldo_base`);
 
 --
 -- Indices de la tabla `trabajadores`
@@ -492,14 +2378,6 @@ ALTER TABLE `trabajadores`
   ADD UNIQUE KEY `cedula` (`cedula`),
   ADD KEY `fk_Trabajadores_prima_profesionalismo1_idx` (`id_prima_profesionalismo`),
   ADD KEY `fk_Trabajadores_Rol1_idx` (`id_rol`);
-
---
--- Indices de la tabla `trabajadores_prima_familiar`
---
-ALTER TABLE `trabajadores_prima_familiar`
-  ADD PRIMARY KEY (`id_trabajadores_prima_familiar`),
-  ADD KEY `fk_trabajadores_prima_beneficios_familiares_Trabajadores1_idx` (`id_trabajador`),
-  ADD KEY `fk_trabajadores_prima_beneficios_familiares_prima_beneficio_idx` (`id_prima_familiar`);
 
 --
 -- Indices de la tabla `trabajador_area`
@@ -522,8 +2400,8 @@ ALTER TABLE `trabajador_deducciones`
 --
 ALTER TABLE `trabajador_prima_general`
   ADD PRIMARY KEY (`id_trabajador_prima_general`),
-  ADD KEY `fk_trabajador_prima_general_primas_generales1_idx` (`iid_primas_generales`),
-  ADD KEY `fk_trabajador_prima_general_Trabajadores1_idx` (`iid_trabajador`);
+  ADD KEY `fk_trabajador_prima_general_primas_generales1_idx` (`id_primas_generales`),
+  ADD KEY `fk_trabajador_prima_general_Trabajadores1_idx` (`id_trabajador`);
 
 --
 -- Indices de la tabla `vacaciones`
@@ -552,19 +2430,25 @@ ALTER TABLE `asistencias`
 -- AUTO_INCREMENT de la tabla `deducciones`
 --
 ALTER TABLE `deducciones`
-  MODIFY `id_deducciones` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de la tabla `detalle_factura`
---
-ALTER TABLE `detalle_factura`
-  MODIFY `id_detalle_factura` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_deducciones` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `escalafon`
 --
 ALTER TABLE `escalafon`
-  MODIFY `id_escalafon` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_escalafon` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+
+--
+-- AUTO_INCREMENT de la tabla `factura`
+--
+ALTER TABLE `factura`
+  MODIFY `id_factura` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+
+--
+-- AUTO_INCREMENT de la tabla `hijos`
+--
+ALTER TABLE `hijos`
+  MODIFY `id_hijo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `liquidacion`
@@ -576,31 +2460,37 @@ ALTER TABLE `liquidacion`
 -- AUTO_INCREMENT de la tabla `modulos`
 --
 ALTER TABLE `modulos`
-  MODIFY `id_modulos` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id_modulos` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
+-- AUTO_INCREMENT de la tabla `permisos_trabajador`
+--
+ALTER TABLE `permisos_trabajador`
+  MODIFY `id_permisos` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT de la tabla `primas_generales`
 --
 ALTER TABLE `primas_generales`
-  MODIFY `id_primas_generales` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_primas_generales` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT de la tabla `primas_hijos`
+--
+ALTER TABLE `primas_hijos`
+  MODIFY `id_prima_hijos` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `prima_antiguedad`
 --
 ALTER TABLE `prima_antiguedad`
-  MODIFY `id_prima_antiguedad` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de la tabla `prima_familiar`
---
-ALTER TABLE `prima_familiar`
-  MODIFY `id_prima_familiar` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_prima_antiguedad` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT de la tabla `prima_profesionalismo`
 --
 ALTER TABLE `prima_profesionalismo`
-  MODIFY `id_prima_profesionalismo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_prima_profesionalismo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de la tabla `reposo`
@@ -615,22 +2505,16 @@ ALTER TABLE `rol`
   MODIFY `id_rol` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT de la tabla ` sueldo_base`
+-- AUTO_INCREMENT de la tabla `sueldo_base`
 --
-ALTER TABLE ` sueldo_base`
-  MODIFY `id sueldo_base` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `sueldo_base`
+  MODIFY `id_sueldo_base` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT de la tabla `trabajadores`
 --
 ALTER TABLE `trabajadores`
-  MODIFY `id_trabajador` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
--- AUTO_INCREMENT de la tabla `trabajadores_prima_familiar`
---
-ALTER TABLE `trabajadores_prima_familiar`
-  MODIFY `id_trabajadores_prima_familiar` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_trabajador` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `trabajador_area`
@@ -642,13 +2526,13 @@ ALTER TABLE `trabajador_area`
 -- AUTO_INCREMENT de la tabla `trabajador_deducciones`
 --
 ALTER TABLE `trabajador_deducciones`
-  MODIFY `id_trabajador_deducciones` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_trabajador_deducciones` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `trabajador_prima_general`
 --
 ALTER TABLE `trabajador_prima_general`
-  MODIFY `id_trabajador_prima_general` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_trabajador_prima_general` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `vacaciones`
@@ -673,16 +2557,23 @@ ALTER TABLE `bitacora`
   ADD CONSTRAINT `bitacora_ibfk_1` FOREIGN KEY (`id_trabajador`) REFERENCES `trabajadores` (`id_trabajador`);
 
 --
--- Filtros para la tabla `detalle_factura`
+-- Filtros para la tabla `detalles_factura`
 --
-ALTER TABLE `detalle_factura`
-  ADD CONSTRAINT `fk_detalle_factura_Trabajadores1` FOREIGN KEY (`id_trabajador`) REFERENCES `trabajadores` (`id_trabajador`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE `detalles_factura`
+  ADD CONSTRAINT `detalles_factura_ibfk_1` FOREIGN KEY (`id_factura`) REFERENCES `factura` (`id_factura`) ON DELETE CASCADE;
 
 --
--- Filtros para la tabla `escalafon`
+-- Filtros para la tabla `factura`
 --
-ALTER TABLE `escalafon`
-  ADD CONSTRAINT `fk_escalafon_Trabajadores1` FOREIGN KEY (`id_trabajador`) REFERENCES `trabajadores` (`id_trabajador`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE `factura`
+  ADD CONSTRAINT `factura_ibfk_1` FOREIGN KEY (`id_trabajador`) REFERENCES `trabajadores` (`id_trabajador`);
+
+--
+-- Filtros para la tabla `hijos`
+--
+ALTER TABLE `hijos`
+  ADD CONSTRAINT `hijos_ibfk_1` FOREIGN KEY (`id_trabajador_madre`) REFERENCES `trabajadores` (`id_trabajador`),
+  ADD CONSTRAINT `hijos_ibfk_2` FOREIGN KEY (`id_trabajador_padre`) REFERENCES `trabajadores` (`id_trabajador`);
 
 --
 -- Filtros para la tabla `liquidacion`
@@ -698,10 +2589,10 @@ ALTER TABLE `permisos`
   ADD CONSTRAINT `fk_Permisos_modulos1` FOREIGN KEY (`id_modulos`) REFERENCES `modulos` (`id_modulos`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
--- Filtros para la tabla `prima_antiguedad`
+-- Filtros para la tabla `permisos_trabajador`
 --
-ALTER TABLE `prima_antiguedad`
-  ADD CONSTRAINT `fk_prima_antiguedad_Trabajadores1` FOREIGN KEY (`id_trabajador`) REFERENCES `trabajadores` (`id_trabajador`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE `permisos_trabajador`
+  ADD CONSTRAINT `fk_Permisos_trabajadores1` FOREIGN KEY (`id_trabajador`) REFERENCES `trabajadores` (`id_trabajador`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
 -- Filtros para la tabla `reposo`
@@ -710,10 +2601,17 @@ ALTER TABLE `reposo`
   ADD CONSTRAINT `fk_Reposo_Trabajadores1` FOREIGN KEY (`id_trabajador`) REFERENCES `trabajadores` (`id_trabajador`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
--- Filtros para la tabla ` sueldo_base`
+-- Filtros para la tabla `sueldo_base`
 --
-ALTER TABLE ` sueldo_base`
-  ADD CONSTRAINT `fk_ sueldo_base_Trabajadores1` FOREIGN KEY (`id_trabajador`) REFERENCES `trabajadores` (`id_trabajador`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE `sueldo_base`
+  ADD CONSTRAINT `fk_ sueldo_base_Trabajadores1` FOREIGN KEY (`id_trabajador`) REFERENCES `trabajadores` (`id_trabajador`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `sueldo_base_ibfk_1` FOREIGN KEY (`id_escalafon`) REFERENCES `escalafon` (`id_escalafon`);
+
+--
+-- Filtros para la tabla `sueldo_base_historial`
+--
+ALTER TABLE `sueldo_base_historial`
+  ADD CONSTRAINT `sueldo_base_historial_ibfk_1` FOREIGN KEY (`id_sueldo_base`) REFERENCES `sueldo_base` (`id_sueldo_base`) ON DELETE CASCADE;
 
 --
 -- Filtros para la tabla `trabajadores`
@@ -721,13 +2619,6 @@ ALTER TABLE ` sueldo_base`
 ALTER TABLE `trabajadores`
   ADD CONSTRAINT `fk_Trabajadores_Rol1` FOREIGN KEY (`id_rol`) REFERENCES `rol` (`id_rol`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_Trabajadores_prima_profesionalismo1` FOREIGN KEY (`id_prima_profesionalismo`) REFERENCES `prima_profesionalismo` (`id_prima_profesionalismo`) ON DELETE NO ACTION ON UPDATE NO ACTION;
-
---
--- Filtros para la tabla `trabajadores_prima_familiar`
---
-ALTER TABLE `trabajadores_prima_familiar`
-  ADD CONSTRAINT `fk_trabajadores_prima_beneficios_familiares_Trabajadores1` FOREIGN KEY (`id_trabajador`) REFERENCES `trabajadores` (`id_trabajador`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `fk_trabajadores_prima_beneficios_familiares_prima_beneficios_1` FOREIGN KEY (`id_prima_familiar`) REFERENCES `prima_familiar` (`id_prima_familiar`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
 -- Filtros para la tabla `trabajador_area`
@@ -747,8 +2638,8 @@ ALTER TABLE `trabajador_deducciones`
 -- Filtros para la tabla `trabajador_prima_general`
 --
 ALTER TABLE `trabajador_prima_general`
-  ADD CONSTRAINT `fk_trabajador_prima_general_Trabajadores1` FOREIGN KEY (`iid_trabajador`) REFERENCES `trabajadores` (`id_trabajador`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `fk_trabajador_prima_general_primas_generales1` FOREIGN KEY (`iid_primas_generales`) REFERENCES `primas_generales` (`id_primas_generales`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+  ADD CONSTRAINT `fk_trabajador_prima_general_Trabajadores1` FOREIGN KEY (`id_trabajador`) REFERENCES `trabajadores` (`id_trabajador`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_trabajador_prima_general_primas_generales1` FOREIGN KEY (`id_primas_generales`) REFERENCES `primas_generales` (`id_primas_generales`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
 -- Filtros para la tabla `vacaciones`

@@ -21,7 +21,10 @@
 						$_POST["pass"],
 						$_POST["numero_cuenta"],
 						$_POST["nivel_educativo"],
-						$_POST["fecha_ingreso"]
+						$_POST["fecha_ingreso"],
+						$_POST["comision_servicios"],
+						(isset($_POST["discapacidad"])?true:false),
+						(isset($_POST["discapacidad_info"])?$_POST["discapacidad_info"]:"")
 					);
 					echo json_encode($resp);
 				}
@@ -61,6 +64,13 @@
 			}
 			else if($accion == "modificar_usuario"){
 				if($permisos["usuarios"]["modificar"]){
+					if (isset($_POST["discapacidad"])) {
+						$_POST["discapacidad"] = true;
+					}
+					else{
+						$_POST["discapacidad"] = false;
+						$_POST["discapacidad_info"] = null;
+					}
 					echo json_encode( $cl->modificar_usuario_s(
 						$_POST["id"],
 						$_POST["cedula"],
@@ -72,7 +82,10 @@
 						$_POST["pass"],
 						$_POST["numero_cuenta"],
 						$_POST["nivel_educativo"],
-						$_POST["fecha_ingreso"]
+						$_POST["fecha_ingreso"],
+						$_POST["comision_servicios"],
+						$_POST["discapacidad"],
+						$_POST["discapacidad_info"]
 					) );
 				}
 				else{
