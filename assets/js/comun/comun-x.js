@@ -831,7 +831,7 @@ function rowsEventActions(tbody,func){
 
 document.addEventListener("DOMContentLoaded", function(){
 
-	if(false){
+	if(true){
 		if(document.querySelector("#page-top > #wrapper:first-child")){
 			
 			document.body.classList.add("dark-mode");

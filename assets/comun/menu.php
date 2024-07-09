@@ -40,6 +40,7 @@
         <div class="bg-white py-2 collapse-inner rounded">
             <!-- <a class="collapse-item active" href="#">Personal</a> -->
             <a class="collapse-item" href="?p=trabajadores">Trabajadores</a>
+            <a class="collapse-item" href="?p=trabajadores_user">Trabajadores</a>
             <!-- <a class="collapse-item" href="?p=administrar_empleado">Trabajadores</a> -->
             <a class="collapse-item" href="?p=hijos">Hijos</a>
 
