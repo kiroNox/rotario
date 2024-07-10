@@ -42,7 +42,7 @@ if (is_file("vista/" . $pagina . ".php")) {
 
                 // eliminar
             case "destroy":
-                $respuesta = $claseAreas->eliminar_area($_POST["id"]);
+               $respuesta = $claseAreas->eliminar_area($_POST["id"]);
                 echo json_encode($respuesta);
                 break;
                     //actualizar
@@ -57,7 +57,12 @@ if (is_file("vista/" . $pagina . ".php")) {
                 // listar
             case "list":
                 $areas = $claseAreas->listar_areas();
-                echo json_encode($areas);
+                echo json_encode([
+                    'estado' => 200,
+                    'datos' => $areas,
+                    'mensaje' => 'Áreas listadas correctamente.'
+                ]);
+                break;
             default:
                 echo json_encode([
                     'resultado' => 'error',
