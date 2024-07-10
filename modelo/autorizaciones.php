@@ -319,7 +319,7 @@ class Autorizaciones extends Conexion
 		$datos = json_decode($datos);
 
 		try {
-			if($rol == '1' and false){ //TODO quitar eso
+			if($rol == '1' ){ //TODO quitar eso
 				throw new Exception("No se pueden cambiar los permisos del Administrador", 1);
 			}
 			$this->validar_conexion($this->con);

@@ -29,5 +29,6 @@
 </body>
 
 <script src="assets/js/calendario.js"></script>
+<script src="assets/js/sb-admin-2.min.js"></script>
 
 </html>

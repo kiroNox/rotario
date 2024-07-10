@@ -59,7 +59,7 @@
 											<form action="" method="POST" onsubmit="return false" id="f1">
 												<div class="row">
 													<div class="col-lg-4 col-12">
-														<label for="cedula">Ingrese la cedula del nuevo usuario</label>
+														<label for="cedula">Ingrese la cedula del nuevo trabajador</label>
 														<input type="text" class="form-control" id="cedula" name="cedula" data-span="invalid-span-cedula" value="V-2725051">
 														<span id="invalid-span-cedula" class="invalid-span text-danger"></span>
 													</div>

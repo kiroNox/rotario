@@ -39,9 +39,9 @@
         data-parent="#accordionSidebar">
         <div class="bg-white py-2 collapse-inner rounded">
             <!-- <a class="collapse-item active" href="#">Personal</a> -->
-            <a class="collapse-item" href="?p=trabajadores">Trabajadores</a>
+            <a class="collapse-item" href="?p=trabajadores_user">Gestionar Trabajadores</a>
             <!-- <a class="collapse-item" href="?p=administrar_empleado">Trabajadores</a> -->
-            <a class="collapse-item" href="?p=hijos">Hijos</a>
+            <a class="collapse-item" href="?p=hijos">Gestionar Hijos</a>
 
         </div>
     </div>
@@ -52,16 +52,16 @@
     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
         aria-expanded="true" aria-controls="collapseUtilities">
         <i class="fas fa-fw fa-wrench"></i>
-        <span>Administracion</span>
+        <span>Administración</span>
     </a>
     <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
         data-parent="#accordionSidebar">
         <div class="bg-white py-2 collapse-inner rounded">
-            <a class="collapse-item" href="#">Permisos</a>
-            <a class="collapse-item" href="#">Reposos</a>
-            <a class="collapse-item" href="#">Vacaciones</a>
-            <a class="collapse-item" href="#">Nivel educativo</a>
-            <a class="collapse-item" href="#">Liquidación</a>
+            <a class="collapse-item" href="?p=administrar_empleado">Administrar Tiempo</a>
+           <!--  <a class="collapse-item" href="#">Reposos</a>
+            <a class="collapse-item" href="#">Vacaciones</a> -->
+            <a class="collapse-item" href="#">Gestionar Nivel Educativo</a>
+            
         </div>
     </div>
 </li>
@@ -99,10 +99,10 @@
     </a>
     <div id="collapseNomina" class="collapse" aria-labelledby="headingNomina" data-parent="#accordionSidebar">
         <div class="bg-white py-2 collapse-inner rounded">
-            <a class="collapse-item" href="?p=sueldo">Sueldos</a>
-            <a class="collapse-item" href="?p=primas">Primas</a>
-            <a class="collapse-item" href="?p=deducciones">Deducciones</a>
-            <a class="collapse-item" href="#">Asignación tiempo</a>
+            <a class="collapse-item" href="?p=sueldo">Gestionar Sueldos</a>
+            <a class="collapse-item" href="?p=primas">Gestionar Primas</a>
+            <a class="collapse-item" href="?p=deducciones">Gestionar Deducciones</a>
+            <a class="collapse-item" href="#">Gestionar Liquidación</a>
         </div>
     </div>
 </li>
@@ -112,11 +112,11 @@
     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseFacturas"
         aria-expanded="true" aria-controls="collapseFacturas">
         <i class="fas fa-fw fa-folder"></i>
-        <span>Gestión de pagos</span>
+        <span>Pagos</span>
     </a>
     <div id="collapseFacturas" class="collapse" aria-labelledby="headingPagos" data-parent="#accordionSidebar">
         <div class="bg-white py-2 collapse-inner rounded">
-            <a class="collapse-item" href="?p=facturar">Facturar</a>
+            <a class="collapse-item" href="?p=facturar">Calcular Pagos</a>
             
         </div>
     </div>

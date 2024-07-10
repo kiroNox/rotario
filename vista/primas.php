@@ -424,18 +424,18 @@
 
 	<script>
 
-		$("#modal_registrar_prima_hijos").modal("show");
+	//	$("#modal_registrar_prima_hijos").modal("show");
 
 
 		// primas generales **************************************************
 
 			// load_primas_generales();
 
-			 load_primas_hijos();
+			//	 load_primas_hijos();
 			// load_primas_antiguedad();
 
 			// load_primas_escalafon();
-			//load_all_primas();
+			load_all_primas();
 
 		// funciones**************************************************
 
