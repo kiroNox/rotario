@@ -624,6 +624,8 @@ class Usuarios extends Conexion
 		return $this->correo;
 	}
 	PUBLIC function set_correo($value){
+
+		$value = Validaciones::removeWhiteSpace($value);
 		$this->correo = $value;
 	}
 	PUBLIC function get_id_rol(){
