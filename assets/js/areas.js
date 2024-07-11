@@ -19,7 +19,9 @@ $(document).ready(function () {
           if (callback) {
             callback(respuesta);
           } else {
-            alert("Éxito", exitoMensaje, "success");
+            muestraMensaje("Éxito", exitoMensaje, "s");
+            //cargar_areas();
+            //$("#exampleModalCenter").modal("hide");
             console.log(respuesta);
           }
         } catch (error) {
@@ -73,10 +75,10 @@ $(document).ready(function () {
       (respuesta) => {
         let lee = JSON.parse(respuesta);
         console.log(lee);
-        //if ($.fn.DataTable.isDataTable("#tabla_areas")) {
-        //  $("#tabla_areas").DataTable().destroy();
-        //}
-        //$("#tbody_areas").html("");
+        if ($.fn.DataTable.isDataTable("#tabla_areas")) {
+          $("#tabla_areas").DataTable().destroy();
+        }
+        $("#tbody_areas").html("");
 
         if (!$.fn.DataTable.isDataTable("#tabla_areas")) {
           $("#tabla_areas").DataTable({
@@ -102,6 +104,7 @@ $(document).ready(function () {
                   { data: "id_area" },
                   { data: "descripcion" },
                   { data: "codigo" },
+                  { data: "extra" },
               ],
               data: lee.datos,
 
@@ -142,6 +145,11 @@ $(document).ready(function () {
         
       });
   }
+
+  $('#exampleModalCenter').on('hidden.bs.modal', function (e) {
+    document.getElementById('descripcion').value = "";
+    document.getElementById('codigo').value = "";
+  })
 
   cargar_areas();
 });

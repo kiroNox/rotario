@@ -20,7 +20,7 @@ class Areas extends Conexion
     //Metodos
     PUBLIC function listar_areas(){
             try {
-                $consulta = $this->con->prepare("SELECT * FROM areas");
+                $consulta = $this->con->prepare("SELECT *, NULL as extra FROM areas");
                 $consulta->execute();
                 return $consulta->fetchAll(PDO::FETCH_ASSOC);
             } catch (Exception $e) {
