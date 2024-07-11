@@ -2,9 +2,10 @@
 if (is_file("vista/" . $pagina . ".php")) {
     $claseAreas = new Areas;
 
+    //comprobamos si tenemos solicitudes
     if (!empty($_POST)) {
         $accion = $_POST["accion"];
-
+        // comprobamos los permisos
         if (!isset($permisos["usuarios"]["crear"]) && $permisos["usuarios"]["crear"] == "0") {
             echo json_encode([
                 'resultado' => 'error',
@@ -12,7 +13,7 @@ if (is_file("vista/" . $pagina . ".php")) {
                 'mensaje' => 'No tienes permisos para realizar esta acción.'
             ]);
         }
-
+        //segun el caso que llegue actuamos 
         switch ($accion) {
 
             case "index":
@@ -39,12 +40,12 @@ if (is_file("vista/" . $pagina . ".php")) {
                 }
                 break;
 
-
+                // eliminar
             case "destroy":
-                $respuesta = $claseAreas->eliminar_area($_POST["id"]);
+               $respuesta = $claseAreas->eliminar_area($_POST["id"]);
                 echo json_encode($respuesta);
                 break;
-
+                    //actualizar
             case "update":
                 $respuesta = $claseAreas->actualizar_area(
                     $_POST["id"],
@@ -53,10 +54,15 @@ if (is_file("vista/" . $pagina . ".php")) {
                 );
                 echo json_encode($respuesta);
                 break;
-
+                // listar
             case "list":
                 $areas = $claseAreas->listar_areas();
-                echo json_encode($areas);
+                echo json_encode([
+                    'estado' => 200,
+                    'datos' => $areas,
+                    'mensaje' => 'Áreas listadas correctamente.'
+                ]);
+                break;
             default:
                 echo json_encode([
                     'resultado' => 'error',
@@ -79,4 +85,4 @@ if (is_file("vista/" . $pagina . ".php")) {
 } else {
     require_once ("vista/404.php");
 }
-?>
+

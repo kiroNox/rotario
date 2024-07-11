@@ -73,22 +73,28 @@
 
 
                     <!-- DataTales Example -->
-								<div >
-                                <table class="table table-bordered table-middle" id="tabla_areas">
-                                    <thead class="thead-dark w-100">
+                    <<div class="card">
+                        <div class="card-header">Lista de áreas</div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered scroll-bar-style table-hover" id="tabla_areas">
+                                    <thead class="bg-primary text-light">
                                         <tr>
                                             <th>ID</th>
-                                            <th>Descripcion</th>
-                                            <th>Codigo</th>
-                                            </tr>
+                                            <th>Código</th>
+                                            <th>Descripción</th>
+                                            <th>Opciones</th>
+                                        </tr>
                                     </thead>
-                                    <tbody id="tbody_areas" class="align-middle">
+                                    <tbody class="table-cell-aling-middle" id="tbody_areas">
                                         <tr>
-                                            <td colspan="9" class="text-center"> No se encontraron areas registradas </td>
+                                            <td colspan="3" class="text-center">Cargando</td>
                                         </tr>
                                     </tbody>
                                 </table>
-                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <?php require_once ("assets/comun/footer.php"); ?>
@@ -129,7 +135,7 @@
     </div>
 </body>
 
-<script src="./assests/js/comun/herramientas.js"></script>
+
 <script src="./vendor/jquery/jquery.min.js"></script>
 <script src="./vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script src="./vendor/bootstrap/js/bootstrap.js"></script>
