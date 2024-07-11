@@ -273,6 +273,13 @@
 
 											
 										}
+										else if (lee.resultado == 'modificar_prima_hijo'){
+											muestraMensaje("Éxito", "La prima por hijos fue modificada exitosa mente", "s");
+
+											cargar_prima_hijos(lee.mensaje);
+
+											$("#modal_registrar_prima_hijos").modal("hide");
+										}
 										else if (lee.resultado == 'is-invalid'){
 											muestraMensaje(lee.titulo, lee.mensaje,"error");
 										}

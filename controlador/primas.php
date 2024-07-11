@@ -81,6 +81,24 @@
 				}
 			}
 
+			else if($accion == "modificar_prima_hijo"){
+				if(isset($permisos["primas"]["modificar"]) and $permisos["primas"]["modificar"] == "1"){
+
+					echo json_encode( $cl->modificar_prima_hijo_s(
+						$_POST["id"]
+						,$_POST["hijo_descripcion"]
+						,$_POST["hijo_monto"]
+						,$_POST["hijo_menor"]
+						,$_POST["hijo_discapacidad"]
+						,$_POST["hijo_porcentaje"]
+					) );
+				}
+				else{
+					$cl->no_permision_msg();
+				}
+			}
+			
+
 			
 
 

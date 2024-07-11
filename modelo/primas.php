@@ -231,6 +231,20 @@ class Primas extends Conexion
 		return $this->get_prima_hijos();
 	}
 
+	PUBLIC function modificar_prima_hijo_s($id, $descripcion ,$monto ,$hijo_menor ,$hijo_discapacidad ,$porcentaje)
+	{
+		$this->set_id($id);
+		$this->set_descripcion($descripcion);
+		$this->set_monto($monto);
+		$this->set_hijo_menor($hijo_menor);
+		$this->set_hijo_discapacidad($hijo_discapacidad);
+		$this->set_porcentaje($porcentaje);
+
+		return $this->modificar_prima_hijo();
+	}
+
+
+
 	PRIVATE function get_prima_hijos(){
 		try {
 			$this->validar_conexion($this->con);
@@ -381,6 +395,76 @@ class Primas extends Conexion
 		return $r;
 	}
 
+	PRIVATE function modificar_prima_hijo(){
+
+		try {
+			$this->validar_conexion($this->con);
+			$this->con->beginTransaction();
+
+
+			// TODO Validaciones
+			
+			$consulta = $this->con->prepare("SELECT * FROM primas_hijos WHERE id_prima_hijos = ?;");
+
+			$consulta->execute([$this->id]);
+
+			if(!$consulta->fetch()){
+				throw new Exception("La prima no existe o fue eliminada", 1);
+			}
+
+			$consulta = $this->con->prepare("UPDATE `primas_hijos` SET `descripcion`= :descripcion,`menor_edad`= :menor_edad,`porcentaje`= :porcentaje,`monto`= :monto,`discapacidad`= :discapacidad WHERE id_prima_hijos = :id");
+
+
+			$consulta->bindValue(":id",$this->id);
+			$consulta->bindValue(":descripcion",$this->descripcion);
+			$consulta->bindValue(":menor_edad",$this->hijo_menor);
+			$consulta->bindValue(":porcentaje",$this->porcentaje);
+			$consulta->bindValue(":monto",$this->monto);
+			$consulta->bindValue(":discapacidad",$this->hijo_discapacidad);
+
+			$consulta->execute();
+
+
+			$hijos = $this->load_primas_hijos();
+
+			if($hijos['resultado'] != "load_primas_hijos"){throw new Exception($hijos['mensaje'], 1); }
+
+			Bitacora::reg($this->con,"Modificó la prima por hijo ($this->descripcion)");
+
+
+			
+			$r['resultado'] = 'modificar_prima_hijo';
+			$r["mensaje"] = $hijos["mensaje"];
+			$this->con->commit();
+		
+		} catch (Validaciones $e){
+			if($this->con instanceof PDO){
+				if($this->con->inTransaction()){
+					$this->con->rollBack();
+				}
+			}
+			$r['resultado'] = 'is-invalid';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+			$r['console'] =  $e->getMessage().": Code : ".$e->getLine();
+		} catch (Exception $e) {
+			if($this->con instanceof PDO){
+				if($this->con->inTransaction()){
+					$this->con->rollBack();
+				}
+			}
+		
+			$r['resultado'] = 'error';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+			//$r['mensaje'] =  $e->getMessage().": LINE : ".$e->getLine();
+		}
+		finally{
+			//$this->con = null;
+		}
+		return $r;
+
+	}
 
 
 
