@@ -3,8 +3,8 @@
 class Primas extends Conexion
 {
 	
-	PRIVATE $id, $descripcion ,$monto ,$hijo_menor ,$hijo_discapacidad ,$porcentaje;
-
+	PRIVATE $con, $id, $descripcion ,$monto ,$hijo_menor ,$hijo_discapacidad ,$porcentaje;
+	PRIVATE $year;
 
 	function __construct($con = '')
 	{
@@ -243,6 +243,36 @@ class Primas extends Conexion
 		return $this->modificar_prima_hijo();
 	}
 
+	PUBLIC function registrar_prima_antiguedad_s($year,$monto){
+
+		$this->set_year($year);
+		$this->set_monto($monto);
+
+		return $this->registrar_prima_antiguedad();
+	}
+
+	PUBLIC function modificar_prima_antiguedad_s($id,$year,$monto){
+		$this->set_id($id);
+		$this->set_year($year);
+		$this->set_monto($monto);
+
+		return $this->modificar_prima_antiguedad();	
+	}
+
+	PUBLIC function eliminar_prima_antiguedad_s($id){
+		$this->set_id($id);
+		return $this->eliminar_prima_antiguedad();	
+	}
+
+	PUBLIC function get_prima_antiguedad_s($id){
+		$this->set_id($id);
+		return $this->get_prima_antiguedad();	
+	}
+
+	
+
+	
+
 
 
 	PRIVATE function get_prima_hijos(){
@@ -314,6 +344,9 @@ class Primas extends Conexion
 			Bitacora::reg($this->con,"Registro la prima por hijo ($this->descripcion)");
 			$r['resultado'] = 'registrar_prima_hijo';
 			$r['mensaje'] =  $hijos["mensaje"];
+
+
+
 			$this->con->commit();
 		
 		} catch (Validaciones $e){
@@ -466,6 +499,173 @@ class Primas extends Conexion
 
 	}
 
+	PRIVATE function registrar_prima_antiguedad(){
+		try {
+			$this->validar_conexion($this->con);
+			$this->con->beginTransaction();
+			
+
+			$consulta = $this->con->prepare("SELECT 1 FROM prima_antiguedad WHERE anios_antiguedad = ?;");
+			$consulta->execute([$this->year]);
+
+			if($consulta->fetch()){
+				throw new Exception("El año ya tiene registrado una prima", 1);
+			}
+
+			$consulta = $this->con->prepare("INSERT INTO prima_antiguedad (anios_antiguedad, monto) VALUES (?, ?)");
+
+			$consulta->execute([$this->year, $this->monto]);
+
+			$antiguedad = $this->load_primas_antiguedad();
+
+			if($antiguedad['resultado'] != "load_primas_antiguedad"){throw new Exception($antiguedad['mensaje'], 1); }
+
+			Bitacora::reg($this->con,"Registro la prima por antigüedad de  ($this->year) año(s)");
+
+			$r['resultado'] = 'registrar_prima_antiguedad';
+			$r['titulo'] = 'Éxito';
+			$r['mensaje'] =  $antiguedad["mensaje"];
+			$this->con->commit();
+		
+		}  catch (Exception $e) {
+			if($this->con instanceof PDO){
+				if($this->con->inTransaction()){
+					$this->con->rollBack();
+				}
+			}
+		
+			$r['resultado'] = 'error';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+			//$r['mensaje'] =  $e->getMessage().": LINE : ".$e->getLine();
+		}
+		
+		return $r;
+	}
+
+	PRIVATE function modificar_prima_antiguedad(){
+
+		try {
+			$this->validar_conexion($this->con);
+			$this->con->beginTransaction();
+			
+			// TODO Validaciones
+			
+			$consulta = $this->con->prepare("SELECT * FROM prima_antiguedad WHERE id_prima_antiguedad = ?;");
+
+			$consulta->execute([$this->id]);
+
+			if(!$old = $consulta->fetch()){
+				throw new Exception("La prima no existe o fue eliminada", 1);
+			}
+
+			if($old["anios_antiguedad"] != $this->year){
+				$consulta = $this->con->prepare("SELECT 1 FROM prima_antiguedad WHERE anios_antiguedad = ?;");
+				$consulta->execute([$this->year]);
+				if($consulta->fetch()){
+					throw new Exception("La prima para el año $this->year ya existe", 1);
+				}
+			}
+
+
+			$consulta = $this->con->prepare("UPDATE prima_antiguedad SET anios_antiguedad = ?, monto = ? WHERE id_prima_antiguedad = ?");
+			$consulta->execute([$this->year, $this->monto, $this->id]);
+
+
+			$antiguedad = $this->load_primas_antiguedad();
+
+			if($antiguedad['resultado'] != "load_primas_antiguedad"){throw new Exception($antiguedad['mensaje'], 1); }
+			Bitacora::reg($this->con,"Modificó la prima por antigüedad de  ($this->year) año(s)");
+
+			$r['resultado'] = 'modificar_prima_antiguedad';
+			$r['mensaje'] =  $antiguedad["mensaje"];
+
+			$this->con->commit();
+		
+		} catch (Exception $e) {
+			if($this->con instanceof PDO){
+				if($this->con->inTransaction()){
+					$this->con->rollBack();
+				}
+			}
+		
+			$r['resultado'] = 'error';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+		}
+		return $r;
+	}
+
+	PRIVATE function eliminar_prima_antiguedad(){
+		try {
+			$this->validar_conexion($this->con);
+			$this->con->beginTransaction();
+			
+			$consulta = $this->con->prepare("SELECT anios_antiguedad as year FROM prima_antiguedad WHERE id_prima_antiguedad = ?;");
+
+			$consulta->execute([$this->id]);
+
+			if(!($old = $consulta->fetch())){
+				throw new Exception("La prima no existe o fue eliminada", 1);
+			}
+
+			$consulta = $this->con->prepare("DELETE FROM prima_antiguedad WHERE id_prima_antiguedad = ?");
+			$consulta->execute([$this->id]);
+
+
+			$antiguedad = $this->load_primas_antiguedad();
+
+			if($antiguedad['resultado'] != "load_primas_antiguedad"){throw new Exception($antiguedad['mensaje'], 1); }
+			Bitacora::reg($this->con,"Elimino la prima por antigüedad de ".$old['year']." año(s)");
+
+
+			
+			$r['resultado'] = 'eliminar_prima_antiguedad';
+			$r['mensaje'] =  $antiguedad["mensaje"];
+			$this->con->commit();
+		
+		} catch (Exception $e) {
+			if($this->con instanceof PDO){
+				if($this->con->inTransaction()){
+					$this->con->rollBack();
+				}
+			}
+		
+			$r['resultado'] = 'error';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+		}
+		
+		return $r;
+	}
+
+	PRIVATE function get_prima_antiguedad(){
+		try {
+			$this->validar_conexion($this->con);
+			
+			$consulta = $this->con->prepare("SELECT anios_antiguedad as year, monto FROM prima_antiguedad WHERE id_prima_antiguedad = ?;");
+			$consulta->execute([$this->id]);
+
+			if(!$consulta = $consulta->fetch(PDO::FETCH_ASSOC)){
+				throw new Exception("La prima no existe o fue eliminada", 1);
+			}
+
+
+			
+			$r['resultado'] = 'get_prima_antiguedad';
+			$r['mensaje'] =  $consulta;
+		
+		} catch (Exception $e) {
+				
+			$r['resultado'] = 'error';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+			//$r['mensaje'] =  $e->getMessage().": LINE : ".$e->getLine();
+		}
+		
+		return $r;
+	}
+
 
 
 
@@ -514,6 +714,19 @@ class Primas extends Conexion
 	}
 	PUBLIC function set_porcentaje($value){
 		$this->porcentaje = $value;
+	}
+	PUBLIC function get_year(){
+		return $this->year;
+	}
+	PUBLIC function set_year($value){
+		$this->year = $value;
+	}
+
+	PUBLIC function get_con(){
+		return $this->con;
+	}
+	PUBLIC function set_con($value){
+		$this->con = $value;
 	}
 
 } 

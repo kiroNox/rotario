@@ -828,6 +828,23 @@ function rowsEventActions(tbody,func){
 }
 
 
+FormData.prototype.consoleAll = function() {
+	for( let [key,value] of this){
+		console.log(`${key} :: '${value}'`);
+	}
+};
+
+FormData.prototype.removeSpace = function() {
+	// este metodo tiene el problema de que usa el metodo set del formData
+	// y si hay dos "name" iguales los elimina y deja uno solo 
+	// incluso creo que fallara si hay dos names iguales y se llama este metodo
+	// o se queda con el ultimo que encuentre no se XD
+  for( let [key,value] of this){
+		this.set(key, removeSpace(value));
+	}
+};
+
+
 
 document.addEventListener("DOMContentLoaded", function(){
 

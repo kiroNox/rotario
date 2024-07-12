@@ -2,9 +2,11 @@
 	if(is_file("vista/".$pagina.".php")){
 
 
-		$cl = new Primas;
+		
 
 		if(!empty($_POST)){// si hay alguna consulta tipo POST
+
+			$cl = new Primas;
 			$accion = $_POST["accion"];// siempre se pasa un parametro con la accion que se va a realizar
 			if($accion == "load_all_primas"){
 				if(isset($permisos["primas"]["consultar"]) and $permisos["primas"]["consultar"] == "1"){
@@ -97,11 +99,60 @@
 					$cl->no_permision_msg();
 				}
 			}
-			
+
+			else if($accion == "registrar_prima_antiguedad"){
+				if(isset($permisos["primas"]["crear"]) and $permisos["primas"]["crear"] == "1"){
+
+					echo json_encode( $cl->registrar_prima_antiguedad_s(
+						$_POST["anio"]
+						,$_POST["porcentaje_monto"]
+					) );
+				}
+				else{
+					$cl->no_permision_msg();
+				}
+			}
+			else if($accion == "get_prima_antiguedad"){
+				if(isset($permisos["primas"]["consultar"]) and $permisos["primas"]["consultar"] == "1"){
+
+					echo json_encode( $cl->get_prima_antiguedad_s(
+						$_POST["id"]
+					) );
+				}
+				else{
+					$cl->no_permision_msg();
+				}
+			}
+
+			else if($accion == "modificar_prima_antiguedad"){
+				if(isset($permisos["primas"]["modificar"]) and $permisos["primas"]["modificar"] == "1"){
+
+					echo json_encode( $cl->modificar_prima_antiguedad_s(
+						$_POST["id"]
+						,$_POST["anio"]
+						,$_POST["porcentaje_monto"]
+					) );
+				}
+				else{
+					$cl->no_permision_msg();
+				}
+			}
+
+			else if($accion == "eliminar_prima_antiguedad"){
+				if(isset($permisos["primas"]["eliminar"]) and $permisos["primas"]["eliminar"] == "1"){
+
+					echo json_encode( $cl->eliminar_prima_antiguedad_s(
+						$_POST["id"]
+					) );
+				}
+				else{
+					$cl->no_permision_msg();
+				}
+			}
 
 			
 
-
+			$cl->set_con(null);
 			exit;
 		}
 
