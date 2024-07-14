@@ -482,10 +482,10 @@
 								row.querySelector("td:nth-child(7)").title = data.observacion;
 								row.querySelector("td:nth-child(7)").classList.add("text-truncate");
 								row.querySelector("td:nth-child(7)").setAttribute("style","max-width: 20ch");;
-								row.querySelector("td:nth-child(3)").appendChild(crearElem("span",'',data.cedulaMadre));
-								row.querySelector("td:nth-child(3)").appendChild(crearElem("small",'class,d-block text-center',data.nombreMadre));
-								row.querySelector("td:nth-child(4)").appendChild(crearElem("span",'',data.cedulaPadre || ''));
-								row.querySelector("td:nth-child(4)").appendChild(crearElem("small",'class,d-block text-center',data.nombrePadre || ''));
+								row.querySelector("td:nth-child(3)").appendChild(crearElem("span",'class,text-nowrap',data.cedulaMadre));
+								row.querySelector("td:nth-child(3)").appendChild(crearElem("small",'class,d-block text-center no-select',data.nombreMadre));
+								row.querySelector("td:nth-child(4)").appendChild(crearElem("span",'class,text-nowrap',data.cedulaPadre || ''));
+								row.querySelector("td:nth-child(4)").appendChild(crearElem("small",'class,d-block text-center no-select',data.nombrePadre || ''));
 
 
 								var acciones = row.querySelector("td:nth-child(8)");

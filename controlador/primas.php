@@ -150,6 +150,87 @@
 				}
 			}
 
+
+			else if($accion == "registrar_prima_escalafon"){
+				if(isset($permisos["primas"]["eliminar"]) and $permisos["primas"]["eliminar"] == "1"){
+
+					echo json_encode( $cl->registrar_prima_escalafon_s(
+						$_POST["escala"]
+						,$_POST["tiempo"]
+						,$_POST["porcentaje"]
+
+					) );
+				}
+				else{
+					$cl->no_permision_msg();
+				}
+			}
+
+
+			else if($accion == "get_prima_escalafon"){
+				if(isset($permisos["primas"]["modificar"]) and $permisos["primas"]["modificar"] == "1"){
+
+					echo json_encode( $cl->get_prima_escalafon_s(
+						$_POST["id"]
+					) );
+				}
+				else{
+					$cl->no_permision_msg();
+				}
+			}
+
+
+			else if($accion == "modificar_prima_escalafon"){
+				if(isset($permisos["primas"]["modificar"]) and $permisos["primas"]["modificar"] == "1"){
+
+					echo json_encode( $cl->modificar_prima_escalafon_s(
+						$_POST["id"]
+						,$_POST["escala"]
+						,$_POST["tiempo"]
+						,$_POST["porcentaje"]
+					) );
+				}
+				else{
+					$cl->no_permision_msg();
+				}
+			}
+
+
+			else if($accion == "eliminar_prima_escalafon"){
+				if(isset($permisos["primas"]["eliminar"]) and $permisos["primas"]["eliminar"] == "1"){
+
+					echo json_encode( $cl->eliminar_prima_escalafon_s(
+						$_POST["id"]
+					) );
+				}
+				else{
+					$cl->no_permision_msg();
+				}
+			}
+
+			else if($accion == "valid_cedula_trabajador"){
+				if(isset($permisos["primas"]["consultar"]) and $permisos["primas"]["consultar"] == "1"){
+
+					echo json_encode( $cl->valid_cedula_trabajador_s(
+						$_POST["cedula"]
+					) );
+				}
+				else{
+					$cl->no_permision_msg();
+				}
+			}
+
+			
+			
+
+			else{
+				$r['resultado'] = 'error';
+				$r['titulo'] = 'Error';
+				$r['mensaje'] =  "Acción no programada";
+
+				echo json_encode($r);
+			}
+
 			
 
 			$cl->set_con(null);

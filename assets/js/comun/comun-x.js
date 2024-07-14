@@ -143,7 +143,7 @@ function enviaAjax(datos, func_success,func_beforesend="loader_main") {
 					loader_body(false,ajaxCounterConsult_body);
 				}
 			},
-			complete: function (xhr, status) {
+			complete: function (xhr, status) { // ocurre en el abort también
 				// modalcarga(false).then(function() {
 				// 	if(status === "success"){
 				// 		exito(xhr.responseText);
@@ -332,6 +332,9 @@ function eventoMonto(etiqueta,func_afterkeyup = function(e){e.value = sepMilesMo
 			return validarKeyUp(false, $(this), mensaje);
 		}
 	}
+	document.getElementById(etiqueta).classList.add("text-right");
+	document.getElementById(etiqueta).autocomplete = 'off';
+
 
 }
 
@@ -626,6 +629,9 @@ function iniciar_show_password(){// aplica el evento a todos los elementos que t
 }
 
 function cedulaKeypress(tag){
+	if(typeof tag === 'string'){
+		tag = document.getElementById(tag);
+	}
 	tag.onkeypress=function(e){
 		tecla = String.fromCharCode(e.keyCode);
 		var cont_tecla_letra;
@@ -820,7 +826,9 @@ function rowsEventActions(tbody,func){
 	 			target=target.parentNode;
 	 		}
 	 		if(target.tagName == "BUTTON"){
-	 			func(target.dataset.action, cell.parentNode.dataset.id ,target);
+	 			if(target.disabled == false){
+	 				func(target.dataset.action, cell.parentNode.dataset.id ,target);
+	 			}
 	 		}
 
 	 	}

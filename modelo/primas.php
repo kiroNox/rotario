@@ -4,7 +4,7 @@ class Primas extends Conexion
 {
 	
 	PRIVATE $con, $id, $descripcion ,$monto ,$hijo_menor ,$hijo_discapacidad ,$porcentaje;
-	PRIVATE $year;
+	PRIVATE $year, $escala, $cedula;
 
 	function __construct($con = '')
 	{
@@ -77,16 +77,14 @@ class Primas extends Conexion
 
 			$r['resultado'] = 'load_primas_generales';
 			$r['mensaje'] =  $consulta->fetchall(PDO::FETCH_ASSOC);
-			//$this->con->commit();
 		
 		} catch (Exception $e) {
 			$r['resultado'] = 'error';
 			$r['titulo'] = 'Error';
 			$r['mensaje'] =  $e->getMessage();
-			//$r['mensaje'] =  $e->getMessage().": LINE : ".$e->getLine();
 		}
 		finally{
-			//$this->con = null;
+			$consulta = null;
 		}
 		return $r;
 	}
@@ -127,7 +125,7 @@ class Primas extends Conexion
 			//$r['mensaje'] =  $e->getMessage().": LINE : ".$e->getLine();
 		}
 		finally{
-			//$this->con = null;
+			$consulta = null;
 		}
 		return $r;
 	}
@@ -165,7 +163,7 @@ class Primas extends Conexion
 			//$r['mensaje'] =  $e->getMessage().": LINE : ".$e->getLine();
 		}
 		finally{
-			//$this->con = null;
+			$consulta = null;
 		}
 		return $r;
 	}
@@ -201,10 +199,9 @@ class Primas extends Conexion
 			$r['resultado'] = 'error';
 			$r['titulo'] = 'Error';
 			$r['mensaje'] =  $e->getMessage();
-			//$r['mensaje'] =  $e->getMessage().": LINE : ".$e->getLine();
 		}
 		finally{
-			//$this->con = null;
+			$consulta = null;
 		}
 		return $r;
 	}
@@ -267,6 +264,41 @@ class Primas extends Conexion
 	PUBLIC function get_prima_antiguedad_s($id){
 		$this->set_id($id);
 		return $this->get_prima_antiguedad();	
+	}
+
+	PUBLIC function registrar_prima_escalafon_s($escala, $tiempo, $porcentaje){
+		$this->set_year($tiempo);
+		$this->set_escala($escala);
+		$this->set_monto($porcentaje);
+
+		return $this->registrar_prima_escalafon();
+	}
+
+	PUBLIC function get_prima_escalafon_s($id){
+		$this->set_id($id);
+
+		return $this->get_prima_escalafon();
+	}
+
+	PUBLIC function modificar_prima_escalafon_s($id, $escala, $tiempo, $porcentaje){
+		$this->set_id($id);
+		$this->set_year($tiempo);
+		$this->set_escala($escala);
+		$this->set_monto($porcentaje);
+
+		return $this->modificar_prima_escalafon();
+	}
+
+	PUBLIC function eliminar_prima_escalafon_s($id){
+		$this->set_id($id);
+
+		return $this->eliminar_prima_escalafon();
+	}
+
+	PUBLIC function valid_cedula_trabajador_s($cedula){
+		$this->set_cedula($cedula);
+
+		return $this->valid_cedula_trabajador();
 	}
 
 	
@@ -503,6 +535,8 @@ class Primas extends Conexion
 		try {
 			$this->validar_conexion($this->con);
 			$this->con->beginTransaction();
+
+			// TODO Validaciones
 			
 
 			$consulta = $this->con->prepare("SELECT 1 FROM prima_antiguedad WHERE anios_antiguedad = ?;");
@@ -666,6 +700,279 @@ class Primas extends Conexion
 		return $r;
 	}
 
+	PRIVATE function registrar_prima_escalafon(){
+		try {
+			$this->validar_conexion($this->con);
+			$this->con->beginTransaction();
+
+			// TODO validaciones
+			
+			$consulta = $this->con->prepare("SELECT * FROM escalafon WHERE escala = ?;");
+
+			$consulta->execute([$this->escala]);
+
+			if($consulta->fetch()){
+				throw new Exception("La escala ya esta registrada", 1);
+			}
+			$consulta = null;
+
+			$consulta = $this->con->prepare("INSERT INTO escalafon (anios_servicio,escala,monto) VALUES (:tiempo, :escala,:monto) ");
+			$consulta->bindValue(":tiempo",$this->year);
+			$consulta->bindValue(":escala",$this->escala);
+			$consulta->bindValue(":monto",$this->monto);
+
+			$consulta->execute();
+
+			$consulta = null;
+
+
+			$escalafon = $this->load_primas_escalafon();
+
+			if($escalafon['resultado'] != "load_primas_escalafon"){throw new Exception($escalafon['mensaje'], 1); }
+
+			Bitacora::reg($this->con,"Registro la prima por escalafón de escala  ($this->escala)");
+
+
+
+			$r['resultado'] = 'registrar_prima_escalafon';
+			$r['mensaje'] =  $escalafon["mensaje"];
+			$this->con->commit();
+		
+		} catch (Validaciones $e){
+			if($this->con instanceof PDO){
+				if($this->con->inTransaction()){
+					$this->con->rollBack();
+				}
+			}
+			$r['resultado'] = 'is-invalid';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+			$r['console'] =  $e->getMessage().": Code : ".$e->getLine();
+		} catch (Exception $e) {
+			if($this->con instanceof PDO){
+				if($this->con->inTransaction()){
+					$this->con->rollBack();
+				}
+			}
+		
+			$r['resultado'] = 'error';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+		}
+		finally{
+			$consulta = null;
+		}
+		return $r;
+	}
+
+	PRIVATE function get_prima_escalafon(){
+		try {
+			$this->validar_conexion($this->con);
+			
+			$consulta = $this->con->prepare("SELECT escala, anios_servicio as tiempo, monto FROM escalafon WHERE id_escalafon = ?;");
+
+			$consulta->execute([$this->id]);
+
+			if(!($resp = $consulta->fetch(PDO::FETCH_ASSOC))){
+				throw new Exception("La prima seleccionada no existe o fue eliminada", 1);
+			}
+
+			$consulta = null;
+
+
+			
+			$r['resultado'] = 'get_prima_escalafon';
+			$r['mensaje'] =  $resp;
+		
+		} catch (Exception $e) {
+				
+			$r['resultado'] = 'error';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+		}
+		finally{
+			$consulta = null;
+		}
+		return $r;
+	}
+
+
+	PRIVATE function modificar_prima_escalafon(){
+
+		try {
+			$this->validar_conexion($this->con);
+			$this->con->beginTransaction();
+			
+
+			$consulta = $this->con->prepare("SELECT escala, monto FROM escalafon WHERE id_escalafon = ?;");
+
+			$consulta->execute([$this->id]);
+
+			if(!($resp = $consulta->fetch(PDO::FETCH_ASSOC))){
+				throw new Exception("La prima seleccionada no existe o fue eliminada", 1);
+			}
+
+			$consulta = null;
+
+			if($resp["escala"] != $this->escala){
+
+
+
+				$consulta = $this->con->prepare("SELECT * FROM escalafon WHERE escala = ?;");
+
+				$consulta->execute([$this->escala]);
+
+				if($consulta->fetch()){
+					throw new Exception("La escala ya esta registrada", 1);
+				}
+				$consulta = null;
+			}
+
+			$consulta = $this->con->prepare("UPDATE escalafon set anios_servicio = :year, escala = :escala, monto = :monto WHERE id_escalafon = :id");
+			$consulta->bindValue(":year",$this->year);
+			$consulta->bindValue(":escala",$this->escala);
+			$consulta->bindValue(":monto",$this->monto);
+			$consulta->bindValue(":id",$this->id);
+
+			$consulta->execute();
+
+			$escalafon = $this->load_primas_escalafon();
+
+			if($escalafon['resultado'] != "load_primas_escalafon"){throw new Exception($escalafon['mensaje'], 1); }
+
+			Bitacora::reg($this->con,"Modificó la prima por escalafón de escala  (".$resp['escala'].")");
+			
+			$r['resultado'] = 'modificar_prima_escalafon';
+			$r['mensaje'] =  $escalafon["mensaje"];
+			$this->con->commit();
+		
+		} catch (Validaciones $e){
+			if($this->con instanceof PDO){
+				if($this->con->inTransaction()){
+					$this->con->rollBack();
+				}
+			}
+			$r['resultado'] = 'is-invalid';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+			$r['console'] =  $e->getMessage().": Code : ".$e->getLine();
+		} catch (Exception $e) {
+			if($this->con instanceof PDO){
+				if($this->con->inTransaction()){
+					$this->con->rollBack();
+				}
+			}
+		
+			$r['resultado'] = 'error';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+		}
+		finally{
+			$consulta = null;
+		}
+		return $r;
+	}
+
+	PRIVATE function eliminar_prima_escalafon(){
+		try {
+			$this->validar_conexion($this->con);
+			$this->con->beginTransaction();
+			
+			$consulta = $this->con->prepare("SELECT escala, monto FROM escalafon WHERE id_escalafon = ?;");
+
+			$consulta->execute([$this->id]);
+
+			if(!($resp = $consulta->fetch(PDO::FETCH_ASSOC))){
+				throw new Exception("La prima seleccionada no existe o fue eliminada", 1);
+			}
+
+			$consulta = null;
+
+			$consulta = $this->con->prepare("DELETE FROM escalafon WHERE id_escalafon = ?");
+			$consulta->execute([$this->id]);
+
+
+
+			$escalafon = $this->load_primas_escalafon();
+
+			if($escalafon['resultado'] != "load_primas_escalafon"){throw new Exception($escalafon['mensaje'], 1); }
+
+
+			
+			$r['resultado'] = 'eliminar_prima_escalafon';
+			$r['titulo'] = 'Éxito';
+			$r['mensaje'] =  $escalafon["mensaje"];
+			$this->con->commit();
+		
+		} catch (Validaciones $e){
+			if($this->con instanceof PDO){
+				if($this->con->inTransaction()){
+					$this->con->rollBack();
+				}
+			}
+			$r['resultado'] = 'is-invalid';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+			$r['console'] =  $e->getMessage().": Code : ".$e->getLine();
+		} catch (Exception $e) {
+			if($this->con instanceof PDO){
+				if($this->con->inTransaction()){
+					$this->con->rollBack();
+				}
+			}
+		
+			$r['resultado'] = 'error';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+		}
+		finally{
+			$consulta = null;
+		}
+		return $r;
+	}
+
+
+
+
+	PRIVATE function valid_cedula_trabajador(){
+		try {
+			$this->validar_conexion($this->con);
+			
+			Validaciones::validarCedula($this->cedula);
+
+			$consulta = $this->con->prepare("SELECT nombre, apellido, id_trabajador FROM trabajadores WHERE cedula = ?;");
+			$consulta->execute([$this->cedula]);
+			if($resp = $consulta->fetch(PDO::FETCH_ASSOC)){
+				$nombre = preg_replace("/^\s*\b(\w+).*/", "$1", $resp["nombre"]);
+				$nombre .= preg_replace("/^\s*\b(\w+).*/", " $1", $resp["apellido"]);
+				
+				$r['resultado'] = 'valid_cedula_trabajador';
+				$r['mensaje'] =  $nombre;
+				$r['id'] = $resp["id_trabajador"];
+			}
+			else{
+				$r["resultado"] = "no_existe";
+				$r["mensaje"] = "La cedula del trabajador no existe";
+			}
+		
+		} catch (Validaciones $e){
+			
+			$r['resultado'] = 'is-invalid';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+			$r['console'] =  $e->getMessage().": Code : ".$e->getLine();
+		} catch (Exception $e) {
+					
+			$r['resultado'] = 'error';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+		}
+		finally{
+			$consulta = null; 
+		}
+		return $r;
+	}
+
 
 
 
@@ -727,6 +1034,22 @@ class Primas extends Conexion
 	}
 	PUBLIC function set_con($value){
 		$this->con = $value;
+	}
+
+	PUBLIC function get_escala(){
+
+		return $this->escala;
+	}
+	PUBLIC function set_escala($value){
+		$value = strtoupper($value);
+		$this->escala = $value;
+	}
+
+	PUBLIC function get_cedula(){
+		return $this->cedula;
+	}
+	PUBLIC function set_cedula($value){
+		$this->cedula = $value;
 	}
 
 } 

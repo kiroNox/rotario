@@ -35,7 +35,7 @@
 											<h3 class="mx-md-3 text-capitalize">primas generales</h3>
 										</div>
 										<div class="col-12 col-md-6 d-flex align-items-center justify-content-center justify-content-md-end">
-											<button class="btn btn-primary mx-md-3">Registrar Primas</button>
+											<button class="btn btn-primary mx-md-3" data-toggle="modal" data-target="#modal_registrar_prima_general">Registrar Primas</button>
 										</div>
 									</div>
 
@@ -44,7 +44,7 @@
 										<thead class="bg-primary text-light">
 											<th>descripción</th>
 											<th>Monto</th>
-											<th>Exclusivo Médicos</th>
+											<th>Sector Salud</th>
 											<th>trabajadores</th>
 											<th>acción</th>
 										</thead>
@@ -213,105 +213,204 @@
 				</div>
 			</div>
 		</div>
+
 	<!-- modal primas antigüedad -->
 
 
-	<div class="modal fade" tabindex="-1" role="dialog" id="modal_registrar_prima_antiguedad">
-		<div class="modal-dialog modal-xl" role="document">
-			<div class="modal-content">
-				<div class="modal-header text-light bg-primary">
-					<h5 class="modal-title">Primas - Antigüedad</h5>
-					<button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
-						<span aria-hidden="true">&times;</span>
-					</button>
-				</div>
-				<div class="container">
+		<div class="modal fade" tabindex="-1" role="dialog" id="modal_registrar_prima_antiguedad">
+			<div class="modal-dialog modal-xl" role="document">
+				<div class="modal-content">
+					<div class="modal-header text-light bg-primary">
+						<h5 class="modal-title">Primas - Antigüedad</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="container">
 
-					<form action="" id="f2" method="POST" onsubmit="return false">
-						<input type="hidden" name="id" id="prima_antiguedad_id">
-						<div class="row justify-content-center">
-							<div class="col-12 col-md-4">
-								<label for="prima_antiguedad_year">Año(s)</label>
-								<input required type="text" class="form-control" id="prima_antiguedad_year" name="anio" data-span="invalid-span-prima_antiguedad_year" autocomplete="off">
-								<span id="invalid-span-prima_antiguedad_year" class="invalid-span text-danger"></span>
+						<form action="" id="f2" method="POST" onsubmit="return false">
+							<input type="hidden" name="id" id="prima_antiguedad_id">
+							<div class="row justify-content-center">
+								<div class="col-12 col-md-4">
+									<label for="prima_antiguedad_year">Año(s)</label>
+									<input required type="text" class="form-control" id="prima_antiguedad_year" name="anio" data-span="invalid-span-prima_antiguedad_year" autocomplete="off">
+									<span id="invalid-span-prima_antiguedad_year" class="invalid-span text-danger"></span>
+								</div>
+								<div class="col-12 col-md-4">
+									<label for="prima_antiguedad_monto">Porcentaje</label>
+									<input required type="text" class="form-control text-right" id="prima_antiguedad_monto" name="porcentaje_monto" data-span="invalid-span-prima_antiguedad_monto" autocomplete="off">
+									<span id="invalid-span-prima_antiguedad_monto" class="invalid-span text-danger"></span>
+								</div>
 							</div>
-							<div class="col-12 col-md-4">
-								<label for="prima_antiguedad_monto">Porcentaje</label>
-								<input required type="text" class="form-control text-right" id="prima_antiguedad_monto" name="porcentaje_monto" data-span="invalid-span-prima_antiguedad_monto" autocomplete="off">
-								<span id="invalid-span-prima_antiguedad_monto" class="invalid-span text-danger"></span>
+							<div class="row">
+								<div class="col-12 text-center mt-3"><button class="btn btn-primary" type="submit">Registrar</button></div>
 							</div>
-						</div>
-						<div class="row">
-							<div class="col-12 text-center mt-3"><button class="btn btn-primary" type="submit">Registrar</button></div>
-						</div>
-					</form>
-					
-				</div>
-				<div class="modal-footer bg-light">
-					<button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+						</form>
+						
+					</div>
+					<div class="modal-footer bg-light">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+					</div>
 				</div>
 			</div>
 		</div>
-	</div>
 
 	<!-- modal primas escalafón -->
 
-	<div class="modal fade" tabindex="-1" role="dialog" id="modal_registrar_prima_escalafon">
-		<div class="modal-dialog modal-xl" role="document">
-			<div class="modal-content">
-				<div class="modal-header text-light bg-primary">
-					<h5 class="modal-title">Primas - Escalafón</h5>
-					<button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
-						<span aria-hidden="true">&times;</span>
-					</button>
-				</div>
-				<div class="container">
-					<form action="" id="f3" method="POST" onsubmit="return false">
-						<input type="hidden" id="primas_escalfon_id" name="id">
-						<div class="row justify-content-center">
-							<div class="col-12 col-md-4">
-								<label for="primas_escalfon_escala">Escala</label>
-								<input required type="text" class="form-control" id="primas_escalfon_escala" name="escala" data-span="invalid-span-primas_escalfon_escala" required>
-								<span id="invalid-span-primas_escalfon_escala" class="invalid-span text-danger"></span>
+		<div class="modal fade" tabindex="-1" role="dialog" id="modal_registrar_prima_escalafon">
+			<div class="modal-dialog modal-xl" role="document">
+				<div class="modal-content">
+					<div class="modal-header text-light bg-primary">
+						<h5 class="modal-title">Primas - Escalafón</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="container">
+						<form action="" id="f3" method="POST" onsubmit="return false">
+							<input type="hidden" id="primas_escalfon_id" name="id">
+							<div class="row justify-content-center">
+								<div class="col-12 col-md-4">
+									<label for="primas_escalfon_escala">Escala</label>
+									<input required type="text" class="form-control" id="primas_escalfon_escala" name="escala" data-span="invalid-span-primas_escalfon_escala" required>
+									<span id="invalid-span-primas_escalfon_escala" class="invalid-span text-danger"></span>
+								</div>
+								<div class="col-12 col-md-4">
+									<label for="primas_escalafon_tiempo">Tiempo</label>
+									<input required type="text" class="form-control" id="primas_escalafon_tiempo" name="tiempo" data-span="invalid-span-primas_escalafon_tiempo">
+									<span id="invalid-span-primas_escalafon_tiempo" class="invalid-span text-danger"></span>
+								</div>
 							</div>
-							<div class="col-12 col-md-4">
-								<label for="primas_escalafon_tiempo">Tiempo</label>
-								<input required type="text" class="form-control" id="primas_escalafon_tiempo" name="tiempo" data-span="invalid-span-primas_escalafon_tiempo">
-								<span id="invalid-span-primas_escalafon_tiempo" class="invalid-span text-danger"></span>
+							<div class="row justify-content-center">
+								<div class="col-12 col-md-4">
+									<label for="primas_escalafon_monto">Porcentaje</label>
+									<input required type="text" class="form-control text-right" id="primas_escalafon_monto" name="porcentaje" data-span="invalid-span-primas_escalafon_monto">
+									<span id="invalid-span-primas_escalafon_monto" class="invalid-span text-danger"></span>
+								</div>
+								<div class="col-md-4 d-md-block d-none">
+									
+								</div>
 							</div>
-						</div>
-						<div class="row justify-content-center">
-							<div class="col-12 col-md-4">
-								<label for="primas_escalafon_monto">Porcentaje</label>
-								<input required type="text" class="form-control text-right" id="primas_escalafon_monto" name="porcentaje" data-span="invalid-span-primas_escalafon_monto">
-								<span id="invalid-span-primas_escalafon_monto" class="invalid-span text-danger"></span>
+							<div class="row mt-3">
+								<div class="col-12 text-center"><button class="btn btn-primary" type="submit">Registrar</button></div>
 							</div>
-							<div class="col-md-4 d-md-block d-none">
-								
-							</div>
-						</div>
-						<div class="row mt-3">
-							<div class="col-12 text-center"><button class="btn btn-primary" type="submit">Registrar</button></div>
-						</div>
-					</form>
-					
-				</div>
-				<div class="modal-footer bg-light">
-					<button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+						</form>
+						
+					</div>
+					<div class="modal-footer bg-light">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+					</div>
 				</div>
 			</div>
 		</div>
-	</div>
 
-
+	<!-- modal primas generales -->
+		<div class="modal fade" tabindex="-1" role="dialog" id="modal_registrar_prima_general">
+			<div class="modal-dialog modal-xl" role="document">
+				<div class="modal-content">
+					<div class="modal-header text-light bg-primary">
+						<h5 class="modal-title">Primas - Generales</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="container">
+						<form action="" id="f4" methot="POST" onsubmit="return false">
+							<div class="row">
+								<div class="col-12 col-md-4">
+									<label for="primas_generales_descripcion">Descripción</label>
+									<input required type="text" class="form-control" id="primas_generales_descripcion" name="descripcion" data-span="invalid-span-primas_generales_descripcion">
+									<span id="invalid-span-primas_generales_descripcion" class="invalid-span text-danger"></span>
+								</div>
+								<div class="col-8 col-md-4">
+									<label for="primas_generales_monto">Monto</label>
+									<input required type="text" class="form-control" id="primas_generales_monto" name="monto" data-span="invalid-span-primas_generales_monto">
+									<span id="invalid-span-primas_generales_monto" class="invalid-span text-danger"></span>
+								</div>
+								<div class="col-4 d-flex flex-column">
+									<label for="" class="fade no-select">l</label>
+									<div class="d-flex justify-content-start align-items-center flex-grow-1">
+										<label for="primas_generales_porcentaje" class="mb-0 mr-1 cursor-pointer no-select">Porcentaje</label>
+										<input type="checkbox" id="primas_generales_porcentaje" name="porcentaje">
+									</div>
+								</div>
+								<div class="col-12 mt-2">
+									<div class="d-table">
+										<div class="d-table-row">
+											<div class="d-table-cell">
+												<label for="primas_generales_salud" class="m-0 cursor-pointer no-select">Sector Salud</label>
+											</div>
+											<div class="d-table-cell pl-2">
+												<input type="checkbox" id="primas_generales_salud" name="sector_salud" class="cursor-pointer">
+											</div>
+										</div>
+										<div class="d-table-row">
+											<div class="d-table-cell">
+												<label for="primas_generales_mensualidad" class="m-0 cursor-pointer no-select">Mensual</label>
+											</div>
+											<div class="d-table-cell pl-2">
+												<input type="checkbox" id="primas_generales_mensualidad" name="dedicada" class="cursor-pointer">
+											</div>
+										</div>
+										<div class="d-table-row">
+											<div class="d-table-cell">
+												<label for="primas_generales_dedicada" class="m-0 cursor-pointer no-select">Dedicada</label>
+											</div>
+											<div class="d-table-cell pl-2">
+												<input type="checkbox" id="primas_generales_dedicada" name="dedicada" class="cursor-pointer">
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="row d-none" id="primas_generales_container_trabajadores">
+								<div class="col-12 text-right">
+									<span>Añadir/Eliminar Trabajadores</span>
+									<button type="button" class="btn btn-primary font-weight-bold no-select" style="width: 37px" id="add_trabajador">+</button>
+									<button type="button" class="btn btn-primary font-weight-bold no-select" style="width: 37px" id="sub_trabajador">-</button>
+								</div>
+								<div class="col-12">
+									<table class="table table-bordered table-middle" id="table_trabajadores_dedicada">
+										<thead>
+											<th>Cedula</th>
+											<th>Nombre</th>
+											<th>Acción</th>
+										</thead>
+									
+										<tbody id="tbody_trabajadores_dedicada">
+											
+										</tbody>
+										
+									</table>
+								</div>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer bg-light">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+					</div>
+				</div>
+			</div>
+		</div>
 
 
 	<script>
 
+
+
+
+		
+
+
+
+		
+
 	//	$("#modal_registrar_prima_hijos").modal("show");
 		// inicializar *******************************************************
 
-			document.getElementById('nav-primas_escalafon-tab').click();
+			//document.getElementById('nav-primas_generales-tab').click();
+
+			//$("#modal_registrar_prima_general").modal("show");
 
 			load_all_primas();
 			// inicializar primas hijos
@@ -528,7 +627,6 @@
 
 
 				rowsEventActions("tbody_primas_antiguedad",(action, rowId)=>{
-					console.log("action", action);
 
 				 	if(action == "modificar"){
 
@@ -579,7 +677,7 @@
 				 				var lee = JSON.parse(respuesta);
 				 				if(lee.resultado == "eliminar_prima_antiguedad"){
 				 					
-				 					muestraMensaje("Éxito", "La prima ha sido modificada exitosamente", "s");
+				 					muestraMensaje("Éxito", "La prima ha sido eliminada exitosamente", "s");
 				 					cargar_prima_antiguedad(lee.mensaje);
 
 				 				}
@@ -711,102 +809,239 @@
 
 			// inicializar primas escalafón
 
-			eventoMonto("primas_escalafon_monto");
+				eventoMonto("primas_escalafon_monto");
 
-			eventoKeyup("primas_escalfon_escala", /^[ivxlcdm]+$/i, "Se esperan números romanos ej I,IV,IX");
+				eventoKeyup("primas_escalfon_escala", /^[ivxlcdm]+$/i, "Se esperan números romanos ej I,IV,IX");
 
-			eventoKeyup("primas_escalafon_tiempo", /^[\d\-\s]+$/, "se espera un plazo de tiempo ej 1 - 2 (años) este es solo un campo informativo");
+				eventoKeyup("primas_escalafon_tiempo", /^[\d\-\s]+$/, "se espera un plazo de tiempo ej 1 - 2 (años) este es solo un campo informativo");
 
-			document.getElementById('f3').onsubmit=function(e){
+				document.getElementById('f3').onsubmit=function(e){
 
-				e.preventDefault();
+					e.preventDefault();
 
-				f3 = this;
+					f3 = this;
 
-				if(f3.sending === true){
-					return false;
-				}
-
-
-
-
-				if(document.getElementById('primas_escalfon_id').value!=''){
-
-					mensaje = "Seguro de que desea modificar la prima";
-				}
-				else{
-					mensaje = "Esta seguro de registrar la prima";
-				}
-
-				muestraMensaje("¿Seguro?", mensaje, "?",function(result){
-					if(result){
-
-
-						var datos = new FormData($("#f3")[0]);
-
-						datos.consoleAll();
-
-						datos.removeSpace();
-
-						datos.consoleAll();
-
+					if(f3.sending === true){
 						return false;
+					}
 
 
-						var temp_monto = parseFloat(sepMilesMonto(datos.get("porcentaje"),true));
-
-						if(temp_monto > 100){
-							muestraMensaje("Error", "El porcentaje no puede ser mayor a 100", "e");
-							return false;
-						}
-						else if(temp_monto <= 0){
-							muestraMensaje("Error", "El porcentaje no puede ser menor o igual a 0", "e");
-							return false;	
-						}
-						
-
-						if(document.getElementById('primas_escalfon_id').value!=''){
-
-							datos.append("accion","modificar_prima_escalafon");
-						}
-						else{
-							datos.append("accion","registrar_prima_escalafon");
-						}
-
-						datos.set("porcentaje", sepMilesMonto(document.getElementById('primas_escalafon_monto').value,true) )
-						datos.set("tiempo", removeSpace(datos.get("tiempo")));
+					// TODO validaciones
 
 
-						enviaAjax(datos,function(respuesta, exito, fail){
-						
-							var lee = JSON.parse(respuesta);
-							if(lee.resultado == "registrar_prima_escalafon"){
-								
+
+
+					if(document.getElementById('primas_escalfon_id').value!=''){
+
+						mensaje = "Seguro de que desea modificar la prima";
+					}
+					else{
+						mensaje = "Esta seguro de registrar la prima";
+					}
+
+					muestraMensaje("¿Seguro?", mensaje, "?",function(result){
+						if(result){
+
+
+							var datos = new FormData($("#f3")[0]);
+
+							var temp_monto = parseFloat(sepMilesMonto(datos.get("porcentaje"),true));
+
+							if(temp_monto > 100){
+								muestraMensaje("Error", "El porcentaje no puede ser mayor a 100", "e");
+								return false;
 							}
-							else if (lee.resultado == 'is-invalid'){
-								muestraMensaje(lee.titulo, lee.mensaje,"error");
+							else if(temp_monto <= 0){
+								muestraMensaje("Error", "El porcentaje no puede ser menor o igual a 0", "e");
+								return false;	
 							}
-							else if(lee.resultado == "error"){
-								muestraMensaje(lee.titulo, lee.mensaje,"error");
-								console.error(lee.mensaje);
-							}
-							else if(lee.resultado == "console"){
-								console.log(lee.mensaje);
+							
+
+							if(document.getElementById('primas_escalfon_id').value!=''){
+
+								datos.append("accion","modificar_prima_escalafon");
 							}
 							else{
-								muestraMensaje(lee.titulo, lee.mensaje,"error");
+								datos.append("accion","registrar_prima_escalafon");
 							}
-						});
+
+							datos.set("porcentaje", sepMilesMonto(document.getElementById('primas_escalafon_monto').value,true) )
+							datos.set("tiempo", removeSpace(datos.get("tiempo")));
+
+
+							f3.sending = true;
+							enviaAjax(datos,function(respuesta, exito, fail){
+							
+								var lee = JSON.parse(respuesta);
+								if(lee.resultado == "registrar_prima_escalafon"){
+
+									muestraMensaje("Éxito", "La prima fue registrada exitosamente", "s");
+									cargar_prima_escalafon(lee.mensaje);
+									$("#modal_registrar_prima_escalafon").modal("hide");
+
+									
+								}
+								else if (lee.resultado == "modificar_prima_escalafon"){
+									muestraMensaje("Éxito", "La prima fue modificada exitosamente", "s");
+									cargar_prima_escalafon(lee.mensaje);
+									$("#modal_registrar_prima_escalafon").modal("hide");
+								}
+								else if (lee.resultado == 'is-invalid'){
+									muestraMensaje(lee.titulo, lee.mensaje,"error");
+								}
+								else if(lee.resultado == "error"){
+									muestraMensaje(lee.titulo, lee.mensaje,"error");
+									console.error(lee.mensaje);
+								}
+								else if(lee.resultado == "console"){
+									console.log(lee.mensaje);
+								}
+								else{
+									muestraMensaje(lee.titulo, lee.mensaje,"error");
+								}
+								f3.sending = false;
+							},"loader_body").p.catch((a)=>{
+								f3.sending = false;
+							});
 
 
 
 
 
 
-					}
+						}
+					});
+
+				};
+
+				$('#modal_registrar_prima_escalafon').on('hidden.bs.modal', function (e) {
+					$("#f3 input").each((index,el)=>{
+						el.value = '';
+						el.classList.remove("is-invalid","is-valid");
+					});
+
+					document.querySelector("#f3 button[type='submit']").innerHTML = "Registrar";
+				})
+
+
+				rowsEventActions("tbody_primas_escalafon",(action, rowId)=>{
+
+				 	if(action == "modificar"){
+
+				 		var datos = new FormData();
+				 		datos.append("accion","get_prima_escalafon");
+				 		datos.append("id",rowId);
+
+				 		enviaAjax(datos,function(respuesta, exito, fail){
+				 		
+				 			var lee = JSON.parse(respuesta);
+				 			if(lee.resultado == "get_prima_escalafon"){
+				 				document.getElementById('primas_escalfon_id').value = rowId;
+				 				document.getElementById('primas_escalfon_escala').value = lee.mensaje.escala;
+				 				document.getElementById('primas_escalafon_monto').value = lee.mensaje.monto;
+				 				document.getElementById('primas_escalafon_tiempo').value = lee.mensaje.tiempo;
+				 				document.getElementById('primas_escalafon_monto').onkeyup();
+				 				document.getElementById('primas_escalafon_monto').classList.remove("is-valid", "is-invalid");
+
+
+				 				document.querySelector("#f3 button[type='submit']").innerHTML = "Modificar";
+
+				 				$("#modal_registrar_prima_escalafon").modal("show");
+
+
+				 				
+				 			}
+				 			else if (lee.resultado == 'is-invalid'){
+				 				muestraMensaje(lee.titulo, lee.mensaje,"error");
+				 			}
+				 			else if(lee.resultado == "error"){
+				 				muestraMensaje(lee.titulo, lee.mensaje,"error");
+				 				console.error(lee.mensaje);
+				 			}
+				 			else if(lee.resultado == "console"){
+				 				console.log(lee.mensaje);
+				 			}
+				 			else{
+				 				muestraMensaje(lee.titulo, lee.mensaje,"error");
+				 			}
+				 		});
+
+				 	}
+				 	else if (action == "eliminar"){
+
+				 		muestraMensaje("¿Seguro?", "Esta seguro de querer eliminar la prima seleccionada?", "?", function(result){
+				 			var datos = new FormData();
+				 			datos.append("accion","eliminar_prima_escalafon");
+				 			datos.append("id",rowId);
+
+				 			enviaAjax(datos,function(respuesta, exito, fail){
+				 			
+				 				var lee = JSON.parse(respuesta);
+				 				if(lee.resultado == "eliminar_prima_escalafon"){
+				 					
+				 					muestraMensaje("Éxito", "La prima ha sido eliminada exitosamente", "s");
+				 					cargar_prima_escalafon(lee.mensaje);
+
+				 				}
+				 				else if (lee.resultado == 'is-invalid'){
+				 					muestraMensaje(lee.titulo, lee.mensaje,"error");
+				 				}
+				 				else if(lee.resultado == "error"){
+				 					muestraMensaje(lee.titulo, lee.mensaje,"error");
+				 					console.error(lee.mensaje);
+				 				}
+				 				else if(lee.resultado == "console"){
+				 					console.log(lee.mensaje);
+				 				}
+				 				else{
+				 					muestraMensaje(lee.titulo, lee.mensaje,"error");
+				 				}
+				 			});
+				 		});
+
+				 	}
 				});
 
-			};
+			// inicializar primas generales
+
+			eventoMonto("primas_generales_monto");
+
+
+
+			document.getElementById('add_trabajador').onclick=add_trabajador;
+			document.getElementById('sub_trabajador').onclick=sub_trabajador;
+
+			document.getElementById('primas_generales_dedicada').onclick = function(){
+				if(this.checked){
+					add_trabajador();
+					document.getElementById('primas_generales_container_trabajadores').classList.remove("d-none");
+					document.getElementById('primas_generales_salud').checked = false;
+					document.getElementById('primas_generales_salud').disabled = true;
+
+					$("#primas_generales_salud, label[for='primas_generales_salud']").each((index,el)=>{
+						el.style="opacity:0.75";
+					});
+				}
+				else{
+					document.getElementById('primas_generales_container_trabajadores').classList.add("d-none");
+					document.getElementById('tbody_trabajadores_dedicada').innerHTML='';
+					document.getElementById('primas_generales_salud').disabled = false;
+					$("#primas_generales_salud, label[for='primas_generales_salud']").each((index,el)=>{
+						el.style="";
+					});
+				}
+			}
+
+			rowsEventActions("tbody_trabajadores_dedicada" ,function(action,rowId,btn){
+				if(action=='eliminar'){
+					document.getElementById('tbody_trabajadores_dedicada').removeChild(btn.parentNode.parentNode);
+				}
+
+			});
+
+
+
+
 
 
 		// primas generales **************************************************
@@ -1196,6 +1431,167 @@
 			}
 			if (document.getElementById('hijo_discapacidad').checked) {
 				info.innerHTML +="*La prima se aplicara solo por los hijos con discapacidad<br>";
+			}
+		}
+
+		function add_trabajador(cedula = '', nombre = '', id = ''){
+			if(typeof cedula !== 'string'){
+				cedula = '';
+			}
+
+			var tbody = document.getElementById('tbody_trabajadores_dedicada');
+
+			var n = tbody.querySelectorAll("tr").length + 1;
+
+			while(document.getElementById(`general-row-${n}`)){
+				n++;
+			}
+
+			var tr = crearElem("tr",`id,general-row-${n}`);
+			tr.dataset.id='1';
+
+			var input = crearElem("input","class,form-control,name,trabajadores,type,text,autocomplete,off");
+			input.id = `primas_generalse_trabajador-${n}`;
+			input.dataset.span = `invalid-span-primas_generalse_trabajador-${n}`;
+			input.dataset.trabajador_info = `trabajador-info-${n}`;
+			input.dataset.trabajador_id = `trabajador_hide-${n}`;
+			input.required=true;
+			input.value = cedula;
+
+
+
+
+
+			var td = crearElem("td",'',input);
+
+			td.appendChild(crearElem("span",`id,invalid-span-primas_generalse_trabajador-${n},class,invalid-span text-danger`));
+
+			input = crearElem("input",`type,hidden,id,trabajador_hide-${n}`);
+			input.value = id;
+
+			td.appendChild(input);
+
+			td.style = "width: 45%;";
+
+
+			tr.appendChild(td);
+			tr.appendChild(crearElem("td",`id,trabajador-info-${n},class,text-center text-nowrap font-weight-bold align-items-center,style,width:45%;`),nombre);
+
+			btn = crearElem("button", "class,btn btn-danger ml-1,data-action,eliminar,type,button", "<span class='bi bi-trash' title='Eliminar trabajador de la lista'></span>")
+			tr.appendChild(crearElem("td",'class,text-center cell-action,style,10%', btn ));
+
+			tbody.appendChild(tr);
+
+			eventoKeyup(`primas_generalse_trabajador-${n}`,V.expCedula,"La cedula es invalida ej. V-00000001",undefined,undefined,valid_trabajador);
+			cedulaKeypress(`primas_generalse_trabajador-${n}`);
+
+			document.getElementById(`primas_generalse_trabajador-${n}`).validarme = function(){
+				if(this.dataset.trabajador_id == ''){
+					return validarKeyUp(false, this, "La cedula del trabajador no existe");;
+				}
+				else{
+					return validarKeyUp(true, this, "La cedula del trabajador no existe");;
+				}
+
+				for(var el of document.querySelectorAll('#primas_generales_list_trabajadores input[id^=primas_generalse_trabajador]')){
+					if(el.value = this.value){
+						return validarKeyUp(false, this, "La cedula del trabajador esta duplicada en la lista");;
+					}
+					else{
+						return validarKeyUp(true, this, "La cedula del trabajador esta duplicada en la lista");;
+					}
+				}
+			}
+
+		}
+
+
+		function sub_trabajador(){
+			var tbody = document.getElementById('tbody_trabajadores_dedicada');
+			var tr = tbody.querySelector("tr:last-child");
+			if(tr){
+				tbody.removeChild(tr);
+			}
+		}
+
+
+
+		function valid_trabajador(etiqueta,valid)
+		{
+
+			if(etiqueta.xhr!= undefined){
+				etiqueta.xhr.abort();
+			}
+			if(valid){
+				
+
+				if(etiqueta.value == ''){
+					return false;
+				}
+
+
+				var datos = new FormData();
+				datos.append("accion","valid_cedula_trabajador");
+				datos.append('cedula',etiqueta.value);
+
+
+
+				
+				document.getElementById(etiqueta.dataset.trabajador_id).value = '';
+
+				var ajax = enviaAjax(datos,function(respuesta, exito, fail){
+					
+					var lee = JSON.parse(respuesta);
+					if(lee.resultado == "valid_cedula_trabajador"){
+
+						document.getElementById(etiqueta.dataset.trabajador_info).innerText = lee.mensaje;
+						document.getElementById(etiqueta.dataset.trabajador_id).value = lee.id;
+
+						for(var el of document.querySelectorAll("#tbody_trabajadores_dedicada input[id^=primas_generalse_trabajador]")){
+							if(el != etiqueta && el.value == etiqueta.value){
+								validarKeyUp(false, etiqueta, "Cedula duplicada en la lista");
+								break;
+							}
+							else{
+								validarKeyUp(true, etiqueta, '');
+							}
+						}
+					}
+					else if (lee.resultado == 'no_existe'){
+						validarKeyUp(false, etiqueta, "La cedula del trabajador no existe");
+						fail();
+					}
+					else if (lee.resultado == 'is-invalid'){
+						muestraMensaje(lee.titulo, lee.mensaje,"error");
+						fail();
+					}
+					else if(lee.resultado == "error"){
+						muestraMensaje(lee.titulo, lee.mensaje,"error");
+						console.error(lee.mensaje);
+						fail();
+					}
+					else if(lee.resultado == "console"){
+						console.log(lee.mensaje);
+						fail();
+					}
+					else{
+						muestraMensaje(lee.titulo, lee.mensaje,"error");
+						fail();
+					}
+					etiqueta.xhr = undefined; 
+				},'loader_body');
+
+				etiqueta.xhr = ajax.xhr; 
+
+				ajax.p.catch((a)=>{
+					etiqueta.xhr = undefined; 
+					document.getElementById(etiqueta.dataset.trabajador_id).value='';
+					document.getElementById(etiqueta.dataset.trabajador_info).innerHTML='';
+				})
+			}
+			else{
+				document.getElementById(etiqueta.dataset.trabajador_id).value='';
+				document.getElementById(etiqueta.dataset.trabajador_info).innerHTML='';
 			}
 		}
 
