@@ -36,7 +36,7 @@ function muestraMensaje(titulo, mensaje = '', icono = '', customProp = false, fu
 	}
 
 
-	obj = {};
+	var obj = {};
 	obj.title = titulo;
 	if(/<ENDL>/.test(mensaje)){
 		mensaje = mensaje.replace(/<ENDL>/g, '<br>');
@@ -167,7 +167,7 @@ function enviaAjax(datos, func_success,func_beforesend="loader_main") {
 
 function loader_main(control = true,counter = 0){	
 	if(document.querySelector("main.main-content")){
-		main = document.querySelector("main.main-content");
+		var main = document.querySelector("main.main-content");
 
 		if(control){
 			if(!main.querySelector("div.loader-main")){
@@ -217,7 +217,12 @@ function eventoKeyup(etiqueta, exp, mensaje, etiquetamensaje, func, func2){
 	if(typeof etiqueta === "string"){
 		etiqueta = document.getElementById(etiqueta);
 	}
-	etiqueta.onkeyup=function(){
+	etiqueta.onkeyup=function(e){
+		if(e.key == "Enter"){
+			return false;
+		}
+
+
 
 		if(typeof func ==="function"){// antes de validar
 			func(this);
@@ -318,7 +323,7 @@ function eventoMonto(etiqueta,func_afterkeyup = function(e){e.value = sepMilesMo
 
 	//Si se está repitiendo, ignorar
 	document.getElementById(etiqueta).addEventListener('keydown', function(keyboardEvent) {if (keyboardEvent.repeat) keyboardEvent.preventDefault(); });
-	document.getElementById(etiqueta).onchange = function(){this.value = sepMilesMonto(this.value); validarKeyUp(montoExp, $(this), mensaje); }
+	document.getElementById(etiqueta).onchange = document.getElementById(etiqueta).oninput = function(){this.value = sepMilesMonto(this.value); validarKeyUp(montoExp, $(this), mensaje); }
 	document.getElementById(etiqueta).maxLength = n;
 	document.getElementById(etiqueta).validarme = function(){
 		if(this.allow_empty == true && this.value == ''){
@@ -407,8 +412,8 @@ function validarKeyUp(er, etiqueta, mensaje, etiquetamensaje) {
 }
 
 function validarKeyPress(e, er) {
-	codigo = e.keyCode;
-	tecla = String.fromCharCode(codigo);
+	var codigo = e.keyCode;
+	var tecla = String.fromCharCode(codigo);
 	if (er.test(tecla) === false) {
 		e.preventDefault();
 		return false;
@@ -841,6 +846,13 @@ FormData.prototype.consoleAll = function() {
 		console.log(`${key} :: '${value}'`);
 	}
 };
+FormData.prototype.groupby = function(name) {
+	var temp = [];
+	if(this.has(name)){
+		temp = this.getAll(name);
+	}
+	this.set(name,JSON.stringify(temp));
+};
 
 FormData.prototype.removeSpace = function() {
 	// este metodo tiene el problema de que usa el metodo set del formData
@@ -851,6 +863,20 @@ FormData.prototype.removeSpace = function() {
 		this.set(key, removeSpace(value));
 	}
 };
+
+
+function add_event_to_label_checkbox(){
+	for(var x of document.querySelectorAll("label.check-button")){
+		
+		x.onkeypress=function(e){
+			if(e.key == 'Enter'){
+				if(document.getElementById(this.getAttribute("for"))){
+					document.getElementById(this.getAttribute("for")).click();
+				}
+			}
+		}
+	}
+}
 
 
 

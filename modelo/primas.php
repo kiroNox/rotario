@@ -5,6 +5,7 @@ class Primas extends Conexion
 	
 	PRIVATE $con, $id, $descripcion ,$monto ,$hijo_menor ,$hijo_discapacidad ,$porcentaje;
 	PRIVATE $year, $escala, $cedula;
+	PRIVATE $mensual, $dedicada, $sector_salud, $trabajadores;
 
 	function __construct($con = '')
 	{
@@ -116,13 +117,11 @@ class Primas extends Conexion
 
 			$r['resultado'] = 'load_primas_hijos';
 			$r['mensaje'] =  $consulta->fetchall(PDO::FETCH_ASSOC);
-			//$this->con->commit();
 		
 		} catch (Exception $e) {
 			$r['resultado'] = 'error';
 			$r['titulo'] = 'Error';
 			$r['mensaje'] =  $e->getMessage();
-			//$r['mensaje'] =  $e->getMessage().": LINE : ".$e->getLine();
 		}
 		finally{
 			$consulta = null;
@@ -154,13 +153,11 @@ class Primas extends Conexion
 
 			$r['resultado'] = 'load_primas_antiguedad';
 			$r['mensaje'] =  $consulta->fetchall(PDO::FETCH_ASSOC);
-			//$this->con->commit();
 		
 		} catch (Exception $e) {
 			$r['resultado'] = 'error';
 			$r['titulo'] = 'Error';
 			$r['mensaje'] =  $e->getMessage();
-			//$r['mensaje'] =  $e->getMessage().": LINE : ".$e->getLine();
 		}
 		finally{
 			$consulta = null;
@@ -193,7 +190,6 @@ class Primas extends Conexion
 
 			$r['resultado'] = 'load_primas_escalafon';
 			$r['mensaje'] =  $consulta->fetchall(PDO::FETCH_ASSOC);
-			//$this->con->commit();
 		
 		} catch (Exception $e) {
 			$r['resultado'] = 'error';
@@ -299,6 +295,51 @@ class Primas extends Conexion
 		$this->set_cedula($cedula);
 
 		return $this->valid_cedula_trabajador();
+	}
+
+	PUBLIC function registra_prima_general_s($descripcion ,$monto ,$porcentaje ,$mensual ,$dedicada ,$trabajadores ,$sector_salud ){
+
+
+		$this->set_descripcion($descripcion);
+		$this->set_monto($monto);
+		$this->set_porcentaje($porcentaje);
+		$this->set_mensual($mensual);
+		$this->set_dedicada($dedicada);
+		$this->set_trabajadores($trabajadores);
+		$this->set_sector_salud($sector_salud);
+
+
+
+
+		return $this->registra_prima_general();
+	}
+	PUBLIC function modificar_prima_general_s($id, $descripcion ,$monto ,$porcentaje ,$mensual ,$dedicada ,$trabajadores ,$sector_salud ){
+
+		$this->set_id($id);
+		$this->set_descripcion($descripcion);
+		$this->set_monto($monto);
+		$this->set_porcentaje($porcentaje);
+		$this->set_mensual($mensual);
+		$this->set_dedicada($dedicada);
+		$this->set_trabajadores($trabajadores);
+		$this->set_sector_salud($sector_salud);
+
+
+
+
+		return $this->modificar_prima_general();
+	}
+
+	PUBLIC function get_prima_general_s($id){
+		$this->set_id($id);
+
+		return $this->get_prima_general();
+	}
+
+	PUBLIC function eliminar_prima_general_s($id){
+		$this->set_id($id);
+
+		return $this->eliminar_prima_general();
 	}
 
 	
@@ -730,7 +771,7 @@ class Primas extends Conexion
 
 			if($escalafon['resultado'] != "load_primas_escalafon"){throw new Exception($escalafon['mensaje'], 1); }
 
-			Bitacora::reg($this->con,"Registro la prima por escalafón de escala  ($this->escala)");
+			Bitacora::reg($this->con,"Registró la prima por escalafón de escala  ($this->escala)");
 
 
 
@@ -897,6 +938,8 @@ class Primas extends Conexion
 
 			if($escalafon['resultado'] != "load_primas_escalafon"){throw new Exception($escalafon['mensaje'], 1); }
 
+			Bitacora::reg($this->con,"Eliminó la prima por escalafón (".$resp["escala"].")");
+
 
 			
 			$r['resultado'] = 'eliminar_prima_escalafon';
@@ -949,6 +992,19 @@ class Primas extends Conexion
 				$r['resultado'] = 'valid_cedula_trabajador';
 				$r['mensaje'] =  $nombre;
 				$r['id'] = $resp["id_trabajador"];
+
+				$consulta = null;
+				$consulta = $this->con->prepare("SELECT 1 FROM sueldo_base WHERE id_trabajador = ?;");
+				$consulta->execute([$r['id']]);
+
+				if(!$consulta->fetch()){
+					$r["resultado"] = "no_existe";
+					$r["mensaje"] = "El trabajador tiene no tiene un sueldo base registrado";
+				}
+
+
+
+
 			}
 			else{
 				$r["resultado"] = "no_existe";
@@ -974,6 +1030,379 @@ class Primas extends Conexion
 	}
 
 
+	PRIVATE function registra_prima_general(){
+		try {
+			$this->validar_conexion($this->con);
+			$this->con->beginTransaction();
+			
+			// TODO validaciones
+
+
+
+			$consulta = $this->con->prepare("INSERT INTO `primas_generales`
+				(`descripcion`, `monto`, `porcentaje`, `sector_salud`, `dedicada`) 
+				VALUES 
+				(:descripcion,:monto,:porcentaje,:sector_salud,:dedicada)");
+
+			$consulta->bindValue(":descripcion",$this->descripcion);
+			$consulta->bindValue(":monto",$this->monto);
+			$consulta->bindValue(":porcentaje",$this->porcentaje);
+			$consulta->bindValue(":sector_salud",$this->sector_salud);
+			$consulta->bindValue(":dedicada",$this->dedicada);
+
+			$consulta->execute();
+
+			$lastId = $this->con->lastInsertId();
+
+			$consulta = null;
+
+			if($this->dedicada == "1") {
+				if(!count($this->trabajadores)>0){
+					throw new Exception("Debe agregar al menos un trabajador si la prima esta seleccionada como \"dedicada\"", 1);
+				}
+
+				foreach ($this->trabajadores as $elem) {
+					
+
+					$this->set_cedula($elem);
+
+					$id_trabajador = $this->valid_cedula_trabajador();
+
+					if($id_trabajador['resultado'] != "valid_cedula_trabajador"){throw new Exception($id_trabajador['mensaje'], 1); }
+
+
+					$id_trabajador = $id_trabajador["id"];
+
+
+
+					$consulta = $this->con->prepare("INSERT INTO `trabajador_prima_general`
+						(`id_primas_generales`, `id_trabajador`, `mensual`, `status`)
+						VALUES 
+						(:id_primas_generales,:id_trabajador,:mensual,:status)");
+
+					$consulta->bindValue(":id_primas_generales",$lastId);
+					$consulta->bindValue(":id_trabajador",$id_trabajador);
+					$consulta->bindValue(":mensual",$this->mensual);
+					$consulta->bindValue(":status", "1");
+
+					$consulta->execute();
+
+					$consulta= null;
+
+				}
+
+
+
+
+			}
+
+			$generales = $this->load_primas_generales();
+			if($generales['resultado'] != "load_primas_generales"){throw new Exception($generales['mensaje'], 1); }
+
+
+
+			Bitacora::reg($this->con,"Registró la prima general ($this->descripcion)");
+
+
+			
+			$r['resultado'] = 'registra_prima_general';
+			$r['mensaje'] = 'La prima fue registrada exitosamente';
+			$r['lista'] =  $generales["mensaje"];
+			$this->con->commit();
+		
+		} catch (Validaciones $e){
+			if($this->con instanceof PDO){
+				if($this->con->inTransaction()){
+					$this->con->rollBack();
+				}
+			}
+			$r['resultado'] = 'is-invalid';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+			$r['console'] =  $e->getMessage().": Code : ".$e->getLine();
+		} catch (Exception $e) {
+			if($this->con instanceof PDO){
+				if($this->con->inTransaction()){
+					$this->con->rollBack();
+				}
+			}
+		
+			$r['resultado'] = 'error';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+			//$r['mensaje'] =  $e->getMessage().": LINE : ".$e->getLine();
+		}
+		finally{
+			//$this->con = null;
+			$consulta=null;
+		}
+		return $r;
+	}
+
+
+
+	PRIVATE function modificar_prima_general(){
+		try {
+			$this->validar_conexion($this->con);
+			$this->con->beginTransaction();
+
+			//TODO Validaciones
+
+			$consulta = $this->con->prepare("SELECT descripcion FROM primas_generales WHERE id_primas_generales = ?;");
+			$consulta->execute([$this->id]);
+
+			if(!($resp = $consulta->fetch(PDO::FETCH_ASSOC))){
+				throw new Exception("La prima seleccionada no existe o fue eliminada", 1);
+			}
+			$resp = $resp["descripcion"];
+			$consulta = null;
+
+
+			$consulta = $this->con->prepare("UPDATE primas_generales 
+				SET 
+				`descripcion`= :descripcion
+				,`monto`= :monto
+				,`porcentaje`= :porcentaje
+				,`sector_salud`= :sector_salud
+				,`dedicada`= :dedicada
+
+				WHERE id_primas_generales = :id");
+
+
+			$consulta->bindValue(":descripcion",$this->descripcion);
+			$consulta->bindValue(":monto",$this->monto);
+			$consulta->bindValue(":porcentaje",$this->porcentaje);
+			$consulta->bindValue(":sector_salud",$this->sector_salud);
+			$consulta->bindValue(":dedicada",$this->dedicada);
+			$consulta->bindValue(":id",$this->id);
+
+			$consulta->execute();
+
+			$consulta = null;
+
+			$consulta = $this->con->prepare("DELETE FROM trabajador_prima_general WHERE id_primas_generales = :id");
+			$consulta->bindValue(":id",$this->id);
+			$consulta->execute();
+
+			if($this->dedicada == "1") {
+				if(!count($this->trabajadores)>0){
+					throw new Exception("Debe agregar al menos un trabajador si la prima esta seleccionada como \"dedicada\"", 1);
+				}
+
+				foreach ($this->trabajadores as $elem) {
+					
+
+					$this->set_cedula($elem);
+
+					$id_trabajador = $this->valid_cedula_trabajador();
+
+					if($id_trabajador['resultado'] != "valid_cedula_trabajador"){throw new Exception($id_trabajador['mensaje'], 1); }
+
+
+					$id_trabajador = $id_trabajador["id"];
+
+
+
+					$consulta = $this->con->prepare("INSERT INTO `trabajador_prima_general`
+						(`id_primas_generales`, `id_trabajador`, `mensual`, `status`)
+						VALUES 
+						(:id_primas_generales,:id_trabajador,:mensual,:status)");
+
+					$consulta->bindValue(":id_primas_generales",$this->id);
+					$consulta->bindValue(":id_trabajador",$id_trabajador);
+					$consulta->bindValue(":mensual",$this->mensual);
+					$consulta->bindValue(":status", "1");
+
+					$consulta->execute();
+
+					$consulta= null;
+
+				}
+
+
+
+				$generales = $this->load_primas_generales();
+				if($generales['resultado'] != "load_primas_generales"){throw new Exception($generales['mensaje'], 1); }
+
+			}
+
+
+
+			
+			$r['resultado'] = 'modificar_prima_general';
+			$r['titulo'] = 'Éxito';
+			$r['mensaje'] =  "La prima fue modificada exitosamente";
+			$r['lista'] =  $generales["mensaje"];
+
+			Bitacora::reg($this->con,"Modificó la prima general ($resp)");
+			$this->con->commit();
+		
+		} catch (Validaciones $e){
+			if($this->con instanceof PDO){
+				if($this->con->inTransaction()){
+					$this->con->rollBack();
+				}
+			}
+			$r['resultado'] = 'is-invalid';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+			$r['console'] =  $e->getMessage().": Code : ".$e->getLine();
+		} catch (Exception $e) {
+			if($this->con instanceof PDO){
+				if($this->con->inTransaction()){
+					$this->con->rollBack();
+				}
+			}
+		
+			$r['resultado'] = 'error';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+			//$r['mensaje'] =  $e->getMessage().": LINE : ".$e->getLine();
+		}
+		finally{
+			//$this->con = null;
+		}
+		return $r;
+	}
+	PRIVATE function get_prima_general(){
+		try {
+			$this->validar_conexion($this->con);
+
+			$consulta = $this->con->prepare("SELECT
+					pg.id_primas_generales as id
+				    ,pg.descripcion
+				    ,pg.porcentaje
+				    ,pg.monto
+				    ,pg.sector_salud
+				    ,pg.dedicada
+				FROM primas_generales AS pg
+				WHERE
+				    pg.id_primas_generales = ?;");
+
+			$consulta->execute([$this->id]);
+
+
+
+			if(!($resp = $consulta->fetch(PDO::FETCH_ASSOC))){
+				throw new Exception("La prima no existe o fue eliminada", 1);
+			}
+
+			$consulta = null;
+
+			if($resp["dedicada"] == '1'){
+
+				$consulta = $this->con->prepare("SELECT
+							    t.cedula
+							    ,t.nombre
+							    ,t.apellido
+							    ,t.id_trabajador as id
+							FROM
+							    trabajador_prima_general tp
+							JOIN trabajadores as t on t.id_trabajador = tp.id_trabajador
+							WHERE
+							    tp.id_primas_generales = ?");
+				$consulta->execute([$this->id]);
+
+				$trabajadores = $consulta->fetchall(PDO::FETCH_ASSOC);
+
+				foreach ($trabajadores as &$elem) {
+
+					$nombre_temp = preg_replace("/^\s*\b(\w+).*/", "$1", $elem["nombre"]);
+					$nombre_temp .= preg_replace("/^\s*\b(\w+).*/", " $1", $elem["apellido"]);
+
+					$elem["nombre"] = $nombre_temp;
+				}
+
+				$r["lista"] = $trabajadores;
+			}
+
+
+
+			
+			$r['resultado'] = 'get_prima_general';
+			$r['mensaje'] =  $resp;
+		
+		}  catch (Exception $e) {
+			if($this->con instanceof PDO){
+				if($this->con->inTransaction()){
+					$this->con->rollBack();
+				}
+			}
+		
+			$r['resultado'] = 'error';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+		}
+		finally{
+			$consulta = null;
+		}
+		return $r;
+	}
+
+
+
+	PRIVATE function eliminar_prima_general(){
+		try {
+			$this->validar_conexion($this->con);
+			$this->con->beginTransaction();
+			
+			$consulta = $this->con->prepare("SELECT descripcion FROM primas_generales WHERE id_primas_generales = ?;");
+
+			$consulta->execute([$this->id]);
+
+			if(!($resp = $consulta->fetch(PDO::FETCH_ASSOC))){
+				throw new Exception("La prima seleccionada no existe o fue eliminada", 1);
+			}
+
+			$consulta = null;
+
+			$consulta = $this->con->prepare("DELETE FROM primas_generales WHERE id_primas_generales = ?");
+			$consulta->execute([$this->id]);
+
+
+
+			$generales = $this->load_primas_generales();
+
+			if($generales['resultado'] != "load_primas_generales"){throw new Exception($generales['mensaje'], 1); }
+
+			Bitacora::reg($this->con,"Eliminó la prima general (".$resp['descripcion'].")");
+
+
+			
+			$r['resultado'] = 'eliminar_prima_general';
+			$r['titulo'] = 'Éxito';
+			$r['mensaje'] =  $generales["mensaje"];
+			$this->con->commit();
+		
+		} catch (Validaciones $e){
+			if($this->con instanceof PDO){
+				if($this->con->inTransaction()){
+					$this->con->rollBack();
+				}
+			}
+			$r['resultado'] = 'is-invalid';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+			$r['console'] =  $e->getMessage().": Code : ".$e->getLine();
+		} catch (Exception $e) {
+			if($this->con instanceof PDO){
+				if($this->con->inTransaction()){
+					$this->con->rollBack();
+				}
+			}
+		
+			$r['resultado'] = 'error';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+		}
+		finally{
+			$consulta = null;
+		}
+		return $r;
+	}
+
+
+
 
 
 
@@ -991,7 +1420,6 @@ class Primas extends Conexion
 	PUBLIC function set_id($value){
 		$this->id = $value;
 	}
-
 	PUBLIC function get_descripcion(){
 		return $this->descripcion;
 	}
@@ -1028,14 +1456,12 @@ class Primas extends Conexion
 	PUBLIC function set_year($value){
 		$this->year = $value;
 	}
-
 	PUBLIC function get_con(){
 		return $this->con;
 	}
 	PUBLIC function set_con($value){
 		$this->con = $value;
 	}
-
 	PUBLIC function get_escala(){
 
 		return $this->escala;
@@ -1044,12 +1470,36 @@ class Primas extends Conexion
 		$value = strtoupper($value);
 		$this->escala = $value;
 	}
-
 	PUBLIC function get_cedula(){
 		return $this->cedula;
 	}
 	PUBLIC function set_cedula($value){
 		$this->cedula = $value;
+	}
+	PUBLIC function get_mensual(){
+		return $this->mensual;
+	}
+	PUBLIC function set_mensual($value){
+		$this->mensual = $value;
+	}
+	PUBLIC function get_dedicada(){
+		return $this->dedicada;
+	}
+	PUBLIC function set_dedicada($value){
+		$this->dedicada = $value;
+	}
+	PUBLIC function get_sector_salud(){
+		return $this->sector_salud;
+	}
+	PUBLIC function set_sector_salud($value){
+		$this->sector_salud = $value;
+	}
+	PUBLIC function get_trabajadores(){
+		return $this->trabajadores;
+	}
+	PUBLIC function set_trabajadores($value){
+		$value = json_decode($value);
+		$this->trabajadores = $value;
 	}
 
 } 

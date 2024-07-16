@@ -220,6 +220,69 @@
 				}
 			}
 
+			else if($accion == "registra_prima_general"){
+				if(isset($permisos["primas"]["crear"]) and $permisos["primas"]["crear"] == "1"){
+
+					echo json_encode( $cl->registra_prima_general_s(
+						$_POST["descripcion"]
+						,$_POST["monto"]
+						,$_POST["porcentaje"]
+						,$_POST["mensual"]
+						,$_POST["dedicada"]
+						,$_POST["trabajadores"]
+						,$_POST["sector_salud"]
+					) );
+				}
+				else{
+					$cl->no_permision_msg();
+				}
+			}
+			else if($accion == "modificar_prima_general"){
+				if(isset($permisos["primas"]["modificar"]) and $permisos["primas"]["modificar"] == "1"){
+
+					echo json_encode( $cl->modificar_prima_general_s(
+						$_POST["id"]
+						,$_POST["descripcion"]
+						,$_POST["monto"]
+						,$_POST["porcentaje"]
+						,$_POST["mensual"]
+						,$_POST["dedicada"]
+						,$_POST["trabajadores"]
+						,$_POST["sector_salud"]
+					) );
+				}
+				else{
+					$cl->no_permision_msg();
+				}
+			}
+
+
+			else if($accion == "get_prima_general"){
+				if(isset($permisos["primas"]["modificar"]) and $permisos["primas"]["modificar"] == "1"){
+
+					echo json_encode( $cl->get_prima_general_s(
+						$_POST["id"]
+					) );
+				}
+				else{
+					$cl->no_permision_msg();
+				}
+			}
+
+		
+			else if($accion == "eliminar_prima_general"){
+				if(isset($permisos["primas"]["eliminar"]) and $permisos["primas"]["eliminar"] == "1"){
+
+					echo json_encode( $cl->eliminar_prima_general_s(
+						$_POST["id"]
+					) );
+				}
+				else{
+					$cl->no_permision_msg();
+				}
+			}
+
+
 			
 			
 

@@ -41,7 +41,7 @@
 	-ms-user-select: none;
 	user-select: none;
 }
-
+.d-table.table-middle .d-table-cell,
 .table-middle tbody tr td,
 .table-middle tbody tr th{
 	vertical-align: middle;
@@ -69,6 +69,9 @@ main .loader-main, body>.loader-body{
 
 body>.loader-body{
 	z-index: 1070;
+	width: 100vw;
+	height: 100vh;
+	position: fixed;
 }
 
 main .loader-main:before, body>.loader-body:before{
@@ -154,6 +157,69 @@ main .loader-main:after, body>.loader-body:after{
 
 {
 	vertical-align: middle !important;
+}
+
+
+
+.check-button:not(input){
+	--size-toggler:0.75em;
+	--btn-radius:1em;
+	display: inline-block;
+	position: relative;
+	width: 2.3em;
+	height: 1.2em;
+	border-width: 0.0625em;
+	border-color: inherit;
+	border-style: solid;
+	border-radius: var(--btn-radius);
+	background-color: white;
+	margin: 0;
+	-moz-user-select: -moz-none;
+	-khtml-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	padding: 0.125em;
+	cursor: pointer;
+
+}
+.check-button:not(input)::before{
+	content: '';
+	display: block;
+	margin: 0;
+	padding:0;
+	width: 100%;
+	height: 100%;
+	border-width: 0.0625em;
+	border-style: solid;
+	border-color: inherit;
+	border-radius: var(--btn-radius);
+	transition: 100ms background-color;
+}
+.check-button:not(input)::after{
+	position: absolute;
+	left: 0.125em;
+	top:0.18em;
+	content: '';
+	display: block;
+	width: var(--size-toggler);
+	height:var(--size-toggler);;
+	border-width: 0.0625em;
+	border-style: solid;
+	border-color: inherit;
+	background-color: white;
+	border-radius: 100%;
+	transition: left 100ms;
+}
+input[type='checkbox'].check-button{
+	display: none;
+}
+input[type='checkbox'].check-button:checked + .check-button::before{
+
+	background-color: var(--primary);
+}
+input[type='checkbox'].check-button:checked + .check-button::after{
+	left: calc(100% - (var(--size-toggler) + 0.125em));
 }
 
 

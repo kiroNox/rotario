@@ -177,16 +177,21 @@
 								</div>
 								<div class="col-12 col-md-6 mt-3">
 									<div>
-										<input type="checkbox" id="hijo_porcentaje" name="hijo_porcentaje">
-										<label class="cursor-pointer no-select" for="hijo_porcentaje">Porcentaje</label>
+										<div class="d-flex align-items-center flex-row">
+											<input type="checkbox" id="hijo_porcentaje" name="hijo_porcentaje" class="check-button">
+											<label for="hijo_porcentaje" class="check-button"></label>
+											<label class="cursor-pointer no-select m-0 ml-1" for="hijo_porcentaje">Porcentaje</label>
+										</div>
 									</div>
-									<div>
-										<input type="checkbox" id="hijo_menor" name="hijo_menor">
-										<label class="cursor-pointer no-select" for="hijo_menor">Solo Para Menor de Edad</label>
+									<div class="d-flex align-items-center flex-row">
+										<input type="checkbox" id="hijo_menor" name="hijo_menor" class="check-button">
+										<label for="hijo_menor" class="check-button"></label>
+										<label class="cursor-pointer no-select mb-0 ml-1" for="hijo_menor">Solo Para Menor de Edad</label>
 									</div>
-									<div>
-										<input type="checkbox" id="hijo_discapacidad" name="hijo_discapacidad">
-										<label class="cursor-pointer no-select" for="hijo_discapacidad">Solo Para Discapacitados</label>
+									<div class="d-flex align-items-center flex-row">
+										<input type="checkbox" id="hijo_discapacidad" name="hijo_discapacidad" class="check-button">
+										<label for="hijo_discapacidad" class="check-button"></label>
+										<label class="cursor-pointer no-select mb-0 ml-1" for="hijo_discapacidad">Solo Para Discapacitados</label>
 									</div>
 								</div>
 								<div class="col-12 col-md-6 mt-md-3" id="hijo_info_prima"></div>
@@ -316,6 +321,7 @@
 					</div>
 					<div class="container">
 						<form action="" id="f4" methot="POST" onsubmit="return false">
+							<input type="hidden" id="primas_generales_id" name="id">
 							<div class="row">
 								<div class="col-12 col-md-4">
 									<label for="primas_generales_descripcion">Descripción</label>
@@ -331,25 +337,21 @@
 									<label for="" class="fade no-select">l</label>
 									<div class="d-flex justify-content-start align-items-center flex-grow-1">
 										<label for="primas_generales_porcentaje" class="mb-0 mr-1 cursor-pointer no-select">Porcentaje</label>
-										<input type="checkbox" id="primas_generales_porcentaje" name="porcentaje">
+										<input type="checkbox" id="primas_generales_porcentaje" name="porcentaje" class="check-button">
+										<label for="primas_generales_porcentaje" class="check-button" tabindex="0"></label>
 									</div>
 								</div>
 								<div class="col-12 mt-2">
-									<div class="d-table">
+									<div class="d-table table-middle">
 										<div class="d-table-row">
 											<div class="d-table-cell">
 												<label for="primas_generales_salud" class="m-0 cursor-pointer no-select">Sector Salud</label>
 											</div>
 											<div class="d-table-cell pl-2">
-												<input type="checkbox" id="primas_generales_salud" name="sector_salud" class="cursor-pointer">
-											</div>
-										</div>
-										<div class="d-table-row">
-											<div class="d-table-cell">
-												<label for="primas_generales_mensualidad" class="m-0 cursor-pointer no-select">Mensual</label>
-											</div>
-											<div class="d-table-cell pl-2">
-												<input type="checkbox" id="primas_generales_mensualidad" name="dedicada" class="cursor-pointer">
+												<div class="d-flex align-items-center">
+													<input type="checkbox" id="primas_generales_salud" name="sector_salud" class="check-button">
+													<label for="primas_generales_salud" class="check-button" tabindex="0"></label>
+												</div>
 											</div>
 										</div>
 										<div class="d-table-row">
@@ -357,7 +359,21 @@
 												<label for="primas_generales_dedicada" class="m-0 cursor-pointer no-select">Dedicada</label>
 											</div>
 											<div class="d-table-cell pl-2">
-												<input type="checkbox" id="primas_generales_dedicada" name="dedicada" class="cursor-pointer">
+												<div class="d-flex align-items-center">
+													<input type="checkbox" id="primas_generales_dedicada" name="dedicada" class="check-button">
+													<label for="primas_generales_dedicada" class="check-button" tabindex="0"></label>
+												</div>
+											</div>
+										</div>
+										<div class="d-table-row">
+											<div class="d-table-cell">
+												<label for="primas_generales_mensual" class="m-0 cursor-pointer no-select">Mensual</label>
+											</div>
+											<div class="d-table-cell pl-2">
+												<div class="d-flex align-items-center">
+													<input type="checkbox" id="primas_generales_mensual" name="mensual" class="check-button">
+													<label for="primas_generales_mensual" class="check-button" tabindex="0"></label>
+												</div>
 											</div>
 										</div>
 									</div>
@@ -384,6 +400,9 @@
 									</table>
 								</div>
 							</div>
+							<div class="row mt-3">
+								<div class="col-12 text-center"><button class="btn btn-primary" type="submit">Registrar</button></div>
+							</div>
 						</form>
 					</div>
 					<div class="modal-footer bg-light">
@@ -396,17 +415,19 @@
 
 	<script>
 
-
-
-
 		
 
 
 
 		
 
-	//	$("#modal_registrar_prima_hijos").modal("show");
+
+
+		
+
 		// inicializar *******************************************************
+
+			add_event_to_label_checkbox();
 
 			//document.getElementById('nav-primas_generales-tab').click();
 
@@ -668,33 +689,35 @@
 				 	else if (action == "eliminar"){
 
 				 		muestraMensaje("¿Seguro?", "Esta seguro de querer eliminar la prima seleccionada?", "?", function(result){
-				 			var datos = new FormData();
-				 			datos.append("accion","eliminar_prima_antiguedad");
-				 			datos.append("id",rowId);
+				 			if(result){
+				 				var datos = new FormData();
+					 			datos.append("accion","eliminar_prima_antiguedad");
+					 			datos.append("id",rowId);
 
-				 			enviaAjax(datos,function(respuesta, exito, fail){
-				 			
-				 				var lee = JSON.parse(respuesta);
-				 				if(lee.resultado == "eliminar_prima_antiguedad"){
-				 					
-				 					muestraMensaje("Éxito", "La prima ha sido eliminada exitosamente", "s");
-				 					cargar_prima_antiguedad(lee.mensaje);
+					 			enviaAjax(datos,function(respuesta, exito, fail){
+					 			
+					 				var lee = JSON.parse(respuesta);
+					 				if(lee.resultado == "eliminar_prima_antiguedad"){
+					 					
+					 					muestraMensaje("Éxito", "La prima ha sido eliminada exitosamente", "s");
+					 					cargar_prima_antiguedad(lee.mensaje);
 
-				 				}
-				 				else if (lee.resultado == 'is-invalid'){
-				 					muestraMensaje(lee.titulo, lee.mensaje,"error");
-				 				}
-				 				else if(lee.resultado == "error"){
-				 					muestraMensaje(lee.titulo, lee.mensaje,"error");
-				 					console.error(lee.mensaje);
-				 				}
-				 				else if(lee.resultado == "console"){
-				 					console.log(lee.mensaje);
-				 				}
-				 				else{
-				 					muestraMensaje(lee.titulo, lee.mensaje,"error");
-				 				}
-				 			});
+					 				}
+					 				else if (lee.resultado == 'is-invalid'){
+					 					muestraMensaje(lee.titulo, lee.mensaje,"error");
+					 				}
+					 				else if(lee.resultado == "error"){
+					 					muestraMensaje(lee.titulo, lee.mensaje,"error");
+					 					console.error(lee.mensaje);
+					 				}
+					 				else if(lee.resultado == "console"){
+					 					console.log(lee.mensaje);
+					 				}
+					 				else{
+					 					muestraMensaje(lee.titulo, lee.mensaje,"error");
+					 				}
+					 			});
+				 			}
 				 		});
 
 				 	}
@@ -1004,40 +1027,290 @@
 
 			// inicializar primas generales
 
-			eventoMonto("primas_generales_monto");
+				eventoMonto("primas_generales_monto");
 
 
 
-			document.getElementById('add_trabajador').onclick=add_trabajador;
-			document.getElementById('sub_trabajador').onclick=sub_trabajador;
+				document.getElementById('add_trabajador').onclick=add_trabajador;
+				document.getElementById('sub_trabajador').onclick=sub_trabajador;
 
-			document.getElementById('primas_generales_dedicada').onclick = function(){
-				if(this.checked){
-					add_trabajador();
-					document.getElementById('primas_generales_container_trabajadores').classList.remove("d-none");
-					document.getElementById('primas_generales_salud').checked = false;
-					document.getElementById('primas_generales_salud').disabled = true;
+				document.getElementById('primas_generales_dedicada').onclick = function(){
+					if(this.checked){
+						add_trabajador();
+						document.getElementById('primas_generales_container_trabajadores').classList.remove("d-none");
+						document.getElementById('primas_generales_salud').checked = false;
+						document.getElementById('primas_generales_salud').disabled = true;
+						document.getElementById('primas_generales_mensual').disabled = false;
 
-					$("#primas_generales_salud, label[for='primas_generales_salud']").each((index,el)=>{
-						el.style="opacity:0.75";
+
+						$("#primas_generales_salud, label[for='primas_generales_salud']").each((index,el)=>{
+							el.style="opacity:0.75";
+						});
+
+
+
+						$("#primas_generales_mensual, label[for='primas_generales_mensual']").each((index,el)=>{
+							el.style="";
+						});
+					}
+					else{
+						document.getElementById('primas_generales_mensual').checked = false;
+						document.getElementById('primas_generales_mensual').disabled = true;
+
+						document.getElementById('primas_generales_container_trabajadores').classList.add("d-none");
+						document.getElementById('tbody_trabajadores_dedicada').innerHTML='';
+						document.getElementById('primas_generales_salud').disabled = false;
+						$("#primas_generales_salud, label[for='primas_generales_salud']").each((index,el)=>{
+							el.style="";
+						});
+
+						$("#primas_generales_mensual, label[for='primas_generales_mensual']").each((index,el)=>{
+							el.style="opacity:0.75";
+						});
+					}
+				}
+				document.getElementById('primas_generales_dedicada').onclick();
+
+				rowsEventActions("tbody_trabajadores_dedicada" ,function(action,rowId,btn){
+					if(action=='eliminar'){
+						document.getElementById('tbody_trabajadores_dedicada').removeChild(btn.parentNode.parentNode);
+					}
+
+				});
+
+
+
+				rowsEventActions("table_primas_generales" ,function(action,rowId,btn){
+					if(action=='eliminar'){
+
+						muestraMensaje("¿Seguro?", "¿Esta seguro de querer eliminar la prima seleccionada?", "?", function(result){
+							if(result){
+								var datos = new FormData();
+								datos.append("accion","eliminar_prima_general");
+								datos.append("id",rowId)
+								enviaAjax(datos,function(respuesta, exito, fail){
+								
+									var lee = JSON.parse(respuesta);
+									if(lee.resultado == "eliminar_prima_general"){
+
+										muestraMensaje("Éxito", "La prima ha sido eliminada exitosamente", "s");
+										cargar_prima_generales(lee.mensaje);
+										
+									}
+									else if (lee.resultado == 'is-invalid'){
+										muestraMensaje(lee.titulo, lee.mensaje,"error");
+									}
+									else if(lee.resultado == "error"){
+										muestraMensaje(lee.titulo, lee.mensaje,"error");
+										console.error(lee.mensaje);
+									}
+									else if(lee.resultado == "console"){
+										console.log(lee.mensaje);
+									}
+									else{
+										muestraMensaje(lee.titulo, lee.mensaje,"error");
+									}
+								});
+
+							}
+						});
+
+
+
+
+
+
+
+					}
+					else if(action=='modificar'){
+
+						muestraMensaje("¿Seguro?", "¿Esta seguro de querer modificar la prima seleccionada?", "?", function(result){
+							if(result){
+
+								var datos = new FormData();
+								datos.append("accion","get_prima_general");
+								datos.append("id",rowId);
+								enviaAjax(datos,function(respuesta, exito, fail){
+								
+									var lee = JSON.parse(respuesta);
+									if(lee.resultado == "get_prima_general"){
+
+										console.log(lee);
+
+										document.getElementById('primas_generales_id').value = lee.mensaje.id;
+										document.getElementById('primas_generales_monto').value = lee.mensaje.monto;
+										document.getElementById('primas_generales_monto').onchange();
+										document.getElementById('primas_generales_monto').classList.remove("is-valid");
+										document.getElementById('primas_generales_descripcion').value = lee.mensaje.descripcion;
+										document.getElementById('primas_generales_porcentaje').checked = (lee.mensaje.porcentaje=='1')?true:false;
+										document.getElementById('primas_generales_salud').checked = (lee.mensaje.sector_salud=='1')?true:false;
+										document.getElementById('primas_generales_dedicada').checked = (lee.mensaje.dedicada=='1')?true:false;
+										document.getElementById('primas_generales_dedicada').onclick();
+
+										document.querySelector("#f4 button[type='submit']").innerHTML='Modificar';
+
+										if(lee.mensaje.dedicada == '1'){
+											sub_trabajador();
+											for(var el of lee.lista){
+												add_trabajador(el.cedula,el.nombre,el.id);
+											}
+
+										}
+
+
+
+										$("#modal_registrar_prima_general").modal("show");
+										
+									}
+									else if (lee.resultado == 'is-invalid'){
+										muestraMensaje(lee.titulo, lee.mensaje,"error");
+									}
+									else if(lee.resultado == "error"){
+										muestraMensaje(lee.titulo, lee.mensaje,"error");
+										console.error(lee.mensaje);
+									}
+									else if(lee.resultado == "console"){
+										console.log(lee.mensaje);
+									}
+									else{
+										muestraMensaje(lee.titulo, lee.mensaje,"error");
+									}
+								});
+
+							}
+						});
+					}
+
+				});
+
+
+
+				
+
+
+				document.getElementById('f4').onsubmit=function(e){
+					e.preventDefault();
+					f4 = this;
+
+					if(f4.sending === true){
+						return false;
+					}
+
+
+					var focus = document.querySelector("#f4 button[type='submit']");
+					focus.focus();
+					focus.blur();
+
+
+
+					for(var el of document.querySelectorAll("#f4 input")){
+						if(el.classList.contains('is-invalid')){
+							el.focus();
+							return false;
+						}
+					}
+
+
+					//TODO validaciones
+
+					var datos = new FormData(this);
+					if(document.getElementById('primas_generales_id').value!=''){
+						datos.append("accion","modificar_prima_general");
+					}
+					else{
+						datos.append("accion","registra_prima_general");
+					}
+
+					var temp_monto = parseFloat( sepMilesMonto(datos.get("monto"),true) );
+
+					if(datos.has("porcentaje")){
+
+						if(temp_monto > 100){
+							muestraMensaje("Error", "El monto no puede ser mayor a 100 si esta activo el porcentaje", "w");
+							return false;
+						}
+					}
+					if(temp_monto <= 0){
+						muestraMensaje("Error", "El monto no puede ser menor o igual 0", "w");
+						return false;
+					}
+
+
+
+					datos.set("sector_salud",datos.has("sector_salud") ? "1":"0");
+					datos.set("porcentaje",datos.has("porcentaje") ? "1":"0");
+					datos.set("mensual",datos.has("mensual") ? "1":"0");
+					datos.set("dedicada",datos.has("dedicada") ? "1":"0");
+					datos.set("monto",temp_monto);
+
+					if(datos.get("dedicada") == '1' && !datos.has("trabajadores")){
+						muestraMensaje("Error", `Debe agregar al menos un trabajador si la prima esta seleccionada como "dedicada"`, "w");
+						return false;
+					}
+
+					datos.groupby("trabajadores");
+
+
+
+
+					enviaAjax(datos,function(respuesta, exito, fail){
+					
+						var lee = JSON.parse(respuesta);
+						if(lee.resultado == "registra_prima_general" || lee.resultado == "modificar_prima_general"){
+
+							muestraMensaje("Exito", lee.mensaje, 's');
+							cargar_prima_generales(lee.lista);
+							$("#modal_registrar_prima_general").modal("hide");
+
+						}
+						else if (lee.resultado == 'is-invalid'){
+							muestraMensaje(lee.titulo, lee.mensaje,"error");
+						}
+						else if(lee.resultado == "error"){
+							muestraMensaje(lee.titulo, lee.mensaje,"error");
+							console.error(lee.mensaje);
+						}
+						else if(lee.resultado == "console"){
+							console.log(lee.mensaje);
+						}
+						else{
+							muestraMensaje(lee.titulo, lee.mensaje,"error");
+						}
+						f4.sending = false; 
+					},"loader_body").p.catch((a)=>{
+						f4.sending = false; 
 					});
-				}
-				else{
-					document.getElementById('primas_generales_container_trabajadores').classList.add("d-none");
-					document.getElementById('tbody_trabajadores_dedicada').innerHTML='';
-					document.getElementById('primas_generales_salud').disabled = false;
-					$("#primas_generales_salud, label[for='primas_generales_salud']").each((index,el)=>{
-						el.style="";
+
+
+
+
+
+				};
+
+				$('#modal_registrar_prima_general').on('hidden.bs.modal', function (e) {
+
+					document.getElementById('tbody_trabajadores_dedicada').innerHTML="";
+
+					$("#f4 input,#f4 span.invalid-span").each((index,el)=>{
+						console.log(el);
+						if(el.tagName=='INPUT'){
+							if(el.type == 'checkbox'){
+								el.checked=false;
+							}
+							else{
+								el.value='';
+								el.classList.remove('is-invalid','is-valid');
+							}
+						}
+						else{
+							el.innerHTML='';
+						}
 					});
-				}
-			}
+					document.getElementById('primas_generales_dedicada').onclick();
 
-			rowsEventActions("tbody_trabajadores_dedicada" ,function(action,rowId,btn){
-				if(action=='eliminar'){
-					document.getElementById('tbody_trabajadores_dedicada').removeChild(btn.parentNode.parentNode);
-				}
+					document.querySelector("#f4 button[type='submit']").innerHTML='Registrar';
 
-			});
+				})
 
 
 
@@ -1475,7 +1748,7 @@
 
 
 			tr.appendChild(td);
-			tr.appendChild(crearElem("td",`id,trabajador-info-${n},class,text-center text-nowrap font-weight-bold align-items-center,style,width:45%;`),nombre);
+			tr.appendChild(crearElem("td",`id,trabajador-info-${n},class,text-center text-nowrap font-weight-bold align-items-center,style,width:45%;`,nombre));
 
 			btn = crearElem("button", "class,btn btn-danger ml-1,data-action,eliminar,type,button", "<span class='bi bi-trash' title='Eliminar trabajador de la lista'></span>")
 			tr.appendChild(crearElem("td",'class,text-center cell-action,style,10%', btn ));
@@ -1502,6 +1775,8 @@
 					}
 				}
 			}
+
+			document.getElementById(`primas_generalse_trabajador-${n}`).focus();
 
 		}
 
@@ -1558,7 +1833,7 @@
 						}
 					}
 					else if (lee.resultado == 'no_existe'){
-						validarKeyUp(false, etiqueta, "La cedula del trabajador no existe");
+						validarKeyUp(false, etiqueta, lee.mensaje);
 						fail();
 					}
 					else if (lee.resultado == 'is-invalid'){

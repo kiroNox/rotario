@@ -78,6 +78,7 @@
 
 
 	<script type="text/javascript">
+		add_event_to_label_checkbox();
 
 		load_lista_roles();
 
@@ -93,7 +94,6 @@
 			
 				var lee = JSON.parse(respuesta);
 				if(lee.resultado == "listar_roles"){
-					console.log(lee.mensaje);
 
 					if ($.fn.DataTable.isDataTable("#tabla_roles")) {
 						$("#tabla_roles").DataTable().destroy();
@@ -195,25 +195,33 @@
 							{data:"modificar"},
 							{data:"eliminar"}
 							],
-							createdRow: function(row,data){
+							createdRow: function(row,data,index){
+								index++;
+								id = (index * 4) - 4;
+								id++;
+
 								var list = row.querySelectorAll("td:nth-child(1)~td");
 
 								var control = ["consultar","crear","modificar","eliminar"];
 								i = 0;
 								for(x of list){
+									
 									var temp = x.innerText;
 									x.innerHTML = '';
 									x.classList.add("text-center");
 									var checkbox = crearElem("input",'type,checkbox');
-									checkbox.classList.add("cursor-pointer");
+									checkbox.classList.add("check-button");
 									if(temp == '1'){ checkbox.checked = true;}
 									else {checkbox.checked = false;}
 									checkbox.name = control[i];
 									checkbox.dataset.id_modulo = data.id_modulos;
 									checkbox.dataset.id_rol = data.id_rol;
+									checkbox.id = `permiso-check-${id}`;
 									cambiar_permiso(checkbox);
 									x.appendChild(checkbox);
+									x.appendChild(crearElem("label",`class,check-button,for,permiso-check-${id}`))
 									i++;
+									id++;
 								}
 
 							},
@@ -254,11 +262,10 @@
 
 		function cambiar_permiso(check){
 			check.onchange=function(){
+				var check = this;
 				var list = this.parentNode.parentNode.querySelectorAll("input[type='checkbox']");
-				console.log(list);
-
 				var datos = new FormData();
-				obj ={}
+				var obj ={}
 				for (y of list){
 					obj[y.name] = (y.checked)?true:false;
 				}
@@ -273,10 +280,11 @@
 				
 					var lee = JSON.parse(respuesta);
 					if(lee.resultado == "cambiar_permiso"){
-						load_lista_modulos(rol,false);
+						//load_lista_modulos(rol,false);
 					}
 					else if (lee.resultado == 'is-invalid'){
 						muestraMensaje(lee.titulo, lee.mensaje,"error");
+						check.checked = (check.checked)?false:true;
 					}
 					else if(lee.resultado == "error"){
 						muestraMensaje(lee.titulo, lee.mensaje,"error");
