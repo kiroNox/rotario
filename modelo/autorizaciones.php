@@ -319,11 +319,29 @@ class Autorizaciones extends Conexion
 		$datos = json_decode($datos);
 
 		try {
-			if($rol == '1' ){ //TODO quitar eso
-				throw new Exception("No se pueden cambiar los permisos del Administrador", 1);
+			if($rol == '1'){ //TODO quitar eso
+				throw new Validaciones("No se pueden cambiar los permisos del Administrador", 1);
 			}
 			$this->validar_conexion($this->con);
 			$this->con->beginTransaction();
+
+			$consulta = $this->con->prepare("SELECT
+											    1
+											FROM
+											    trabajadores AS t
+											JOIN permisos as p on p.id_rol = t.id_rol
+											JOIN modulos as m on m.id_modulos = p.id_modulos
+											WHERE
+											    t.id_trabajador = ? AND m.nombre like '%permisos%' AND m.id_modulos = ?");
+
+			$consulta->execute([$_SESSION["usuario_rotario"], $modulo]);
+
+			if($consulta->fetch()){
+				throw new Validaciones("No puede modificar este permiso para su propio rol", 1);
+			}
+			$consulta = null;
+
+
 			
 			$consulta = $this->con->prepare("INSERT INTO `permisos`(`id_rol`, `id_modulos`, `crear`, `modificar`, `eliminar`, `consultar`) VALUES (:id_rol, :id_modulos, :crear, :modificar, :eliminar, :consultar) ON DUPLICATE KEY UPDATE crear = :crear, modificar = :modificar, eliminar = :eliminar, consultar = :consultar");
 
@@ -353,7 +371,6 @@ class Autorizaciones extends Conexion
 			$r['resultado'] = 'is-invalid';
 			$r['titulo'] = 'Error';
 			$r['mensaje'] =  $e->getMessage();
-			$r['console'] =  $e->getMessage().": Code : ".$e->getLine();
 		} catch (Exception $e) {
 			if($this->con instanceof PDO){
 				if($this->con->inTransaction()){
@@ -368,6 +385,7 @@ class Autorizaciones extends Conexion
 		}
 		finally{
 			//$this->con = null;
+			$consulta = null;
 		}
 		return $r;
 
