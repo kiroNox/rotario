@@ -13,6 +13,7 @@ if (is_file("vista/" . $pagina . ".php")) {
                 'mensaje' => 'No tienes permisos para realizar esta acción.'
             ]);
         }
+     
         //segun el caso que llegue actuamos 
         switch ($accion) {
 
@@ -42,8 +43,12 @@ if (is_file("vista/" . $pagina . ".php")) {
 
                 // eliminar
             case "destroy":
-               $respuesta = $claseAreas->eliminar_area($_POST["id"]);
-                echo json_encode($respuesta);
+               $respuesta = $claseAreas->eliminar_area(id: $_POST['id']);
+                echo json_encode([
+                    'estado' => 200,
+                    'respuesta' => $respuesta
+                ]);
+
                 break;
                     //actualizar
             case "update":
