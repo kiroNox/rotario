@@ -23,5 +23,9 @@
 	else{
 		echo "pagina en construcción I <br>";
 	}
-	
+	// Para preguntar:
+	/*
+		Nivel de precicion de los calculos (el redondeo)
+		para las deducciones quincenales como se hace en febrero
+	*/
  ?>

@@ -637,7 +637,7 @@ function cedulaKeypress(tag){
 	if(typeof tag === 'string'){
 		tag = document.getElementById(tag);
 	}
-	tag.onkeypress=function(e){
+	tag.onkeypress=tag.oninput= tag.onchange=function(e){
 		tecla = String.fromCharCode(e.keyCode);
 		var cont_tecla_letra;
 
@@ -853,6 +853,16 @@ FormData.prototype.groupby = function(name) {
 	}
 	this.set(name,JSON.stringify(temp));
 };
+FormData.prototype.setter = function(name,verdad = 1,falso = 0) {
+	this.set(name,(this.has(name))?verdad:falso);
+};
+
+
+FormData.prototype.clean = function(name) {
+	if(this.has(name)){
+		this.set(name,removeSpace(this.get(name)));
+	}
+};
 
 FormData.prototype.removeSpace = function() {
 	// este metodo tiene el problema de que usa el metodo set del formData
@@ -882,7 +892,7 @@ function add_event_to_label_checkbox(){
 
 document.addEventListener("DOMContentLoaded", function(){
 
-	if(false){
+	if(true){
 		if(document.querySelector("#page-top > #wrapper:first-child")){
 			
 			document.body.classList.add("dark-mode");

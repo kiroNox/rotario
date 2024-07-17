@@ -116,7 +116,7 @@
     </a>
     <div id="collapseFacturas" class="collapse" aria-labelledby="headingPagos" data-parent="#accordionSidebar">
         <div class="bg-white py-2 collapse-inner rounded">
-            <a class="collapse-item" href="?p=facturar">Calcular Pagos</a>
+            <a class="collapse-item" href="?p=facturar">Gestionar Facturas de Pagos</a>
             
         </div>
     </div>

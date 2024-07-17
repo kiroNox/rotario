@@ -1,7 +1,7 @@
 
 // registar *************************************
 	cedulaKeypress(document.getElementById('cedula_modificar'));
-	eventoKeyup("cedula_modificar", V.expCedula, "La cedula es invalida");
+	eventoKeyup("cedula_modificar", V.expCedula, "La cedula es invalida ej V-00000001");
 	eventoKeyup('nombre_modificar', V.expTexto(50), "El nombre no es valido");
 	eventoKeyup('apellido_modificar', V.expTexto(50), "El apellido no es valido");
 	eventoKeyup('telefono_modificar', V.expTelefono, "El teléfono es invalido", undefined, (elem)=>{

@@ -200,7 +200,7 @@
 											<div class="row">
 												<div class="col-12 col-lg-4">
 													<label for="cedula_modificar">Cedula</label>
-													<input type="text" class="form-control" id="cedula_modificar" name="cedula" data-span="invalid-span-cedula">
+													<input type="text" class="form-control" id="cedula_modificar" name="cedula" data-span="invalid-span-cedula_modificar">
 													<span id="invalid-span-cedula_modificar" class="invalid-span text-danger"></span>
 													
 												</div>
