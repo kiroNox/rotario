@@ -168,8 +168,10 @@ main .loader-main:after, body>.loader-body:after{
 	position: relative;
 	width: 2.3em;
 	height: 1.2em;
+	min-width: 2.3em;
+	min-height: 1.2em;
 	border-width: 0.0625em;
-	border-color: inherit;
+	border-color: #858796;
 	border-style: solid;
 	border-radius: var(--btn-radius);
 	background-color: white;
@@ -192,7 +194,7 @@ main .loader-main:after, body>.loader-body:after{
 	height: 100%;
 	border-width: 0.0625em;
 	border-style: solid;
-	border-color: inherit;
+	border-color: #858796;
 	border-radius: var(--btn-radius);
 	transition: 100ms background-color;
 }
@@ -206,7 +208,7 @@ main .loader-main:after, body>.loader-body:after{
 	height:var(--size-toggler);;
 	border-width: 0.0625em;
 	border-style: solid;
-	border-color: inherit;
+	border-color: #858796;
 	background-color: white;
 	border-radius: 100%;
 	transition: left 100ms;
@@ -221,6 +223,14 @@ input[type='checkbox'].check-button:checked + .check-button::before{
 input[type='checkbox'].check-button:checked + .check-button::after{
 	left: calc(100% - (var(--size-toggler) + 0.125em));
 }
+
+
+
+input[type='checkbox'].check-button:disabled + .check-button::after,
+input[type='checkbox'].check-button:disabled + .check-button::before{
+	background-color: #eaecf4 !important;
+}
+
 
 
 
@@ -273,6 +283,26 @@ input[type='checkbox'].check-button:checked + .check-button::after{
 	.darkmode_btn-container:hover{
 		background-color: #1f1f1f;
 		opacity: 1;
+	}
+
+	.dark-mode input[type='checkbox'].check-button + .check-button::before{
+
+		background-color: var(--dark-back);
+	}
+	.dark-mode input[type='checkbox'].check-button:checked + .check-button::before{
+
+		background-color: var(--primary);
+	}
+
+	.dark-mode input[type='checkbox'].check-button:disabled + .check-button::before{
+		background-color: #6a6a6a !important;
+	}
+
+	.dark-mode input[type='checkbox'].check-button:disabled + .check-button::after{
+		background-color: #cdcdcd !important;
+	}
+	.dark-mode .form-control:disabled{
+		background-color: #7a7a7a !important;
 	}
 /* dark-mode a eliminar*/
 
