@@ -73,7 +73,7 @@
 
 
                     <!-- DataTales Example -->
-                    <<div class="card">
+                    <div class="card">
                         <div class="card-header">Lista de áreas</div>
                         <div class="card-body">
                             <div class="table-responsive">

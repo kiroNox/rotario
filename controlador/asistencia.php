@@ -1,81 +1,83 @@
 <?php
-	if(is_file("vista/".$pagina.".php")){
 
-		$cl = new Usuarios;
+if (is_file("vista/" . $pagina . ".php")) {
 
-		if(!empty($_POST)){// si hay alguna consulta tipo POST
-			$accion = $_POST["accion"];// siempre se pasa un parametro con la accion que se va a realizar
-			if($accion == "valid_cedula"){
-				echo json_encode( $cl->valid_cedula($_POST["cedula"]) );
-			}
-			else if($accion == "registrar"){
-				if(isset($permisos["usuarios"]["crear"]) and $permisos["usuarios"]["crear"] == "1"){
-					$resp = $cl->registrar_s(
-						$_POST["cedula"],
-						$_POST["nombre"],
-						$_POST["apellido"],
-						$_POST["telefono"],
-						$_POST["correo"],
-						$_POST["rol"],
-						$_POST["pass"]
-					);
+	$claseasistencia = new Asistencia;
+
+	if (!empty($_POST)) { // Si hay alguna consulta tipo POST
+		$accion = $_POST["accion"]; // Siempre se pasa un parámetro con la acción que se va a realizar
+
+
+		if (isset($permisos["vacaciones"]["crear"]) && $permisos["vacaciones"]["crear"] == "1") {
+
+			//crea la estructura de un switch case con la accion que se va a realizar 
+
+			switch ($accion) {
+				case "index":	// inicio	
+					echo json_encode($claseasistencia->load_asistencia());
+					break;
+
+				case "store":		// llama al metodo registrar asistencia
+					$id_trabajador = $_POST["id_trabajador"];
+					$id_area = $_POST["id_area"];
+					$desde = $_POST["desde"];
+					$hasta = $_POST["hasta"];
+
+					if ($id_trabajador && $id_area && $desde && $hasta && $estado) {
+
+						$resp = $claseasistencia->create_asistencia($id_trabajador, $id_area, $desde, $hasta);
+
+						echo json_encode($resp);
+
+					} else {
+						echo json_encode([
+							"resultado" => "error",
+							"titulo" => "Error",
+							"mensaje" => "Faltan parámetros en la solicitud."
+						]);
+					}
+
+					break;
+
+				case "destroy":		// llama al metodo registrar asistencia
+					$id_asistencia = $_POST["id_asistencia"];
+					$resp = $claseasistencia->delete_asistencia($id_asistencia);
+
 					echo json_encode($resp);
-				}
-				else{
-					$cl->no_permision_msg();
-				}
+
+					break;
+				case "update":		// llama al metodo registrar asistencia
+					$id_asistencia = $_POST["id_asistencia"];
+					$id_trabajador = $_POST["id_trabajador"];
+					$id_area = $_POST["id_area"];
+					$desde = $_POST["desde"];
+					$hasta = $_POST["hasta"];
+					$resp = $claseasistencia->update_asistencia( $id_trabajador, $id_area, $desde, $hasta);
+					echo json_encode($resp);
+
+					break;
+
+				case "show":
+					$id_asistencia = $_POST["id_asistencia"];
+					$resp = $claseasistencia->show_asistencia($id_asistencia);
+					echo json_encode($resp);
+					break;
+
 
 			}
-			else if($accion == "get_roles"){
+		} else {
+			$claseasistencia->no_permision_msg();
 
-				if(isset($permisos["usuarios"]["consultar"]) and $permisos["usuarios"]["consultar"] == "1"){
-					echo json_encode( $cl->get_roles() );
-				}
-				else{
-					$cl->no_permision_msg();
-				}
-			}
-			else if($accion == "listar_usuarios"){
-				if($permisos["usuarios"]["consultar"]){
-					echo json_encode( $cl->listar_usuarios() );
-				}
-				else{
-					$cl->no_permision_msg();
-				}
-			}
-			else if($accion == "modificar_usuario"){
-				if($permisos["usuarios"]["modificar"]){
-					echo json_encode( $cl->modificar_usuario_s(
-						$_POST["id"],
-						$_POST["cedula"],
-						$_POST["nombre"],
-						$_POST["apellido"],
-						$_POST["telefono"],
-						$_POST["correo"],
-						$_POST["rol"],
-						$_POST["pass"]
-					) );
-				}
-				else{
-					$cl->no_permision_msg();
-				}
-			}
-
-			else if($accion == "get_user"){
-				echo json_encode( $cl->get_user($_POST["id"]));
-			}
-
-			$cl->set_con(null);
-			exit;
 		}
-
-
-
-		$cl->set_con(null);
-		Bitacora::ingreso_modulo("Asistencias");
-		require_once("vista/".$pagina.".php");
 	}
-	else{
-		require_once("vista/404.php"); 
-	}
+
+
+
+	$claseasistencia->set_con(null);
+	Bitacora::ingreso_modulo("Asistencia");
+	require_once ("vista/" . $pagina . ".php");
+} else {
+	require_once ("vista/404.php");
+}
+
 ?>
