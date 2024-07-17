@@ -1,7 +1,7 @@
 <?php
 
 
-class Asistencia extends Conexion
+class asistencias extends Conexion
 {
 
     private $con, $id_area,$id_trabajador, $codigo, $descripcion, $desde, $hasta;
@@ -16,7 +16,7 @@ class Asistencia extends Conexion
     }
 
     //crea un metodo para cargar las asistencias que es una tabla pivot entre area y trabajador
-    public function load_asistencia()
+    public function listar_asistencia()
     {
         try {
             $this->validar_conexion($this->con);
