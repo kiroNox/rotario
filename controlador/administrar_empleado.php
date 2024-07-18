@@ -36,34 +36,49 @@
 				} else {
 					$cl->no_permision_msg();
 				}
-			} else if($accion == "registrar_trabajador"){
-				if(isset($permisos["usuarios"]["crear"]) and $permisos["usuarios"]["crear"] == "1"){
-					$resp = $cl->registrar_trabajador(
-						$_POST["cedula"],
-						$_POST["nombre"],
-						$_POST["apellido"],
-						$_POST["telefono"],
-						$_POST["correo"],
-						$_POST["numero_cuenta"],
-						$_POST["fecha_nacimiento"],
-						$_POST["sexo"],
-						$_POST["instruccion"],
-						$_POST["salario"]
-					);
-					echo json_encode($resp);
-				}
-				else{
+			} elseif ($accion == "calculo_habil") {
+				if (isset($permisos["usuarios"]["crear"]) && $permisos["usuarios"]["crear"] == "1") {
+					$valor1 = $_POST["desde"];
+					$diasTotales = (int)$_POST["dias_totales"];
+			
+					// Suponiendo que $cl->dias_habiles() devuelve las fechas no hábiles en el formato mencionado
+					$resp = $cl->dias_habiles();
+					$noHabiles = array_map(function($dateArray) {
+						return $dateArray[0];
+					}, $resp['mensaje']);
+			
+					$fechaInicial = new DateTime($valor1);
+					$diasContados = 0;
+			
+					while ($diasContados < $diasTotales) {
+						$fechaInicial->modify('+1 day');
+						$diaSemana = $fechaInicial->format('N');
+			
+						// Excluir sábados (6), domingos (7) y días no hábiles
+						if ($diaSemana < 6 && !in_array($fechaInicial->format('Y-m-d'), $noHabiles)) {
+							$diasContados++;
+						}
+					}
+			
+					$fechaFinal = $fechaInicial->format('Y-m-d');
+					echo json_encode([
+						"resultado" => "fecha_calculada",
+						"titulo" => "Éxito",
+						"mensaje" => "La fecha final calculada es: $fechaFinal",
+						"fecha_final" => $fechaFinal
+					]);
+				} else {
 					$cl->no_permision_msg();
 				}
-
-			}elseif ($accion == "registrar_reposo") {
+			} elseif ($accion == "registrar_reposo") {
 				if (isset($permisos["usuarios"]["crear"]) && $permisos["usuarios"]["crear"] == "1") {
 					$resp = $cl->registrar_reposo(
 						$_POST["id"],
 						$_POST["tipo_reposo"],
 						$_POST["descripcion_reposo"],
 						$_POST["fecha_inicio_reposo"],
-						$_POST["fecha_reincorporacion_reposo"]
+						$_POST["fecha_reincorporacion_reposo"],
+						$_POST["dias_totales_repo"]
 						
 						
 					);
@@ -71,14 +86,40 @@
 				} else {
 					$cl->no_permision_msg();
 				}
-			} elseif ($accion == "registrar_permiso") {
+			}else if ($accion == "modificar_reposo") {
+				if (isset($permisos["usuarios"]["crear"]) && $permisos["usuarios"]["crear"] == "1") {
+					$resp = $cl->modificar_reposo(
+						$_POST["fecha_inicio_reposo"],
+						$_POST["fecha_reincorporacion_reposo"],
+						$_POST["dias_totales_repo"],
+						$_POST["tipo_reposo"],
+						$_POST["descripcion_reposo"],
+						$_POST["id_tabla2"]
+					);
+					echo json_encode($resp);
+				} else {
+					$cl->no_permision_msg();
+				}
+			}  elseif ($accion == "registrar_permiso") {
 				if (isset($permisos["usuarios"]["crear"]) && $permisos["usuarios"]["crear"] == "1") {
 					$resp = $cl->registrar_permiso(
 						$_POST["id"],
 						$_POST["tipo_de_permiso"],
 						$_POST["descripcion_permiso"],
+						$_POST["fecha_inicio_permiso"]
+						
+					);
+					echo json_encode($resp);
+				} else {
+					$cl->no_permision_msg();
+				}
+			}else if ($accion == "modificar_permiso") {
+				if (isset($permisos["usuarios"]["crear"]) && $permisos["usuarios"]["crear"] == "1") {
+					$resp = $cl->modificar_permiso(
+						$_POST["tipo_de_permiso"],
+						$_POST["descripcion_permiso"],
 						$_POST["fecha_inicio_permiso"],
-						$_POST["fecha_reincorporacion_permiso"]
+						$_POST["id_tabla3"]
 						
 					);
 					echo json_encode($resp);
@@ -108,6 +149,14 @@
 			elseif ($accion == "detalles_vacaciones") {
 				$id_trabajador = $_POST['id'];
 				echo json_encode($cl->obtener_detalles_vacaciones($id_trabajador));
+			}
+			elseif ($accion == "detalles_reposos") {
+				$id_trabajador = $_POST['id'];
+				echo json_encode($cl->obtener_detalles_reposo($id_trabajador));
+			}
+			elseif ($accion == "detalles_permisos") {
+				$id_trabajador = $_POST['id'];
+				echo json_encode($cl->obtener_detalles_permisos($id_trabajador));
 			}
 	
 			$cl->set_con(null);
