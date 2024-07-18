@@ -272,4 +272,109 @@ $(document).ready(function () {
 		});
 	})
 
+  $('#modal_registar_hijos').on('hidden.bs.modal', function (e) {
+    // Selecciona todos los inputs y selects dentro del formulario con id 'formularioAsistencia', excepto los checkboxes y botones de submit
+    $("#formularioAsistencia input:not(input[type='checkbox']):not(input[type='submit']), #formularioAsistencia select").each(function(index, el) {
+        // Limpia el valor de cada input y select
+        el.value = '';
+        // Si el id del elemento no es 'form_id_hijo'
+        if(el.id != 'form_id_hijo' ){
+            validarKeyUp(true, el.id);
+            el.classList.remove("is-valid");
+        }
+    });
+    // Desmarca el checkbox dentro del formulario con id 'formularioAsistencia'
+    document.querySelector("#formularioAsistencia input[type='checkbox']").checked = false;
+    // Limpia el contenido de los elementos con id 'nombre-padre' y 'nombre-madre'
+    document.getElementById('nombre-padre').innerHTML = '';
+    document.getElementById('nombre-madre').innerHTML = '';
+    // Cambia el valor del botón de submit a 'Registrar'
+    document.getElementById('submit_btn').value = 'Registrar';
+    // Remueve la clase 'text-dark' del botón de submit
+    document.getElementById('submit_btn').classList.remove('text-dark');
+    // Reemplaza la clase 'btn-warning' con 'btn-primary' en el botón de submit
+    document.getElementById('submit_btn').classList.replace("btn-warning", "btn-primary");
+    // Cambia el título del modal a 'Registrar Hijo'
+    document.querySelector("#modal_registar_hijos h5.modal-title").innerHTML = 'Registrar Hijo';
+});
+
+document.getElementById('f1').onsubmit=function(e){
+  e.preventDefault();
+  if(document.getElementById('f1').value != ''){
+    if(this.sending){
+      return false;
+    }
+    if(document.getElementById('submit_btn').value == 'Registrar'){
+      var mensaje = "Seguro que desea registrar nuevo hijo de trabajador"
+    }
+    else if (document.getElementById('submit_btn').value == 'Modificar'){
+      var mensaje = "Seguro que desea modificar hijo de trabajador"
+    }
+    else {
+      alert("error");
+      return false;
+    }
+
+    muestraMensaje("¿Seguro?", mensaje, "?",(resp)=>{
+      if(resp){
+
+        var datos = new FormData($("#f1")[0]);
+        if($("#padre_cedula").val() == '' && $("#madre_cedula").val() == ''){
+          muestraMensaje("Invalido", "Debe registrar al menos una cedula de un padre/madre", "e");
+          return false;
+        }
+
+        if(document.getElementById('submit_btn').value == 'Registrar'){
+          datos.append("accion","registrar_hijo");
+        }
+        else if (document.getElementById('submit_btn').value == 'Modificar'){
+          datos.append("accion","modificar_hijo");
+        }
+
+        this.sending = true;
+        document.getElementById('submit_btn').disabled = true;
+        enviaAjax(datos,function(respuesta, exito, fail){
+        
+          var lee = JSON.parse(respuesta);
+          if(lee.resultado == "registrar_hijo"){
+            muestraMensaje("Registro Exitoso", "El hijo ha sido registrado exitosamente", "s");
+            $("#modal_registar_hijos").modal("hide");
+
+          }
+          else if (lee.resultado == 'modificar_hijo'){
+            muestraMensaje("Modificación Exitosa", "El hijo ha sido modificado exitosamente", "s");
+            $("#modal_registar_hijos").modal("hide");
+
+          }
+          else if (lee.resultado == 'is-invalid'){
+            muestraMensaje(lee.titulo, lee.mensaje,"error");
+          }
+          else if(lee.resultado == "error"){
+            muestraMensaje(lee.titulo, lee.mensaje,"error");
+            console.error(lee.mensaje);
+          }
+          else if(lee.resultado == "console"){
+            console.log(lee.mensaje);
+          }
+          else{
+            muestraMensaje(lee.titulo, lee.mensaje,"error");
+          }
+          load_lista_hijos();
+          document.getElementById('f1').sending = undefined;
+          document.getElementById('submit_btn').disabled = false;
+        },"loader_body").p.catch((a)=>{
+          load_lista_hijos();
+          document.getElementById('f1').sending = undefined;
+          document.getElementById('submit_btn').disabled = false;
+        });
+      }
+    });
+  }
+  else{
+    muestraMensaje("Error", "La acción no se puede completar", "s");
+  }
+};
+
+
+
 });
