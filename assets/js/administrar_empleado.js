@@ -1,5 +1,10 @@
 $(document).ready(function() {
-
+    
+    // Cargar datos y actualizar tarjetas al inicio
+    cargarVacaciones();
+    cargarReposos();
+    cargarPermisos();
+    
     load_lista_usuarios();
     $('.card-vacaciones').on('click', function() {
         cargarVacaciones(function() {
@@ -17,21 +22,53 @@ $(document).ready(function() {
         });
     });
 
-    $("#cerrar_modal").on('click', function() {
-       $('#vacaciones_hasta').text('');
-       $("#home").css('display','none');
-       $("#mm").val('0');
-
-       
-    });
-    $("#cerrar_mv").on('click', function() {
+   
+    $(".close, .cv_w").on('click', function() {
         $('#vacaciones_hasta').text('');
-        $("#home").css('display','none');
+        $("#home").css('display','block');
         $("#mm").val('0');
+        $("#f1")[0].reset();
+
+        $('#reposos_hasta').text('');
+        $("#myTabContent1").css('display','block');
+        $("#mm2").val('0');
+        $("#f2")[0].reset();
+ 
+        $('#permisos_hasta').text('');
+        $("#myTabContent2").css('display','block');
+        $("#mm3").val('0');
+        $("#f3")[0].reset();
+ 
  
         
      });
 
+     $( "#dias_totales" ).on( "keyup", function() {
+        var dato1 = $( "#desde" ).val();
+        var dato2 = $( "#dias_totales" ).val();
+        var dato3 = "1";
+        calcular_dia_habil(dato1, dato2, dato3);
+
+
+      } );
+
+      $( "#dias_totales_repo" ).on( "keyup", function() {
+        var dato1 = $( "#fecha_inicio_reposo" ).val();
+        var dato2 = $( "#dias_totales_repo" ).val();
+        var dato3 = "2";
+        calcular_dia_habil(dato1, dato2, dato3);
+
+
+      } );
+
+      $( "#dias_totales" ).on( "keyup", function() {
+        var dato1 = $( "#desde" ).val();
+        var dato2 = $( "#dias_totales" ).val();
+        calcular_dia_habil(dato1, dato2);
+        
+
+
+      } );
     
 
     $(document).on('click', '.vacaciones-btn', function() {
@@ -39,27 +76,14 @@ $(document).ready(function() {
         obtenerDetallesVacaciones(idTrabajador);
     });
 
-    // Cargar datos y actualizar tarjetas al inicio
-    cargarVacaciones();
-    cargarReposos();
-    cargarPermisos();
+    $(document).on('click', '.reposos-btn', function() {
+        var idTrabajador = $(this).closest('tr').data('id');
+        obtenerDetallesReposos(idTrabajador);
+    });
 
-    $("#agg").on("click", function(){
-        $('#exampleModal').modal('show');
-    })
-
-    $('#tabla_trabajadores').on('click', '.edit-btn', function() {
-        var row = $(this).closest('tr')[0];
-        var id = row.dataset.id;
-        console.log('ID del trabajador:', id);
-        $('#id1').val(id);
-        $('#id2').val(id);
-        $('#id3').val(id);
-    
-        // Aquí puedes cargar los datos adicionales en el modal, si es necesario
-    
-        // Mostrar el modal
-        $('#exampleModal1').modal('show');
+    $(document).on('click', '.permisos-btn', function() {
+        var idTrabajador = $(this).closest('tr').data('id');
+        obtenerDetallesPermisos(idTrabajador);
     });
 
     // Funciones para manejar los modales
@@ -101,26 +125,41 @@ function mostrarModalPermisos(id) {
     // Implementación del modal de permisos
     console.log("Mostrar modal de permisos para el usuario con ID: " + id);
 }
-   /*  rowsEvent("tbody_trabajadores",(row)=>{
-        row.addEventListener('click', function() {
-            // Obtén el ID del trabajador desde el atributo data-id
-            const id = row.dataset.id;
-            console.log('ID del trabajador:', id);
-            $('#id1').val(id);
-            $('#id2').val(id);
-            $('#id3').val(id);
 
-            // Aquí puedes hacer algo con el ID, como cargar datos adicionales en el modal
 
-            // Muestra el modal
-            $('#exampleModal').modal('show');
-        });
-        console.log(row.dataset.id);
-    }); */
+function setupFormValidation(formulario, accion, successMessage, cargarFuncion) {
+    $(formulario).on('submit', function(e) {
+        e.preventDefault();
+        if (validarFormulario(formulario)) {
+            var datos = new FormData($(formulario)[0]);
+            datos.append("accion", accion);
 
-    $('#myButton').on('click', function() {
-        
+            enviaAjax(datos, function(respuesta, exito, fail) {
+                try {
+                    var lee = JSON.parse(respuesta);
+                    if (lee.resultado === "registrar") {
+                        muestraMensaje("Éxito", successMessage, "s");
+                        cargarFuncion();
+                    } else if (lee.resultado === 'is-invalid') {
+                        muestraMensaje(lee.titulo, lee.mensaje, "error");
+                    } else if (lee.resultado === "error") {
+                        muestraMensaje(lee.titulo, lee.mensaje, "error");
+                        console.error(lee.mensaje);
+                    } else if (lee.resultado === "console") {
+                        console.log(lee.mensaje);
+                    } else {
+                        muestraMensaje(lee.titulo, lee.mensaje, "error");
+                    }
+                } catch (error) {
+                    console.error("Error al parsear la respuesta JSON:", error);
+                    console.error("Respuesta recibida:", respuesta);
+                }
+            });
+        }
     });
+}
+
+   
 
     $('#f1').on('submit', function(e) {
         e.preventDefault();
@@ -133,7 +172,10 @@ function mostrarModalPermisos(id) {
             });
 
         
+            if (validarFormulario('#f1')) {
 
+
+            
             var datos = new FormData($('#f1')[0]);
 
             if( $("#mm").val() === "1"){
@@ -153,11 +195,19 @@ function mostrarModalPermisos(id) {
                     var lee = JSON.parse(respuesta);
                     if (lee.resultado === "registrar") {
                         muestraMensaje("Exito", "Vacaciones nuevas registrado", "s");
+                        $('#exampleModal1').modal('hide');
+                        $("#f1")[0].reset();
+                        $("#mm").val("1");
                         $("input").val();
                         cargarVacaciones();
+                        
                     }else if (lee.resultado === 'modificar') {
                         muestraMensaje(lee.titulo, lee.mensaje, "s");
+                        $('#exampleModal1').modal('hide');
+                        $("#f1")[0].reset();
+                        $("#mm").val("1");
                         $("input").val();
+                        
                     } else if (lee.resultado === 'is-invalid') {
                         muestraMensaje(lee.titulo, lee.mensaje, "error");
                     } else if (lee.resultado === "error") {
@@ -173,6 +223,8 @@ function mostrarModalPermisos(id) {
                     console.error("Respuesta recibida:", respuesta);
                 }
             });
+
+        }
         
     });
     $('#f2').on('submit', function(e) {
@@ -185,20 +237,42 @@ function mostrarModalPermisos(id) {
                 }
             });
 
-        
+            if (validarFormulario('#f2')) {
 
             var datos = new FormData($('#f2')[0]);
-            datos.append("accion", "registrar_reposo");
+
+            if( $("#mm2").val() === "1"){
+                datos.append("accion", "modificar_reposo");
+                console.log("modif");
+
+            }else
+            {
+                datos.append("accion", "registrar_reposo");
+                console.log("registraaaar");
+
+            }
 
             enviaAjax(datos, function(respuesta, exito, fail) {
                 try {
                     var lee = JSON.parse(respuesta);
                     if (lee.resultado === "registrar") {
                         muestraMensaje("Exito", "Reposo nuevo registrado", "s");
-                       
+                        $('#exampleModal2').modal('hide');
+                        $("#f2")[0].reset();
+                        $("#mm2").val("1");
                         cargarReposos();
+                    } else if (lee.resultado === 'modificar') {
+                        muestraMensaje(lee.titulo, lee.mensaje, "s");
+                        $('#exampleModal2').modal('hide');
+                        $("#f2")[0].reset();
+                        $("#mm2").val("1");
+                        $("input").val();
+                        
                     } else if (lee.resultado === 'is-invalid') {
                         muestraMensaje(lee.titulo, lee.mensaje, "error");
+                    } else if (lee.resultado === "error") {
+                        muestraMensaje(lee.titulo, lee.mensaje, "error");
+                        console.error(lee.mensaje);
                     } else if (lee.resultado === "error") {
                         muestraMensaje(lee.titulo, lee.mensaje, "error");
                         console.error(lee.mensaje);
@@ -211,8 +285,8 @@ function mostrarModalPermisos(id) {
                     console.error("Error al parsear la respuesta JSON:", error);
                     console.error("Respuesta recibida:", respuesta);
                 }
-            });
-        
+            }); 
+        }
     });
     $('#f3').on('submit', function(e) {
         e.preventDefault();
@@ -224,16 +298,28 @@ function mostrarModalPermisos(id) {
                 }
             });
 
-
+            if (validarFormulario('#f3')) {
             var datos = new FormData($('#f3')[0]);
-            datos.append("accion", "registrar_permiso");
 
+            if( $("#mm3").val() === "1"){
+                datos.append("accion", "modificar_permiso");
+                console.log("modif");
+
+            }else
+            {
+                datos.append("accion", "registrar_permiso");
+                console.log("registrar");
+
+            }
+           
             enviaAjax(datos, function(respuesta, exito, fail) {
                 try {
                     var lee = JSON.parse(respuesta);
                     if (lee.resultado === "registrar") {
                         muestraMensaje("Exito", "Permiso nuevo registrado", "s");
                         cargarPermisos();
+                    } else if (lee.resultado === 'modificar') {
+                        muestraMensaje("Exito", "Permiso Modificado", "s");
                     } else if (lee.resultado === 'is-invalid') {
                         muestraMensaje(lee.titulo, lee.mensaje, "error");
                     } else if (lee.resultado === "error") {
@@ -249,46 +335,9 @@ function mostrarModalPermisos(id) {
                     console.error("Respuesta recibida:", respuesta);
                 }
             });
-       
+        }
     });
-    $('#f4').on('submit', function(e) {
-        e.preventDefault();
-        
-            $("#f4 input").each(function(i, elem) {
-                if (!$(elem).validarme()) {
-                    valido = false;
-                    return false;  // salir del bucle each
-                }
-            });
-
-        
-
-            var datos = new FormData($('#f4')[0]);
-            datos.append("accion", "registrar_trabajador");
-
-            enviaAjax(datos, function(respuesta, exito, fail) {
-                try {
-                    var lee = JSON.parse(respuesta);
-                    if (lee.resultado === "registrar") {
-                        load_lista_usuarios();
-                        muestraMensaje("Exito", "Usuario nuevo registrado", "s");
-                    } else if (lee.resultado === 'is-invalid') {
-                        muestraMensaje(lee.titulo, lee.mensaje, "error");
-                    } else if (lee.resultado === "error") {
-                        muestraMensaje(lee.titulo, lee.mensaje, "error");
-                        console.error(lee.mensaje);
-                    } else if (lee.resultado === "console") {
-                        console.log(lee.mensaje);
-                    } else {
-                        muestraMensaje(lee.titulo, lee.mensaje, "error");
-                    }
-                } catch (error) {
-                    console.error("Error al parsear la respuesta JSON:", error);
-                    console.error("Respuesta recibida:", respuesta);
-                }
-            });
-        
-    });
+   
 
 
 });
@@ -514,62 +563,223 @@ function obtenerDetallesVacaciones(idTrabajador) {
     datos.append("accion", "detalles_vacaciones");
     datos.append("id", idTrabajador);
     enviaAjax(datos, function(respuesta, exito, fail) {
-        if (exito) {
+        try {
             var lee = JSON.parse(respuesta);
             if (lee.resultado == "listar") {
-                // Aquí puedes actualizar el modal con los detalles específicos de las vacaciones
-                $('#vacacionesModalLabel').text('Detalles de Vacaciones');
-
-                $('#vacaciones_hasta').append('En vacaciones hasta<br>');
-               
-                $('#vacaciones_hasta').append(lee.mensaje.hasta
-                   /* ` <tr>
-                        <td>${lee.mensaje.id_vacaciones}</td>
-                        <td>${lee.mensaje.nombre_trabajador}</td>
-                        <td>${lee.mensaje.descripcion}</td>
-                        <td>${lee.mensaje.dias_totales}</td>
-                        <td>${lee.mensaje.desde}</td>
-                        <td>${lee.mensaje.hasta}</td>
-                    </tr>
-                ` */);
-
-                $('#vacaciones_hasta').append(
-                    
-                    '<br><button id="boton_modificar_vaca" class="btn btn-primary">Modificar vacaciones</button>'
-                    );
-
-                    $('#boton_modificar_vaca').on('click', function() {
-                       
-                        $("#descripcion").val(lee.mensaje.descripcion)
-                        $("#dias_totales").val(lee.mensaje.dias_totales)
-                        $("#desde").val(lee.mensaje.desde)
-                        $("#hasta").val(lee.mensaje.hasta)
-                        $("#id1").val(lee.mensaje.id_trabajador)
-                        $("#id_tabla").val(lee.mensaje.id_vacaciones)
-                        $("#mm").val('1');
-
-                        
-
+                if(esFechaActualOFutura(lee.mensaje.hasta)){
+                        $("#home").css('display','none');
                         $('#vacaciones_hasta').text('');
+                        // Aquí puedes actualizar el modal con los detalles específicos de las vacaciones
+                        $('#vacacionesModalLabel').text('Detalles de Vacaciones');
+        
+                        $('#vacaciones_hasta').append('En vacaciones hasta<br>');
+                    
+                        $('#vacaciones_hasta').append(lee.mensaje.hasta
+                        /* ` <tr>
+                                <td>${lee.mensaje.id_vacaciones}</td>
+                                <td>${lee.mensaje.nombre_trabajador}</td>
+                                <td>${lee.mensaje.descripcion}</td>
+                                <td>${lee.mensaje.dias_totales}</td>
+                                <td>${lee.mensaje.desde}</td>
+                                <td>${lee.mensaje.hasta}</td>
+                            </tr>
+                        ` */);
+        
+                        $('#vacaciones_hasta').append(
+                            
+                            '<br><button id="boton_modificar_vaca" class="btn btn-primary">Modificar vacaciones</button>'
+                            );   
+        
+                            $('#boton_modificar_vaca').on('click', function() {
+                            
+                                $("#descripcion").val(lee.mensaje.descripcion)
+                                $("#dias_totales").val(lee.mensaje.dias_totales)
+                                $("#desde").val(lee.mensaje.desde)
+                                $("#hasta").val(lee.mensaje.hasta)
+                                $("#id1").val(lee.mensaje.id_trabajador)
+                                $("#id_tabla").val(lee.mensaje.id_vacaciones)
+                                $("#mm").val('1');
+        
+                                
+        
+                                $('#vacaciones_hasta').text('');
+                                $("#home").css('display','block');
+                            });          
+        
+                    
+                    } else {
                         $("#home").css('display','block');
-                    });
-
-                
-
-
-
-
-               
+                        console.error(lee.mensaje);
+                    }
             } else {
+
                 $("#home").css('display','block');
-                console.error(lee.mensaje);
             }
-        } else {
+            
+                
+        } catch {
             console.error(fail);
         }
     });
 }
 
+function obtenerDetallesReposos(idTrabajador) {
+    var datos = new FormData();
+    datos.append("accion", "detalles_reposos");
+    datos.append("id", idTrabajador);
+    enviaAjax(datos, function(respuesta, exito, fail) {
+        try {
+            var lee = JSON.parse(respuesta);
+            if (lee.resultado == "listar") {
+                if(esFechaActualOFutura(lee.mensaje.hasta)){
+
+                    $("#myTabContent1").css('display','none');
+                    $('#reposos_hasta').text('');
+                    // Aquí puedes actualizar el modal con los detalles específicos de las vacaciones
+                    $('#vacacionesModalLabel').text('Detalles de Vacaciones');
+    
+                    $('#reposos_hasta').append('En reposo hasta<br>');
+                   
+                    $('#reposos_hasta').append(lee.mensaje.hasta
+                       /* ` <tr>
+                            <td>${lee.mensaje.id_vacaciones}</td>
+                            <td>${lee.mensaje.nombre_trabajador}</td>
+                            <td>${lee.mensaje.descripcion}</td>
+                            <td>${lee.mensaje.dias_totales}</td>
+                            <td>${lee.mensaje.desde}</td>
+                            <td>${lee.mensaje.hasta}</td>
+                        </tr>
+                    ` */);
+    
+                    $('#reposos_hasta').append(
+                        
+                        '<br><button id="boton_modificar_repo" class="btn btn-primary">Modificar Reposo</button>'
+                        );   
+    
+                        $('#boton_modificar_repo').on('click', function() {
+                           
+                            $("#tipo_reposo").val(lee.mensaje.tipo_reposo)
+                            $("#descripcion_reposo").val(lee.mensaje.descripcion)
+                            $("#dias_totales_repo").val(lee.mensaje.dias_totales)
+                            $("#fecha_inicio_reposo").val(lee.mensaje.desde)
+                            $("#fecha_reincorporacion_reposo").val(lee.mensaje.hasta)
+                            $("#id2").val(lee.mensaje.id_trabajador)
+                            $("#id_tabla2").val(lee.mensaje.id_reposo)
+                            $("#mm2").val('1');
+    
+                            
+    
+                            $('#reposos_hasta').text('');
+                            $("#myTabContent1").css('display','block');
+                        });          
+                }
+
+               
+            } else {
+                $("#myTabContent1").css('display','block');
+                console.error(lee.mensaje);
+            }
+        } catch {
+            console.log("myTabContent1");
+            console.error(fail);
+        }
+    });
+}
+
+function obtenerDetallesPermisos(idTrabajador) {
+    var datos = new FormData();
+    datos.append("accion", "detalles_permisos");
+    datos.append("id", idTrabajador);
+    enviaAjax(datos, function(respuesta, exito, fail) {
+        try {
+            var lee = JSON.parse(respuesta);
+            if (lee.resultado == "listar") {
+
+                if(esFechaActualOFutura(lee.mensaje.desde)){
+
+                    $("#myTabContent2").css('display','none');
+                    $('#permisos_hasta').text('');
+                    
+                    // Aquí puedes actualizar el modal con los detalles específicos de las vacaciones
+                    $('#vacacionesModalLabel').text('Detalles de Vacaciones');
+    
+                    $('#permisos_hasta').append('Trabajador en permiso <br>');
+                   
+                    $('#permisos_hasta').append(lee.mensaje.desde
+                       /* ` <tr>
+                            <td>${lee.mensaje.id_vacaciones}</td>
+                            <td>${lee.mensaje.nombre_trabajador}</td>
+                            <td>${lee.mensaje.descripcion}</td>
+                            <td>${lee.mensaje.dias_totales}</td>
+                            <td>${lee.mensaje.desde}</td>
+                            <td>${lee.mensaje.hasta}</td>
+                        </tr>
+                    ` */);
+    
+                    $('#permisos_hasta').append(
+                        
+                        '<br><button id="boton_modificar_perm" class="btn btn-primary">Modificar Permiso</button>'
+                        );   
+    
+                        $('#boton_modificar_perm').on('click', function() {
+                           
+                            $("#tipo_de_permiso").val(lee.mensaje.tipo_de_permiso)
+                            $("#descripcion_permiso").val(lee.mensaje.descripcion)
+                            $("#fecha_inicio_permiso").val(lee.mensaje.desde)
+                            $("#id1").val(lee.mensaje.id_trabajador)
+                            $("#id_tabla3").val(lee.mensaje.id_permisos)
+                            $("#mm3").val('1');
+    
+                            
+    
+                            $('#permisos_hasta').text('');
+                            $("#myTabContent2").css('display','block');
+                        });          
+                }
+
+
+               
+            } else {
+                $("#myTabContent2").css('display','block');
+                console.error(lee.mensaje);
+            }
+        } catch {
+            console.error(fail);
+        }
+    });
+}
+
+function calcular_dia_habil(desde, dias, control) {
+    var datos = new FormData();
+    datos.append("accion", "calculo_habil");
+    datos.append("desde", desde);
+    datos.append("dias_totales", dias);
+    enviaAjax(datos, function(respuesta, exito, fail) {
+        try{
+            var lee = JSON.parse(respuesta);
+            if (lee.resultado == "fecha_calculada") {
+                console.log(respuesta);
+               if (control === "1"){
+
+                   $("#hasta").val(lee.fecha_final);
+               } else if(control === "2"){
+                $("#fecha_reincorporacion_reposo").val(lee.fecha_final);
+               }else if(control === "3"){
+                $("#fecha_reincorporacion_permiso").val(lee.fecha_final);
+               }
+                
+            } else {
+                console.error(lee.mensaje);
+            }
+        } catch (error){
+            console.error(error);
+        }
+    });
+}
+
+
+
+//---------------------------------------------
 
 function enviaAjax(datos, callback) {
     $.ajax({
@@ -585,6 +795,45 @@ function enviaAjax(datos, callback) {
             callback(jqXHR.responseText, false, true);
         }
     });
+}
+
+function esFechaActualOFutura(fecha) {
+    // Obtener la fecha actual
+    const fechaActual = new Date();
+    // Formatear la fecha actual como YYYY-MM-DD
+    const hoy = fechaActual.toISOString().split('T')[0];
+    // Formatear la fecha proporcionada como YYYY-MM-DD
+    const fechaFormateada = new Date(fecha).toISOString().split('T')[0];
+
+    // Comparar las dos fechas formateadas
+    return fechaFormateada >= hoy;
+}
+
+function validarCampoTexto(input, regex, mensajeError) {
+    var valor = $(input).val();
+    if (!regex.test(valor.trim())) {  // trim to remove leading/trailing spaces
+        $(input).addClass('is-invalid');
+        muestraMensaje("Error", mensajeError, "error");
+        return false;
+    } else {
+        $(input).removeClass('is-invalid');
+        return true;
+    }
+}
+
+
+
+function validarFormulario(formulario) {
+    var valido = true;
+    $(formulario).find('input').each(function() {
+        if ($(this).hasClass('no-validar')) {
+            return true; // Skip this input
+        }
+        if ($(this).attr('type') === 'text') {
+            valido &= validarCampoTexto(this, /^[\w\s]+$/, "El campo debe contener solo letras y números.");
+        }
+    });
+    return !!valido; // Convertir a booleano
 }
 
 $.fn.validarme = function() {
