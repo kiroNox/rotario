@@ -15,6 +15,53 @@ class areasTrabajador extends Conexion
 
     }
 
+    PUBLIC function registrar_area_trabajador($id_trabajador, $id_area){
+        $this->set_id_area($id_area);
+        $this->set_id_trabajador($id_trabajador);
+		return $this->registrar_area_t();
+	}
+
+    private function registrar_area_t() {
+        try {
+            $this->validar_conexion($this->con);
+            $this->con->beginTransaction();
+            
+            $consulta = $this->con->prepare("INSERT INTO `trabajador_area` (`id_area`, `id_trabajador`) VALUES (:id_area, :id_trabajador)");
+            $consulta->bindValue(":id_area", $this->id_area);
+			$consulta->bindValue(":id_trabajador", $this->id_trabajador);
+            $consulta->execute();
+            
+            $this->con->commit();
+            $r['resultado'] = 'registrar';
+            $r['titulo'] = 'Éxito';
+            $r['mensaje'] = "Trabajador registrado con éxito";
+        } catch (Validaciones $e) {
+            if ($this->con instanceof PDO) {
+                if ($this->con->inTransaction()) {
+                    $this->con->rollBack();
+                }
+            }
+            $r['resultado1'] =  $this->id_area;
+            $r['resultado2'] = $this->id_trabajador;
+            $r['resultado'] = 'is-invalid';
+            $r['titulo'] = 'Error';
+            $r['mensaje'] = $e->getMessage();
+            $r['console'] = $e->getMessage() . ": Code : " . $e->getLine();
+        } catch (Exception $e) {
+            if ($this->con instanceof PDO) {
+                if ($this->con->inTransaction()) {
+                    $this->con->rollBack();
+                }
+            }
+            $r['resultado1'] =  $this->id_area;
+            $r['resultado2'] = $this->id_trabajador;
+            $r['resultado'] = 'error';
+            $r['titulo'] = 'Error';
+            $r['mensaje'] = $e->getMessage();
+        }
+        return $r;
+    }
+
     //crear un metodo para listar areasTrabajador   
     public function listar_areasTrabajador()
     {
@@ -152,10 +199,10 @@ public function set_con($value){
     return $this->con;
 }
 public function set_id_area($value){
-    return $this->id_area;
+    return $this->id_area = $value;
 }
 public function set_id_trabajador($value){
-    return $this->id_trabajador;
+    return $this->id_trabajador = $value;
 }
 public function set_desde($value){
     return $this->desde;

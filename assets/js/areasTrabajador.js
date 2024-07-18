@@ -302,6 +302,7 @@ document.getElementById('f1').onsubmit=function(e){
   e.preventDefault();
   if(document.getElementById('f1').value != ''){
     if(this.sending){
+      this.sending = false;
       return false;
     }
     if(document.getElementById('submit_btn').value == 'Registrar'){
@@ -311,6 +312,8 @@ document.getElementById('f1').onsubmit=function(e){
       var mensaje = "Seguro que desea modificar hijo de trabajador"
     }
     else {
+    //  document.getElementById('submit_btn').disabled = false;
+     this.sending = false;
       alert("error");
       return false;
     }
@@ -319,30 +322,32 @@ document.getElementById('f1').onsubmit=function(e){
       if(resp){
 
         var datos = new FormData($("#f1")[0]);
-        if($("#padre_cedula").val() == '' && $("#madre_cedula").val() == ''){
-          muestraMensaje("Invalido", "Debe registrar al menos una cedula de un padre/madre", "e");
-          return false;
-        }
-
+        datos.consoleAll();
+ 
         if(document.getElementById('submit_btn').value == 'Registrar'){
-          datos.append("accion","registrar_hijo");
+          datos.append("accion","registrar_area_trabajador");
+       /*    datos.append("trabajador_cedula",$("#trabajador_cedula").val());
+          datos.append("trabajador_area",$("#trabajador_area").val()); */
         }
         else if (document.getElementById('submit_btn').value == 'Modificar'){
-          datos.append("accion","modificar_hijo");
+          datos.append("accion","registrar_area_trabajador");
+      /*     datos.append("trabajador_cedula",$("#trabajador_cedula").val());
+          datos.append("trabajador_area",$("#trabajador_area").val());
+          datos.append("trabajador_area_tabla",$("#trabajador_area_tabla").val()); */
         }
 
         this.sending = true;
-        document.getElementById('submit_btn').disabled = true;
+       // document.getElementById('submit_btn').disabled = true;
         enviaAjax(datos,function(respuesta, exito, fail){
         
           var lee = JSON.parse(respuesta);
-          if(lee.resultado == "registrar_hijo"){
-            muestraMensaje("Registro Exitoso", "El hijo ha sido registrado exitosamente", "s");
+          if(lee.resultado == "registrar"){
+            muestraMensaje("Registro Exitoso", "Trabajador en area ha sido registrado exitosamente", "s");
             $("#modal_registar_hijos").modal("hide");
 
           }
           else if (lee.resultado == 'modificar_hijo'){
-            muestraMensaje("Modificación Exitosa", "El hijo ha sido modificado exitosamente", "s");
+            muestraMensaje("Modificación Exitosa", "Trabajador en area ha sido modificado exitosamente", "s");
             $("#modal_registar_hijos").modal("hide");
 
           }
@@ -359,14 +364,16 @@ document.getElementById('f1').onsubmit=function(e){
           else{
             muestraMensaje(lee.titulo, lee.mensaje,"error");
           }
-          load_lista_hijos();
+          
           document.getElementById('f1').sending = undefined;
-          document.getElementById('submit_btn').disabled = false;
+        //  document.getElementById('submit_btn').disabled = false;
         },"loader_body").p.catch((a)=>{
-          load_lista_hijos();
+         
           document.getElementById('f1').sending = undefined;
-          document.getElementById('submit_btn').disabled = false;
+        //  document.getElementById('submit_btn').disabled = false;
         });
+      }else{
+        this.sending = false;
       }
     });
   }
