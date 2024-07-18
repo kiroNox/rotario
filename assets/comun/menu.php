@@ -57,7 +57,7 @@
     <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
         data-parent="#accordionSidebar">
         <div class="bg-white py-2 collapse-inner rounded">
-            <a class="collapse-item" href="?p=administrar_empleado">Administrar Tiempo</a>
+            <a class="collapse-item" href="?p=administrar_empleado">Administrar Ausencias</a>
            <!--  <a class="collapse-item" href="#">Reposos</a>
             <a class="collapse-item" href="#">Vacaciones</a> -->
             <a class="collapse-item" href="?p=nivel_educativo">Gestionar Nivel Educativo</a>
@@ -79,8 +79,9 @@
     </a>
     <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
         <div class="bg-white py-2 collapse-inner rounded">
-            <a class="collapse-item" href="?p=asistencia">Asistencia</a>
+            <a class="collapse-item" href="?p=areasTrabajador">Areas Trabajador</a>
             <a class="collapse-item" href="?p=areas">Áreas</a>
+            <a class="collapse-item" href="?p=asistencia">Asistencias</a>
            
         </div>
     </div>
@@ -142,6 +143,7 @@
     </a>
     <div id="collapseAdministracion" class="collapse" aria-labelledby="headingNomina" data-parent="#accordionSidebar">
         <div class="bg-white py-2 collapse-inner rounded">
+        <a class="collapse-item" href="?p=notificacion">Notififcaciones</a>
             <a class="collapse-item" href="?p=bitacora">Bitácora</a>
             <a class="collapse-item" href="?p=roles">Roles</a>
             <a class="collapse-item" href="?p=permisos_usuario">Permisos</a>

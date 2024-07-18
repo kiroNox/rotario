@@ -1,28 +1,17 @@
 <?php
 	if(is_file("vista/".$pagina.".php")){
 
-		$cl = new asistencia();
+		$cl = new areasTrabajador();
 
 		if(!empty($_POST)){// si hay alguna consulta tipo POST
 			$accion = $_POST["accion"];// siempre se pasa un parametro con la accion que se va a realizar
 			if($accion == "valid_cedula"){echo json_encode( $cl->valid_cedula($_POST["cedula"]) );}
 
-			else if($accion == "registrar"){
+			else if($accion == "registrar_area_trabajador"){
 				if(isset($permisos["usuarios"]["crear"]) and $permisos["usuarios"]["crear"] == "1"){
-					$resp = $cl->registrar_usuario_s(
-						$_POST["cedula"],
-						$_POST["nombre"],
-						$_POST["apellido"],
-						$_POST["telefono"],
-						$_POST["correo"],
-						$_POST["rol"],
-						$_POST["pass"],
-						$_POST["numero_cuenta"],
-						$_POST["nivel_educativo"],
-						$_POST["fecha_ingreso"],
-						$_POST["comision_servicios"],
-						(isset($_POST["discapacidad"])?true:false),
-						(isset($_POST["discapacidad_info"])?$_POST["discapacidad_info"]:"")
+					$resp = $cl->registrar_area_trabajador(
+						$_POST["trabajador_cedula"],
+						$_POST["trabajador_area"]
 					);
 					echo json_encode($resp);
 				}
@@ -48,9 +37,9 @@
 					$cl->no_permision_msg();
 				}
 			}
-			else if($accion == "listar_asistencias"){
+			else if($accion == "listar_areasTrabajador"){
 				if($permisos["usuarios"]["consultar"]){
-					echo json_encode( $cl->listar_asistencias() );
+					echo json_encode( $cl->listar_areasTrabajador() );
 				}
 				else{
 					$cl->no_permision_msg();
@@ -106,7 +95,7 @@
 
 
 		$cl->set_con(null);
-		Bitacora::ingreso_modulo("asistencias");
+		Bitacora::ingreso_modulo("areasTrabajador");
 		require_once("vista/".$pagina.".php");
 	}
 	else{

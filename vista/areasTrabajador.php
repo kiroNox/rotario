@@ -18,14 +18,14 @@
                     <div class="row">
 
                         <div class="col-6">
-                            <h1 class="h3 mb-2 text-gray-800">Asistencias</h1>
-                            <p class="mb-4">Las asistencias totales de los trabajadores
+                            <h1 class="h3 mb-2 text-gray-800">Areas Trabajadores</h1>
+                            <p class="mb-4">Las areas totales de los trabajadores
 
                         </div>
                         <div class="col-6">
                             <p class="mb-4">Registrar asistencias
                                 <button type="button" class="btn btn-primary" data-toggle="modal"
-                                    data-target="#exampleModalCenter">
+                                    data-target="#ModalCenter">
                                     Registro de asistencia
                                 </button>
                         </div>
@@ -33,25 +33,22 @@
 
                     <!-- DataTales Example -->
                     <div class="card">
-                        <div class="card-header">Lista de asistencias</div>
+                        <div class="card-header">Lista de areas de trabajadores</div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table class="table table-bordered scroll-bar-style table-hover" id="tabla_asistencia">
+                                <table class="table table-bordered scroll-bar-style table-hover" id="tabla_asistencias">
                                     <thead class="bg-primary text-light">
                                         <tr>
-                                            <th>Nombre</th>
-                                            <th>Apellido</th>
+                                            <th>Trabajador</th>
                                             <th>Cedula</th>
                                             <th>Area</th>
                                             <th>codigo</th>
-                                            <th>fecha de entrada</th>
-                                            <th>fecha de salida</th>
                                             <th>opciones</th>
                                         </tr>
                                     </thead>
-                                    <tbody class="table-cell-aling-middle" id="tbody_asistencia">
+                                    <tbody class="table-cell-aling-middle" id="tbody_asistencias">
                                         <tr>
-                                            <td colspan="8" class="text-center">Cargando</td>
+                                            <td colspan="7" class="text-center">Cargando</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -69,47 +66,49 @@
     </div>
     <!-- modal -->
 
-    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog"
-        aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal fade" id="ModalCenter" tabindex="-1" role="dialog" aria-labelledby="ModalCenterTitle"
+        aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
 
-                    <h5 class="modal-title" id="exampleModalLongTitle">Registrar asistencia</h5>
+                    <h5 class="modal-title" id="ModalLongTitle">Registrar Areas trabajadores</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
                     <div class="container">
-                        <form action="" method="POST" id="formularioAsistencia">
+                        <form action="" method="POST" id="f1">
                             <div class="row">
                                 <div class="col-12">
-                                    <label for="trabajador" class="form-label">Trabajador</label>
-                                    <input type="text" name="trabajador" id="trabajador" class="form-control">
-                                </div> 
-                                <div class="col-6">
-                                    <label for="cedula" class="form-label">Cedula</label>
-                                    <input type="text" name="cedula" id="cedula" class="form-control">
-                                </div>
-                                <div class="col-6">
-                                    <label for="area" class="form-label">Area</label>
-                                    <input type="text" name="area" id="area" class="form-control">
+                                    <label for="trabajador_cedula" class="form-label">Trabajador ()</label>
+                                    <input type="text" class="form-control" id="trabajador_cedula"
+                                        name="trabajador_cedula" data-span="invalid-span-trabajador_cedula"
+                                        placeholder="cedula" data-paretnname='trabajador_cedula'>
+
                                 </div>
                                 <div class="col-12">
-                                    <label for="codigo" class="form-label">Codigo</label>   
-                                    <input type="text" name="codigo" id="codigo" class="form-control">
+                                    <label for="trabajador_area" class="form-label">Area</label>
+                                    <input type="text" class="form-control" id="trabajador_area" name="trabajador_area"
+                                        data-span="invalid-span-trabajador_area" placeholder="area"
+                                        data-paretnname='trabajador_area'>
+
                                 </div>
-                              
-                                
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">cerrar</button>
+                                <div class="row mt-3">
+                                    <div class="col text-center">
+
+                                        <input type="submit" class="btn btn-primary" id="submit_btn" value="Registrar">
+                                    </div>
+                                </div>
                             </div>
                         </form>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">cerrar</button>
-                    <button type="button" class="btn btn-primary">guardar</button>
-                </div>
+
             </div>
         </div>
     </div>
@@ -125,6 +124,6 @@
 <script src="./vendor/datatables/jquery.dataTables.min.js"></script>
 <script src="./vendor/datatables/dataTables.bootstrap4.min.js"></script>
 <script src="./assets/js/datatables-demo.js"></script>
-<script src="./assets/js/asistencia.js"></script>
+<script src="./assets/js/areasTrabajador.js"></script>
 
 </html>
