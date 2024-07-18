@@ -161,7 +161,12 @@
 
 
 				var datos = new FormData($("#f1")[0]);
+				if(!datos.has("comision_servicios")){
+					muestraMensaje("Error", "Debe selecionar si es de comision de servicios o no", "e");
+					return false;
+				}
 				datos.append("accion","registrar");
+				datos.clean("correo");
 				enviaAjax(datos,function(respuesta, exito, fail){
 				
 					var lee = JSON.parse(respuesta);
@@ -177,6 +182,7 @@
 						document.querySelector("#f1 input[name='comision_servicios']:checked").checked=false;
 
 						load_lista_usuarios();
+						$("#modal_registrar").modal("hide");
 						
 					}
 					else if (lee.resultado == 'is-invalid'){

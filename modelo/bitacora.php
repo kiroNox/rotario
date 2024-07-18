@@ -4,17 +4,9 @@
  */
 class Bitacora extends Conexion
 {
-	 private $temp_con;
-	 public static $last;
-	function __construct($temp_con = '')
+	function __construct()
 	{
-		// al instanciar la clase puede hacerce con una conexion vieja o no 
-		// se pasaria como argumento (para controlar transacciones)
-		// "con" = conexion
-		if($temp_con instanceof PDO){// si "con" no es una instancia de PDO
-			$this->temp_con = $temp_con;
-		}
-
+		
 	}
 
 	public function load_bitacora(){

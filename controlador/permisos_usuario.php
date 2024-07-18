@@ -24,7 +24,7 @@
 			}
 			else if($accion == "cambiar_permiso"){
 				if(isset($permisos["permisos"]["modificar"]) and $permisos["permisos"]["modificar"] == "1"){
-					echo json_encode( $cl->cambiar_permiso($_POST["datos"],$_POST["rol"], $_POST["modulo"]) );
+					echo json_encode( $cl->cambiar_permiso_s($_POST["datos"],$_POST["rol"], $_POST["modulo"]) );
 				}
 				else{
 					$cl->no_permision_msg();

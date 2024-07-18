@@ -60,7 +60,7 @@
             <a class="collapse-item" href="?p=administrar_empleado">Administrar Tiempo</a>
            <!--  <a class="collapse-item" href="#">Reposos</a>
             <a class="collapse-item" href="#">Vacaciones</a> -->
-            <a class="collapse-item" href="#">Gestionar Nivel Educativo</a>
+            <a class="collapse-item" href="?p=nivel_educativo">Gestionar Nivel Educativo</a>
             
         </div>
     </div>
@@ -102,7 +102,7 @@
             <a class="collapse-item" href="?p=sueldo">Gestionar Sueldos</a>
             <a class="collapse-item" href="?p=primas">Gestionar Primas</a>
             <a class="collapse-item" href="?p=deducciones">Gestionar Deducciones</a>
-            <a class="collapse-item" href="#">Gestionar Liquidación</a>
+            <a class="collapse-item" href="?p=liquidacion">Gestionar Liquidación</a>
         </div>
     </div>
 </li>

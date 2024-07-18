@@ -4,12 +4,15 @@
  */
 class Autorizaciones extends Conexion
 {
-	PRIVATE $id, $nombre, $crear, $modidficar, $eliminar, $consultar,$con;
+	PRIVATE $con, $id, $nombre, $crear, $modidficar, $eliminar, $consultar, $datos, $modulo;
 	
 	function __construct($con = '')
 	{
 		if(!($con instanceof PDO)){
 			$this->con = $this->conecta();
+		}
+		else{
+			$this->con = $con;
 		}
 
 	}
@@ -130,11 +133,18 @@ class Autorizaciones extends Conexion
 		
 			$r['resultado'] = 'error';
 			$r['titulo'] = 'Error';
-			$r['mensaje'] =  $e->getMessage();
+			if(preg_match("/Integrity constraint violation/", $e->getMessage())){
+				$r["mensaje"] = 'El rol no puede ser eliminado ya que existen usuarios con este rol asignado';
+			}
+			else{
+
+				$r['mensaje'] =  $e->getMessage();
+			}
 			//$r['mensaje'] =  $e->getMessage().": LINE : ".$e->getLine();
 		}
 		finally{
 			//$this->con = null;
+			$consulta = null;
 		}
 		return $r;
 	}
@@ -262,7 +272,8 @@ class Autorizaciones extends Conexion
 					$consulta = $this->con->prepare("SELECT
 						m.id_modulos,
 						r.id_rol,
-		    m.nombre AS modulo,
+		    m.descripcion AS modulo,
+		    m.nombre as nombre,
 		    IF(p.crear IS NULL,0,p.crear) as crear,
 		    IF(p.modificar IS NULL, 0 , p.modificar) as modificar,
 		    IF(p.eliminar IS NULL, 0 , p.eliminar) as eliminar,
@@ -276,7 +287,7 @@ class Autorizaciones extends Conexion
 		    p.id_modulos = m.id_modulos AND
 		    p.id_rol = r.id_rol
 		WHERE
-		    r.id_rol = ?");
+		    r.id_rol = ? and m.descripcion <> 'no'");
 
 			$consulta->execute([$this->id]);
 
@@ -314,8 +325,20 @@ class Autorizaciones extends Conexion
 		return $r;
 	}
 
+	PUBLIC function cambiar_permiso_s($datos, $rol, $modulo){
+		$this->set_datos($datos);
+		$this->set_id($rol);
+		$this->set_modulo($modulo);
 
-	PUBLIC function cambiar_permiso($datos,$rol,$modulo){
+		return $this->cambiar_permiso();
+	}
+
+
+	PUBLIC function cambiar_permiso(){
+
+		$datos = $this->datos;
+		$rol = $this->id;
+		$modulo = $this->modulo;
 		$datos = json_decode($datos);
 
 		try {
@@ -436,6 +459,18 @@ class Autorizaciones extends Conexion
 	}
 	PUBLIC function set_con($value){
 		$this->con = $value;
+	}
+	PUBLIC function get_datos(){
+		return $this->datos;
+	}
+	PUBLIC function set_datos($value){
+		$this->datos = $value;
+	}
+	PUBLIC function get_modulo(){
+		return $this->modulo;
+	}
+	PUBLIC function set_modulo($value){
+		$this->modulo = $value;
 	}
 
 }

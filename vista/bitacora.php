@@ -37,6 +37,7 @@
 		</div>
 	</div>
 	<script src="assets/js/bitacora.js"></script>
+	<script src="assets/js/sb-admin-2.min.js"></script>
 
 	
 </body>

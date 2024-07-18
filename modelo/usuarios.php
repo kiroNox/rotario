@@ -146,13 +146,14 @@ class Usuarios extends Conexion
 
 
 	PUBLIC function valid_cedula ($cedula){
+		$this->set_cedula($cedula);
 		try {
-			Validaciones::validarCedula($cedula);
+			Validaciones::validarCedula($this->cedula);
 			$this->validar_conexion($this->con);
 			$this->con->beginTransaction();
 
 			$consulta = $this->con->prepare("SELECT 1 FROM trabajadores as t WHERE cedula = ?;");
-			$consulta->execute([$cedula]);
+			$consulta->execute([$this->cedula]);
 
 			if($consulta = $consulta->fetch(PDO::FETCH_ASSOC)){
 				$r["mensaje"] = 1;//existe
@@ -525,6 +526,11 @@ class Usuarios extends Conexion
 		try {
 			$this->validar_conexion($this->con);
 			$this->con->beginTransaction();
+
+			if($this->id == $_SESSION["usuario_rotario"] ){
+				throw new Exception("No puede eliminar su propio usuario", 1);
+				
+			}
 			
 			$consulta = $this->con->prepare("SELECT cedula FROM trabajadores WHERE id_trabajador = ?");
 			$consulta->execute([$this->id]);

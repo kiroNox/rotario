@@ -66,7 +66,7 @@ function muestraMensaje(titulo, mensaje = '', icono = '', customProp = false, fu
 	}
 	if(typeof func === 'function'){
 		Swal.fire(obj).then((result)=>{
-			func(result.isConfirmed);
+			func(result.isConfirmed,result);
 		});
 	}
 	else{
