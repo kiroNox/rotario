@@ -3,7 +3,7 @@
 <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
 <!-- Sidebar - Brand -->
-<a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+<a class="sidebar-brand d-flex align-items-center justify-content-center" href="?p=dashboard">
     <div class="sidebar-brand-icon rotate-n-15">
         <i class="fas fa-laugh-wink"></i>
     </div>
@@ -15,7 +15,7 @@
 
 <!-- Nav Item - Dashboard -->
 <li class="nav-item">
-    <a class="nav-link" href="index.html">
+    <a class="nav-link" href="?p=dashboard">
         <i class="fas fa-fw fa-tachometer-alt"></i>
         <span>Inicio</span></a>
 </li>
@@ -128,6 +128,15 @@
         aria-expanded="true" aria-controls="collapseFacturas">
         <i class="bi bi-calendar-day"></i>
         <span>Calendario</span>
+    </a>
+    
+</li>
+
+<li class="nav-item">
+    <a class="nav-link collapsed" href="?p=estadisticas"  
+        aria-expanded="true" aria-controls="collapseFacturas">
+        <i class="bi bi-bar-chart-line-fill"></i>
+        <span>Estadisticas</span>
     </a>
     
 </li>

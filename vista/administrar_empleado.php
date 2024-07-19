@@ -361,6 +361,7 @@ aria-hidden="true">
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
+       <button type="button" class="btn btn-info" id="Reporte_vaca">Crear reporte anual</button>
         <table class="table table-bordered table-hover" id="tabla_vacaciones" width="100%" cellspacing="0">
           <thead>
             <tr>
