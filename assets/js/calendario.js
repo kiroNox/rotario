@@ -1,4 +1,6 @@
 $(document).ready(function() {
+
+    introJs().setOption("dontShowAgain", true).start();
      const $calendarBody = $('#calendar-body');
     const $monthYear = $('#monthYear');
     const $prevButton = $('#prev');

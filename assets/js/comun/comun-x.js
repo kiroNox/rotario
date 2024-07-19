@@ -889,10 +889,55 @@ function add_event_to_label_checkbox(){
 		}
 	}
 }
+function fetchNotifications() {
+    $.ajax({
+        url: 'controlador/notificacion.php', 
+        method: 'GET',
+        data: { accion: 'getNotifications' },
+        dataType: 'json',
+        success: function(data) {
+            const alertsDropdown = $('#alertsDropdown');
+            const alertList = $('.dropdown-list');
+            alertList.empty(); // Clear previous alerts
+
+            let alertCount = 0;
+            data.forEach(notification => {
+                alertCount++;
+
+                const alertItem = $(`
+                    <a class="dropdown-item d-flex align-items-center" href="#">
+                        <div class="mr-3">
+                            <div class="icon-circle bg-warning">
+                                <i class="fas fa-exclamation-triangle text-white"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="small text-gray-500">${new Date(notification.fecha).toLocaleDateString()}</div>
+                            <span class="font-weight-bold">${notification.mensaje}</span>
+                        </div>
+                    </a>
+                `);
+
+                alertList.append(alertItem);
+            });
+
+            const badgeCounter = alertsDropdown.find('.badge-counter');
+            badgeCounter.text(alertCount > 3 ? '3+' : alertCount);
+        },
+        error: function(error) {
+            console.error('Error fetching notifications:', error);
+        }
+    });
+}
+
+// Llamar a la función fetchNotifications cada 5 minutos
 
 
 
 document.addEventListener("DOMContentLoaded", function(){
+
+	fetchNotifications(); // Fetch notifications on page load
+    setInterval(fetchNotifications, 60000); // Fetch notifications every 60 seconds
 
 	if(true){
 		if(document.querySelector("#page-top > #wrapper:first-child")){

@@ -1,9 +1,9 @@
 <div class="col-md-8 offset-md-2">
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
-                <button id="prev" class="btn btn-primary">Anterior</button>
+                <button id="prev" class="btn btn-primary" data-intro="Aqui vamos a un mes anterior">Anterior</button>
             <h2 id="monthYear"></h2>
-            <button id="next" class="btn btn-primary">Siguiente</button>
+            <button id="next" class="btn btn-primary" data-intro="Aqui vamos a un mes posterior">Siguiente</button>
             <button id="today" class="btn btn-secondary">Hoy</button>
         </div>
         <div class="card-body">
@@ -19,7 +19,7 @@
                         <th>Sáb</th>
                     </tr>
                 </thead>
-                <tbody id="calendar-body">
+                <tbody id="calendar-body" data-intro="Para poder registrar un dia, damos doble click en el dia deseado">
                     <!-- Calendar days will be injected here -->
                 </tbody>
             </table>
@@ -32,7 +32,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="eventModalLabel">Agregar/Editar Evento</h5>
+                <h5 class="modal-title" id="eventModalLabel" >Agregar/Editar Evento</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
