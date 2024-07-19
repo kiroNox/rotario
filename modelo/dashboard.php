@@ -23,7 +23,7 @@ class dashboard extends Conexion
     }
 
     public function totalVacacionesActivas() {
-        $sql = "SELECT COUNT(*) as total FROM vacaciones WHERE hasta IS NULL";
+        $sql = "SELECT COUNT(*) as total FROM vacaciones WHERE hasta > CURDATE()";
         $stmt = $this->con->prepare($sql);
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC)['total'];

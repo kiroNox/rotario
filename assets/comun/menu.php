@@ -5,9 +5,9 @@
 <!-- Sidebar - Brand -->
 <a class="sidebar-brand d-flex align-items-center justify-content-center" href="?p=dashboard">
     <div class="sidebar-brand-icon rotate-n-15">
-        <i class="fas fa-laugh-wink"></i>
+    <i class="bi bi-hospital"></i>
     </div>
-    <div class="sidebar-brand-text mx-3">SB Admin <sup>2</sup></div>
+    <div class="sidebar-brand-text mx-3">SDHR</div>
 </a>
 
 <!-- Divider -->
@@ -66,6 +66,8 @@
     </div>
 </li>
 
+
+
 <!-- Divider -->
 
 
@@ -83,6 +85,21 @@
             <a class="collapse-item" href="?p=areas">Áreas</a>
             <a class="collapse-item" href="?p=asistencia">Asistencias</a>
            
+        </div>
+    </div>
+</li>
+
+<li class="nav-item">
+    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities1"
+        aria-expanded="true" aria-controls="collapseUtilities1">
+        <i class="fas fa-fw fa-folder"></i>
+        <span>Documentos</span>
+    </a>
+    <div id="collapseUtilities1" class="collapse" aria-labelledby="headingUtilities"
+        data-parent="#accordionSidebar">
+        <div class="bg-white py-2 collapse-inner rounded">
+            <a class="collapse-item" href="?p=generar">Generar Documentos</a>
+            
         </div>
     </div>
 </li>
