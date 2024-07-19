@@ -1,4 +1,5 @@
 $(document).ready(function() {
+    introJs().setOption("dontShowAgain", true).start();
 
     console.log("adds");
     $.ajax({
@@ -17,4 +18,7 @@ $(document).ready(function() {
             $('#totalHijos').text(data[6]);
         }
     });
+
+
+
 });

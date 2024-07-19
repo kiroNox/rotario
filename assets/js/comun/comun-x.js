@@ -895,7 +895,7 @@ document.addEventListener("DOMContentLoaded", function(){
 	if(true){
 		if(document.querySelector("#page-top > #wrapper:first-child")){
 			
-			document.body.classList.add("dark-mode");
+			//document.body.classList.add("dark-mode");
 
 
 			var darkmode_btn = crearElem("button","class,btn","Dark mode change");

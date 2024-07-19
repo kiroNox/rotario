@@ -168,7 +168,7 @@
                         <!-- Nav Item - User Information -->
                         <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-intro="Desde aqui podemos cerrar la sesión actual" data-step="4">
                                 <span class="mr-2 d-none d-lg-inline text-gray-600 small"><?=$_SESSION["usuario_rotario_name"] ?></span>
                                 <!-- <img class="img-profile rounded-circle" src=""> -->
                                 <span class="img-profile rounded-circle bi bi-person-circle d-flex justify-content-center align-items-center" style="font-size: 2rem"></span>
