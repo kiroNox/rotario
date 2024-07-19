@@ -117,10 +117,12 @@
                                     <div class="mb-3">
                                         <label for="descripcion" class="form-label">Descripcion</label>
                                         <input type="text" class="form-control" name="descripcion" id="descripcion" required>
+                                        <p class="text-danger" id="error_descripcion"></p>
                                     </div>
                                     <div class="mb-3">
                                         <label for="codigo" class="form-label">Codigo</label>
                                         <input type="text" class="form-control" name="codigo" id="codigo" required>
+                                        <p class="text-danger" id="error_codigo"></p> 
                                     </div>
                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
                                     <button type="button" id="botonEnvio" class="btn btn-primary">Registro</button>

@@ -33,15 +33,29 @@ $(document).ready(function () {
 
   // Evento para el botón de envío
   $("#botonEnvio").on("click", function () {
+   
+
     let datos = new FormData($("#formularioAreas")[0]);
     const descripcion = datos.get("descripcion");
     const codigo = datos.get("codigo");
+    let error = false;
     datos.append("accion", "create");
     // Validar los campos
-    if (descripcion === "" || codigo === "") {
-      alert("Por favor, complete todos los campos.");
-      return;
+    if (descripcion == "") {
+      document.getElementById("error_descripcion").innerHTML = "Por favor, complete todos los campos.";
+      error = "true";
+    } else {
+      document.getElementById("error_descripcion").innerHTML = "";
     }
+    if (codigo == "") {
+      document.getElementById("error_codigo").innerHTML = "Por favor, complete todos los campos.";
+      error = "true";
+    } else {
+      document.getElementById("error_codigo").innerHTML = "";
+    }
+    if(error == "true"){ console.log("hola"); return;}
+    console.log("hola");
+
     // Llamar a la función AJAX
     realizarSolicitudAjax(
       "",
