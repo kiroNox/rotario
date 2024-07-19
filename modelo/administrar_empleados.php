@@ -652,6 +652,84 @@ class administrar_empleados extends Conexion
 		return $r;
 	}
 
+	public function obtener_vacaciones_anuales($year) {
+		try {
+			$this->validar_conexion($this->con);
+			$this->con->beginTransaction();
+	
+			$consulta = $this->con->prepare("
+				SELECT 
+					MONTH(v.desde) as mes,
+					COUNT(v.id_trabajador) as total_empleados
+				FROM 
+					vacaciones AS v
+				WHERE 
+					YEAR(v.desde) = :year
+				GROUP BY 
+					MONTH(v.desde)
+			");
+			$consulta->bindParam(':year', $year, PDO::PARAM_INT);
+			$consulta->execute();
+			$resultado = $consulta->fetchAll(PDO::FETCH_ASSOC);
+	
+			$this->con->commit();
+			return $resultado;
+	
+		} catch (Exception $e) {
+			if ($this->con instanceof PDO && $this->con->inTransaction()) {
+				$this->con->rollBack();
+			}
+			throw $e;
+		}
+	}
+
+	public function generar_reporte_vacaciones_anual($year) {
+		require_once 'vendor/autoload.php';
+		$dompdf = new \Dompdf\Dompdf();
+		
+		// Obtener datos del modelo
+		$modelo = new TuModelo();
+		$datos = $modelo->obtener_vacaciones_anuales($year);
+		
+		// Calcular el total de empleados en el año
+		$totalEmpleados = array_sum(array_column($datos, 'total_empleados'));
+		
+		// Generar HTML para el reporte
+		$html = '<h1>Reporte Anual de Vacaciones - ' . $year . '</h1>';
+		$html .= '<table border="1" cellspacing="0" cellpadding="5">
+					<thead>
+						<tr>
+							<th>Mes</th>
+							<th>Total Empleados</th>
+							<th>Porcentaje</th>
+						</tr>
+					</thead>
+					<tbody>';
+	
+		foreach ($datos as $dato) {
+			$mes = DateTime::createFromFormat('!m', $dato['mes'])->format('F');
+			$totalEmpleadosMes = $dato['total_empleados'];
+			$porcentaje = ($totalEmpleadosMes / $totalEmpleados) * 100;
+	
+			$html .= '<tr>
+						<td>' . $mes . '</td>
+						<td>' . $totalEmpleadosMes . '</td>
+						<td>' . number_format($porcentaje, 2) . '%</td>
+					  </tr>';
+		}
+	
+		$html .= '  </tbody>
+				  </table>';
+		
+		// Cargar el HTML en DomPDF
+		$dompdf->loadHtml($html);
+		$dompdf->setPaper('A4', 'landscape');
+		$dompdf->render();
+		
+		// Enviar el PDF al navegador
+		$dompdf->stream('reporte_vacaciones_anual_' . $year . '.pdf', array("Attachment" => false));
+	}
+
 	
 	PUBLIC function get_intruccion(){
 		return $this->intruccion;

@@ -105,7 +105,7 @@
 		
 			var lee = JSON.parse(respuesta);
 			if(lee.resultado == "singing"){
-				location.href="?p=trabajadores_user"; //TODO cambiar ruta
+				location.href="?p=dashboard"; //TODO cambiar ruta
 			}
 			else if (lee.resultado == 'is-invalid'){
 				muestraMensaje(lee.titulo, lee.mensaje,"error");

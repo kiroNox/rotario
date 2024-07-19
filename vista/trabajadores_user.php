@@ -40,125 +40,22 @@
 					<div class="container-fluid">
 
 						<!-- Page Heading -->
-						<h1 class="h3 mb-4 text-gray-800">Trabajador</h1>
-
-						<div class="container-fluid p-0">
-							<nav>
-								<div class="nav nav-tabs" id="nav-tab" role="tablist">
-									<a class="nav-item nav-link active" id="nav-registrar_usuario-tab" data-toggle="tab" href="#nav-registrar_usuario" role="tab" aria-controls="nav-registrar_usuario" aria-selected="true">Registrar</a>
-									<a class="nav-item nav-link" id="nav-consultar_usuarios-tab" data-toggle="tab" href="#nav-consultar_usuarios" role="tab" aria-controls="nav-consultar_usuarios" aria-selected="false">listar</a>
+						<div class="row mb-4">
+							<div class="col">
+								<h1 class="h3 mb-2 text-gray-800">Trabajadores</h1>
+							</div>
+							<div class="col d-flex justify-content-end align-items-center">
+								<div>
+									<button class="btn btn-primary" data-toggle="modal" data-target="#modal_registrar">Registrar Trabajadores</button>
 								</div>
-							</nav>
+							</div>
 						</div>
+
+						
 						<div class="container-fluid p-0">
 								
 							<div class="tab-content" id="nav-tabContent">
-								<div class="tab-pane fade show active" id="nav-registrar_usuario" role="tabpanel" aria-labelledby="nav-registrar_usuario-tab">
-									<div class="m-auto">
-										<div class="container">
-											<form action="" method="POST" onsubmit="return false" id="f1">
-												<div class="row">
-													<div class="col-lg-4 col-12">
-														<label for="cedula">Ingrese la cedula del nuevo trabajador</label>
-														<input type="text" class="form-control" id="cedula" name="cedula" data-span="invalid-span-cedula" value="V-2725051">
-														<span id="invalid-span-cedula" class="invalid-span text-danger"></span>
-													</div>
-												</div>
-
-												<div class="container pl-0 pr-0" id="fields">
-
-													<div class="row">
-														<div class="col-lg-4 col-12">
-															<label class="d-block" for="nombre">Nombre</label>
-															<input required type="text" class="form-control" id="nombre" name="nombre" data-span="invalid-span-nombre">
-															<span id="invalid-span-nombre" class="invalid-span text-danger"></span>
-														</div>
-														<div class="col-lg-4 col-12">
-															<label class="d-block" for="apellido">Apellido</label>
-															<input required type="text" class="form-control" id="apellido" name="apellido" data-span="invalid-span-apellido">
-															<span id="invalid-span-apellido" class="invalid-span text-danger"></span>
-															
-														</div>
-														<div class="col-lg-4 col-12">
-															<label class="d-block" for="telefono">Teléfono</label>
-															<input type="text" class="form-control" id="telefono" name="telefono" data-span="invalid-span-telefono">
-															<span id="invalid-span-telefono" class="invalid-span text-danger"></span>
-														</div>
-														<div class="col-lg-4 col-12">
-															<label class="d-block" for="correo">Correo</label>
-															<input required type="email" class="form-control" id="correo" name="correo" data-span="invalid-span-correo">
-															<span id="invalid-span-correo" class="invalid-span text-danger"></span>
-														</div>
-														<div class="col-lg-4 col-12">
-															<label for="numero_cuenta">Numero de cuenta</label>
-															<input type="text" class="form-control" id="numero_cuenta" name="numero_cuenta" data-span="invalid-span-numero_cuenta">
-															<span id="invalid-span-numero_cuenta" class="invalid-span text-danger"></span>
-														</div>
-														<div class="col-lg-4 col-12">
-															<label for="fecha_ingreso">Fecha de Ingreso</label>
-															<input type="date" class="form-control" id="fecha_ingreso" name="fecha_ingreso" data-span="invalid-span-fecha_ingreso">
-															<span id="invalid-span-fecha_ingreso" class="invalid-span text-danger"></span>
-														</div>
-														<div class="col-lg-4 col-12">
-															<label for="nivel_educativo">Nivel Educativo</label>
-															<select required name="nivel_educativo" class="form-control" id="nivel_educativo" data-span="invalid-span-nivel_educativo">
-																	<option value="">Seleccione un nivel educativo</option>
-															</select>
-															<span id="invalid-span-nivel_educativo" class="invalid-span text-danger"></span>
-														</div>
-														<div class="col-lg-4 col-12">
-															<label for="rol">Rol</label>
-															<select required class="form-control" id="rol" name="rol" data-span="invalid-span-rol">
-																<option value="">Seleccione un rol</option>
-															</select>
-															<span id="invalid-span-rol" class="invalid-span text-danger"></span>
-															
-														</div>
-														<div class="col-lg-4 col-12">
-															<label for="comision_servicios" class="d-block mb-3" >Comisión de servicios?</label>
-															<label for="comision_servicios" class="d-inline-block cursor-pointer">Si</label>
-															<input type="radio" class="form-check-inline" id="comision_servicios" name="comision_servicios" data-span="invalid-span-comision_servicios" value="true">
-															<label for="comision_servicios_no" class="d-inline-block cursor-pointer">No</label>
-															<input type="radio" class="form-check-inline" id="comision_servicios_no" name="comision_servicios" data-span="invalid-span-comision_servicios" value="false">
-															<span id="invalid-span-comision_servicios" class="invalid-span text-danger"></span>
-														</div>
-														<div class="col-lg-4 col-12">
-															<label for="discapacidad" class="d-block mb-3">Discapacidad</label>
-															<input type="checkbox" id="discapacidad" name="discapacidad" data-span="invalid-span-discapacidad">
-															<span id="invalid-span-discapacidad" class="invalid-span text-danger"></span>
-														</div>
-														<div class="col-lg-8 col-12">
-
-															<label for="discapacidad_info">Discapacidad</label>
-															<input type="text" class="form-control" id="discapacidad_info" name="discapacidad_info" data-span="invalid-span-discapacidad_info" maxlength="50">
-															<span id="invalid-span-discapacidad_info" class="invalid-span text-danger"></span>
-															
-														</div>
-														<div class="col-lg-6 col-12">
-															<label class="d-block" for="pass">Clave</label>
-															<div class="show-password-container">
-																<input required type="password" class="form-control" id="pass" name="pass" data-span="invalid-span-pass">
-																<span class="show-password-btn" data-inputpass="pass" aria-label="show password button"></span>
-															</div>
-															<span id="invalid-span-pass" class="invalid-span text-danger"></span>
-															
-														</div>
-													</div>
-
-
-
-
-														<div class="text-center mt-4">
-															<button type="submit" class="btn btn-success">Registrar</button>
-														</div>
-												</div>
-											</form>
-										</div>
-									</div>
-								</div>
-
-
-								<div class="tab-pane fade" id="nav-consultar_usuarios" role="tabpanel" aria-labelledby="nav-consultar_usuarios-tab">
+								<div class="tab-pane show active" id="nav-consultar_usuarios" role="tabpanel" aria-labelledby="nav-consultar_usuarios-tab">
 
 									<table class="table table-bordered table-middle scroll-bar-style" id="tabla_usuarios">
 										<thead class="bg-primary text-light w-100">
@@ -294,6 +191,121 @@
 											</div>
 										</form>
 										
+									</div>
+									<div class="modal-footer bg-light">
+										<button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="modal fade" tabindex="-1" role="dialog" id="modal_registrar">
+							<div class="modal-dialog modal-xl" role="document">
+								<div class="modal-content">
+									<div class="modal-header text-light bg-primary">
+										<h5 class="modal-title">Registrar Trabajadores</h5>
+										<button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+											<span aria-hidden="true">&times;</span>
+										</button>
+									</div>
+									<div class="container" style="min-height: 200px;">
+										<form action="" method="POST" onsubmit="return false" id="f1">
+											<div class="row">
+												<div class="col-lg-4 col-12">
+													<label for="cedula">Ingrese la cedula del nuevo trabajador</label>
+													<input type="text" class="form-control" id="cedula" name="cedula" data-span="invalid-span-cedula" value="V-2725051">
+													<span id="invalid-span-cedula" class="invalid-span text-danger"></span>
+												</div>
+											</div>
+
+											<div class="container pl-0 pr-0" id="fields">
+
+												<div class="row">
+													<div class="col-lg-4 col-12">
+														<label class="d-block" for="nombre">Nombre</label>
+														<input required type="text" class="form-control" id="nombre" name="nombre" data-span="invalid-span-nombre">
+														<span id="invalid-span-nombre" class="invalid-span text-danger"></span>
+													</div>
+													<div class="col-lg-4 col-12">
+														<label class="d-block" for="apellido">Apellido</label>
+														<input required type="text" class="form-control" id="apellido" name="apellido" data-span="invalid-span-apellido">
+														<span id="invalid-span-apellido" class="invalid-span text-danger"></span>
+														
+													</div>
+													<div class="col-lg-4 col-12">
+														<label class="d-block" for="telefono">Teléfono</label>
+														<input type="text" class="form-control" id="telefono" name="telefono" data-span="invalid-span-telefono">
+														<span id="invalid-span-telefono" class="invalid-span text-danger"></span>
+													</div>
+													<div class="col-lg-4 col-12">
+														<label class="d-block" for="correo">Correo</label>
+														<input required type="email" class="form-control" id="correo" name="correo" data-span="invalid-span-correo">
+														<span id="invalid-span-correo" class="invalid-span text-danger"></span>
+													</div>
+													<div class="col-lg-4 col-12">
+														<label for="numero_cuenta">Numero de cuenta</label>
+														<input type="text" class="form-control" id="numero_cuenta" name="numero_cuenta" data-span="invalid-span-numero_cuenta">
+														<span id="invalid-span-numero_cuenta" class="invalid-span text-danger"></span>
+													</div>
+													<div class="col-lg-4 col-12">
+														<label for="fecha_ingreso">Fecha de Ingreso</label>
+														<input type="date" class="form-control" id="fecha_ingreso" name="fecha_ingreso" data-span="invalid-span-fecha_ingreso">
+														<span id="invalid-span-fecha_ingreso" class="invalid-span text-danger"></span>
+													</div>
+													<div class="col-lg-4 col-12">
+														<label for="nivel_educativo">Nivel Educativo</label>
+														<select required name="nivel_educativo" class="form-control" id="nivel_educativo" data-span="invalid-span-nivel_educativo">
+																<option value="">Seleccione un nivel educativo</option>
+														</select>
+														<span id="invalid-span-nivel_educativo" class="invalid-span text-danger"></span>
+													</div>
+													<div class="col-lg-4 col-12">
+														<label for="rol">Rol</label>
+														<select required class="form-control" id="rol" name="rol" data-span="invalid-span-rol">
+															<option value="">Seleccione un rol</option>
+														</select>
+														<span id="invalid-span-rol" class="invalid-span text-danger"></span>
+														
+													</div>
+													<div class="col-lg-4 col-12">
+														<label for="comision_servicios" class="d-block mb-3" >Comisión de servicios?</label>
+														<label for="comision_servicios" class="d-inline-block cursor-pointer">Si</label>
+														<input type="radio" class="form-check-inline" id="comision_servicios" name="comision_servicios" data-span="invalid-span-comision_servicios" value="true">
+														<label for="comision_servicios_no" class="d-inline-block cursor-pointer">No</label>
+														<input type="radio" class="form-check-inline" id="comision_servicios_no" name="comision_servicios" data-span="invalid-span-comision_servicios" value="false">
+														<span id="invalid-span-comision_servicios" class="invalid-span text-danger"></span>
+													</div>
+													<div class="col-lg-4 col-12">
+														<label for="discapacidad" class="d-block mb-3">Discapacidad</label>
+														<input type="checkbox" id="discapacidad" name="discapacidad" data-span="invalid-span-discapacidad">
+														<span id="invalid-span-discapacidad" class="invalid-span text-danger"></span>
+													</div>
+													<div class="col-lg-8 col-12">
+
+														<label for="discapacidad_info">Discapacidad</label>
+														<input type="text" class="form-control" id="discapacidad_info" name="discapacidad_info" data-span="invalid-span-discapacidad_info" maxlength="50">
+														<span id="invalid-span-discapacidad_info" class="invalid-span text-danger"></span>
+														
+													</div>
+													<div class="col-lg-6 col-12">
+														<label class="d-block" for="pass">Clave</label>
+														<div class="show-password-container">
+															<input required type="password" class="form-control" id="pass" name="pass" data-span="invalid-span-pass">
+															<span class="show-password-btn" data-inputpass="pass" aria-label="show password button"></span>
+														</div>
+														<span id="invalid-span-pass" class="invalid-span text-danger"></span>
+														
+													</div>
+												</div>
+
+
+
+
+													<div class="text-center mt-4">
+														<button type="submit" class="btn btn-success">Registrar</button>
+													</div>
+											</div>
+										</form>
 									</div>
 									<div class="modal-footer bg-light">
 										<button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>

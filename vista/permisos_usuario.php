@@ -16,7 +16,7 @@
 					</div>
 					<div class="container-fluid">
 						<div class="container m-auto" style="max-width: 500px">
-							<table class="table table-hover table-bordered row-cursor-pointer" id="tabla_roles">
+							<table class="table table-hover table-bordered table-middle row-cursor-pointer" id="tabla_roles">
 								<thead class="bg-primary text-light">
 									<tr>
 										<th>Rol</th>
@@ -53,7 +53,7 @@
 				</style>
 				<div class="container">
 					<div class="table-responsive">
-						<table class="table table-sm table-striped table-hover rows-cursor-pointer" id="tabla_permisos">
+						<table class="table table-sm table-striped table-hover rows-cursor-pointer table-middle" id="tabla_permisos">
 							<thead class="thead-dark">
 								<tr>
 									<th>Modulo</th>
@@ -228,8 +228,8 @@
 							//searching:false,
 							info: false,
 							ordering: false,
-							autoWidth: false
-							//paging: false
+							autoWidth: false,
+							paging: false
 							//order: [[1, "asc"]],
 							
 						});
@@ -300,6 +300,7 @@
 			}
 		}
 	</script>
+	<script src="assets/js/sb-admin-2.min.js"></script>
 </body>
 
 </html>

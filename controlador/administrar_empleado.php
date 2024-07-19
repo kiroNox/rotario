@@ -1,8 +1,56 @@
 <?php
 
+
+
 	if (is_file("vista/" . $pagina . ".php")) {
 
 		$cl = new administrar_empleados;
+
+		function generar_reporte_vacaciones_anual($cl,$year) {
+			require_once 'vendor/autoload.php';
+			$dompdf = new \Dompdf\Dompdf();
+			
+			
+			$datos = $cl->obtener_vacaciones_anuales($year);
+			
+			// Calcular el total de empleados en el año
+			$totalEmpleados = array_sum(array_column($datos, 'total_empleados'));
+			
+			// Generar HTML para el reporte
+			$html = '<h1>Reporte Anual de Vacaciones - ' . $year . '</h1>';
+			$html .= '<table border="1" cellspacing="0" cellpadding="5">
+						<thead>
+							<tr>
+								<th>Mes</th>
+								<th>Total Empleados</th>
+								<th>Porcentaje</th>
+							</tr>
+						</thead>
+						<tbody>';
+		
+			foreach ($datos as $dato) {
+				$mes = DateTime::createFromFormat('!m', $dato['mes'])->format('F');
+				$totalEmpleadosMes = $dato['total_empleados'];
+				$porcentaje = ($totalEmpleadosMes / $totalEmpleados) * 100;
+		
+				$html .= '<tr>
+							<td>' . $mes . '</td>
+							<td>' . $totalEmpleadosMes . '</td>
+							<td>' . number_format($porcentaje, 2) . '%</td>
+						  </tr>';
+			}
+		
+			$html .= '  </tbody>
+					  </table>';
+			
+			// Cargar el HTML en DomPDF
+			$dompdf->loadHtml($html);
+			$dompdf->setPaper('A4', 'landscape');
+			$dompdf->render();
+			
+			// Enviar el PDF al navegador
+			$dompdf->stream('reporte_vacaciones_anual_' . $year . '.pdf', array("Attachment" => false));
+		}
 	
 		if (!empty($_POST)) { // Si hay alguna consulta tipo POST
 			$accion = $_POST["accion"]; // Siempre se pasa un parámetro con la acción que se va a realizar
@@ -126,6 +174,9 @@
 				} else {
 					$cl->no_permision_msg();
 				}
+			} elseif ($_POST['accion'] === 'generar_reporte_vacaciones_anual') {
+				$year = intval("2024");
+				generar_reporte_vacaciones_anual($cl, $year);
 			} elseif ($accion == "listar") {
 				if ($permisos["usuarios"]["consultar"]) {
 					echo json_encode($cl->listar_usuarios());
@@ -166,6 +217,9 @@
 		$cl->set_con(null);
 		Bitacora::ingreso_modulo("Areas");
 		require_once("vista/" . $pagina . ".php");
+
+		
+		
 	} else {
 		require_once("vista/404.php");
 	}

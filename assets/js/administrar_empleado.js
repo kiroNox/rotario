@@ -22,6 +22,11 @@ $(document).ready(function() {
         });
     });
 
+    $("#Reporte_vaca").on('click', function() {
+        reporte_vacaciones();
+    });
+    
+
    
     $(".close, .cv_w").on('click', function() {
         $('#vacaciones_hasta').text('');
@@ -754,6 +759,32 @@ function calcular_dia_habil(desde, dias, control) {
     datos.append("accion", "calculo_habil");
     datos.append("desde", desde);
     datos.append("dias_totales", dias);
+    enviaAjax(datos, function(respuesta, exito, fail) {
+        try{
+            var lee = JSON.parse(respuesta);
+            if (lee.resultado == "fecha_calculada") {
+                console.log(respuesta);
+               if (control === "1"){
+
+                   $("#hasta").val(lee.fecha_final);
+               } else if(control === "2"){
+                $("#fecha_reincorporacion_reposo").val(lee.fecha_final);
+               }else if(control === "3"){
+                $("#fecha_reincorporacion_permiso").val(lee.fecha_final);
+               }
+                
+            } else {
+                console.error(lee.mensaje);
+            }
+        } catch (error){
+            console.error(error);
+        }
+    });
+}
+
+function reporte_vacaciones() {
+    var datos = new FormData();
+    datos.append("accion", "generar_reporte_vacaciones_anual");
     enviaAjax(datos, function(respuesta, exito, fail) {
         try{
             var lee = JSON.parse(respuesta);

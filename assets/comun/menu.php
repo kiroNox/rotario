@@ -3,7 +3,7 @@
 <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
 <!-- Sidebar - Brand -->
-<a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+<a class="sidebar-brand d-flex align-items-center justify-content-center" href="?p=dashboard">
     <div class="sidebar-brand-icon rotate-n-15">
         <i class="fas fa-laugh-wink"></i>
     </div>
@@ -15,7 +15,7 @@
 
 <!-- Nav Item - Dashboard -->
 <li class="nav-item">
-    <a class="nav-link" href="index.html">
+    <a class="nav-link" href="?p=dashboard">
         <i class="fas fa-fw fa-tachometer-alt"></i>
         <span>Inicio</span></a>
 </li>
@@ -60,7 +60,7 @@
             <a class="collapse-item" href="?p=administrar_empleado">Administrar Ausencias</a>
            <!--  <a class="collapse-item" href="#">Reposos</a>
             <a class="collapse-item" href="#">Vacaciones</a> -->
-            <a class="collapse-item" href="#">Gestionar Nivel Educativo</a>
+            <a class="collapse-item" href="?p=nivel_educativo">Gestionar Nivel Educativo</a>
             
         </div>
     </div>
@@ -103,7 +103,7 @@
             <a class="collapse-item" href="?p=sueldo">Gestionar Sueldos</a>
             <a class="collapse-item" href="?p=primas">Gestionar Primas</a>
             <a class="collapse-item" href="?p=deducciones">Gestionar Deducciones</a>
-            <a class="collapse-item" href="#">Gestionar Liquidación</a>
+            <a class="collapse-item" href="?p=liquidacion">Gestionar Liquidación</a>
         </div>
     </div>
 </li>
@@ -128,6 +128,15 @@
         aria-expanded="true" aria-controls="collapseFacturas">
         <i class="bi bi-calendar-day"></i>
         <span>Calendario</span>
+    </a>
+    
+</li>
+
+<li class="nav-item">
+    <a class="nav-link collapsed" href="?p=estadisticas"  
+        aria-expanded="true" aria-controls="collapseFacturas">
+        <i class="bi bi-bar-chart-line-fill"></i>
+        <span>Estadisticas</span>
     </a>
     
 </li>
