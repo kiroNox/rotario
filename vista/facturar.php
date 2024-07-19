@@ -221,31 +221,34 @@
 
 	<script>
 		document.getElementById('btn_concluir_factura').onclick=function(){
-			var datos = new FormData();
-			datos.append("accion","Concluir_facturas");
-			enviaAjax(datos,function(respuesta, exito, fail){
-			
-				var lee = JSON.parse(respuesta);
-				if(lee.resultado == "Concluir_facturas"){
+			muestraMensaje("¿Seguro?", "¿Culminar el proceso de la factura?, Una vez concluidas enviara a los trabajadores un correo con los detalles de las facturas", "?",function(result){
+				var datos = new FormData();
+				datos.append("accion","concluir_facturas");
+				enviaAjax(datos,function(respuesta, exito, fail){
+				
+					var lee = JSON.parse(respuesta);
+					if(lee.resultado == "concluir_facturas"){
 
-					muestraMensaje("Éxito", "Las facturas han sido concluidas exitosamente", "s");
-					
-					
-				}
-				else if (lee.resultado == 'is-invalid'){
-					muestraMensaje(lee.titulo, lee.mensaje,"error");
-				}
-				else if(lee.resultado == "error"){
-					muestraMensaje(lee.titulo, lee.mensaje,"error");
-					console.error(lee.mensaje);
-				}
-				else if(lee.resultado == "console"){
-					console.log(lee.mensaje);
-				}
-				else{
-					muestraMensaje(lee.titulo, lee.mensaje,"error");
-				}
+						muestraMensaje("Éxito", "Las facturas han sido concluidas exitosamente", "s");
+
+						
+					}
+					else if (lee.resultado == 'is-invalid'){
+						muestraMensaje(lee.titulo, lee.mensaje,"error");
+					}
+					else if(lee.resultado == "error"){
+						muestraMensaje(lee.titulo, lee.mensaje,"error");
+						console.error(lee.mensaje);
+					}
+					else if(lee.resultado == "console"){
+						console.log(lee.mensaje);
+					}
+					else{
+						muestraMensaje(lee.titulo, lee.mensaje,"error");
+					}
+				});
 			});
+
 		}
 		document.getElementById('btn_txt').onclick=function(){
 			var datos = new FormData();

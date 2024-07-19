@@ -8,14 +8,14 @@ use PHPMailer\PHPMailer\Exception;
  */
 trait Correos
 {
-	PRIVATE function enviar_correo($data,$template,$file_to_send = false)
+	PRIVATE function enviar_correo($data,$template,$asunto='',$file_to_send = false)
 	{
 		$mail = new PHPMailer(true);
 		ob_start();
-		require_once("assets/templates/".$template.".php");
+		require("assets/templates/".$template.".php");
 		$mensaje = ob_get_clean();
 
-		try { 
+
 			$mail->isSMTP();
 			$mail->SMTPDebug = 0;
 			$mail->Debugoutput = 'html';
@@ -35,17 +35,17 @@ trait Correos
 			}
 			$mail->CharSet = 'UTF-8';
 			$mail->isHTML(true);
-			$mail->Subject = $data['asunto'];
-			$mail->Body = $mensaje;
+			$mail->Subject = $asunto;
+			//$mail->Body = $mensaje;
+			$mail->MsgHTML($mensaje);
 			$resp = $mail->send();
-			if(!$resp){
+			$mail->clearAllRecipients();
+			$mail->clearAttachments();
+			$mail->clearCustomHeaders();
 
-				throw new Exception("No se pudo enviar el correo", 1);
-				
-			}
-		}  finally{
-
-		}
+			$mail = null;
+			
+		
 
 	}
 }

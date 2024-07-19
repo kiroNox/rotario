@@ -1,19 +1,7 @@
-<?php if(file_exists('../../assets/config/config.php')){
-	require_once '../../assets/config/config.php'; 
-} ?>
-<?php 
-if(!isset($data)){
-	$data["nombre"] = 'Ingrese nombre';
-	$data["monto"] = "XXXX";
-	$data["fecha"] = "2024/05/01";
-	$data["n_fact"] = "3213213";
-	$data["cedula"] = "3213213";
-
-}
- ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
+
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
 	<title>Liquidación</title>
@@ -122,6 +110,26 @@ if(!isset($data)){
 			padding: 1rem;
 		}
 
+		table{
+			border-spacing: 0;
+			border-collapse: collapse;
+		}
+
+		table th,
+		table td{
+			border:1px solid black;
+			padding: 0.8rem;
+		}
+		table td{
+			padding: 0.5rem;
+		}
+		tbody td:nth-child(2){
+			text-align: right;
+			padding-right: 15px;
+		}
+		tbody td:nth-child(2)::after{
+			content: ' Bs'
+		}
 
 	</style>
 </head>
@@ -129,9 +137,12 @@ if(!isset($data)){
 	<div class="d-table">
 		<div class="d-row">
 			<div class="d-cell">
-				<div class="x_sgwrap x_title_blue">
+				<div class="x_sgwrap x_title_blue d-flex justify-content-around">
 					<div style="display: flex; vertical-align: middle; align-items: center;">
 						<h1 style="text-align: left; font-size: 16px"><?= NOMBRE_EMPRESA ?></h1>
+					</div>
+					<div>
+						<img src="../../assets/img/comun/rotario_logo.jpg" style="width: 140px;height: 140px">
 					</div>
 				</div>
 				<div class="x_sgwrap x_title_blue d-flex" style="justify-content: flex-end;">
@@ -142,9 +153,9 @@ if(!isset($data)){
 							Factura Nº
 						</div>
 						<div class="p-1">
-							<span>
+							<span style="white-space: nowrap;">
 							<?= $data["fecha"] ?> <br>
-							<?= $data["n_fact"] ?> 
+							<?= $data["id_factura"] ?> 
 
 								
 							</span>
@@ -165,42 +176,54 @@ if(!isset($data)){
 		<div class="d-row">
 			<div class="d-cell">
 				<div>
+					<div>
+						<table style="width: 100%">
+							<thead>
+								<th>Descipcion</th>
+								<th style="width: 20%">Monto</th>
+							</thead>
+							<tbody>
+								<?php 
+									foreach ($data["detalles"] as $elem) {
+										echo "<tr>
+											<td>".$elem["descripcion"]."</td>
+											<td>".$elem["monto"]."</td>
+										</tr>";
+									}
+								 ?>
 
-
+								 <tr>
+								 	<td style="border:none; text-align: right; font-weight: bold;">Sueldo Base</td>
+								 	<td><?=$data["sueldo_base"]  ?></td>
+								 </tr>
+								 <tr>
+								 	<td style="border:none; text-align: right; font-weight: bold;">Sueldo Integral</td>
+								 	<td><?=$data["sueldo_integral"]  ?></td>
+								 </tr>
+								 <tr>
+								 	<td style="border:none; text-align: right; font-weight: bold;">Sueldo Deducido</td>
+								 	<td><?=$data["sueldo_deducido"]  ?></td>
+								 </tr>
+								 <tr>
+								 	<td style="border:none; text-align: right; font-weight: bold;">ISLR</td>
+								 	<td><?=$data["islr"]  ?></td>
+								 </tr><tr>
+								 	<td style="border:none; text-align: right; font-weight: bold;">Total a Pagar</td>
+								 	<td><?=$data["sueldo_total"]  ?></td>
+								 </tr>
+								 
+								 
+							</tbody>
+						</table>
+					</div>
+					<br>
+					<div style="text-align: center;">Para cualquier consulta, dirigirse al departamento de Recursos Humanos.</div>
 
 
 				</div>
 			</div>
 		</div>
 	</div>
-	<!-- <table align="center" cellpadding="0" cellspacing="0" bgcolor="#ffffff" style="padding: 0 50px;">
-		<tbody>
-			<tr>
-				<td>
-					<div class="x_sgwrap x_title_blue">
-						<h1 style="text-align: center;"><?= NOMBRE_EMPRESA ?></h1>
-					</div>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<div class="d-table">
-						<div class="d-row">
-							
-						</div>
-					</div>
-				</td>
-			</tr>
-		</tbody>
-	</table> -->
 </body>
 </html>
 
-<script>
-
-// setInterval(function(){
-// 	location.reload();
-// },1000);
-
-	
-</script>

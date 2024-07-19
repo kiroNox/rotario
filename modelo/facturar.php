@@ -281,14 +281,57 @@ class Facturar extends Conexion
 	}
 
 
-	public function Concluir_facturas(){
+	public function concluir_facturas(){
 		try {
 			$this->validar_conexion($this->con);
 			$this->con->beginTransaction();
+
+
+			$consulta = $this->con->prepare("SELECT 
+				t.correo as email
+				,t.cedula
+				,CONCAT(t.nombre,' ',t.apellido) as nombre
+				,f.id_trabajador
+				,f.id_factura
+				, f.fecha
+				, f.sueldo_base
+				, (f.sueldo_base + f.sueldo_integral) as sueldo_integral
+				, sueldo_deducido 
+				, ((f.sueldo_base + f.sueldo_integral) - f.sueldo_deducido) as sueldo_total
+				FROM factura as f left JOIN trabajadores as t on t.id_trabajador = f.id_trabajador
+				WHERE status = 0");
+
+			$consulta->execute();
+			$facturas = $consulta->fetchall(PDO::FETCH_ASSOC);
+			$consulta = null;
+
+			foreach ($facturas as &$elem) {
+				$this->id = $elem["id_factura"];
+				$elem["detalles"] = $this->detalles_factura()["detalles"];
+				$consulta = $this->con->prepare("SELECT COALESCE(sum(monto),0) as islr FROM detalles_factura WHERE id_factura = ? AND islr IS TRUE;");
+				$consulta->execute([$elem["id_factura"]]);;
+				$elem["islr"] = $consulta->fetch(PDO::FETCH_ASSOC)["islr"];
+				$consulta = null;
+
+				$this->enviar_correo($elem,"factura","Pajeros");
+
+
+
+
+
+			}
+
+
+
+
+
+
+
 			
 			$consulta = $this->con->prepare("UPDATE factura set status = 1 WHERE status = 0");
 			
-			$r['resultado'] = 'Concluir_facturas';
+			$r['resultado'] = 'concluir_facturas';
+			$r["facturas"] = $facturas;
 			//$this->con->commit();
 		
 		} catch (Validaciones $e){
@@ -315,6 +358,7 @@ class Facturar extends Conexion
 		}
 		finally{
 			//$this->con = null;
+			$consulta=null;
 		}
 		return $r;
 	}

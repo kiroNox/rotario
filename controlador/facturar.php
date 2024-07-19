@@ -38,6 +38,14 @@
 					$cl->no_permision_msg();
 				}
 			}
+			else if($accion == "concluir_facturas"){
+				if(isset($permisos["facturas"]["crear"]) and $permisos["facturas"]["crear"] == "1"){
+					echo json_encode( $cl->concluir_facturas() );
+				}	
+				else{
+					$cl->no_permision_msg();
+				}
+			}
 			
 
 			else{
