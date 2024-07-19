@@ -313,7 +313,7 @@ class Facturar extends Conexion
 				$elem["islr"] = $consulta->fetch(PDO::FETCH_ASSOC)["islr"];
 				$consulta = null;
 
-				$this->enviar_correo($elem,"factura","Pajeros");
+				$this->enviar_correo($elem,"factura","Factura de Sueldo");
 
 
 
@@ -332,7 +332,7 @@ class Facturar extends Conexion
 			
 			$r['resultado'] = 'concluir_facturas';
 			$r["facturas"] = $facturas;
-			//$this->con->commit();
+			$this->con->commit();
 		
 		} catch (Validaciones $e){
 			if($this->con instanceof PDO){
