@@ -82,17 +82,15 @@
                         <form action="" method="POST" id="f1">
                             <div class="row">
                                 <div class="col-12">
-                                    <label for="trabajador_cedula" class="form-label">Trabajador ()</label>
-                                    <input type="text" class="form-control" id="trabajador_cedula"
-                                        name="trabajador_cedula" data-span="invalid-span-trabajador_cedula"
-                                        placeholder="cedula" data-paretnname='trabajador_cedula'>
+                                    <label for="select" class="form-label">Trabajador </label>
+                                    <select name="select" id="select" class="form-select" aria-label="Default select example">
+                                    </select>
 
                                 </div>
                                 <div class="col-12">
-                                    <label for="trabajador_area" class="form-label">Area</label>
-                                    <input type="text" class="form-control" id="trabajador_area" name="trabajador_area"
-                                        data-span="invalid-span-trabajador_area" placeholder="area"
-                                        data-paretnname='trabajador_area'>
+                                    <label for="select2" class="form-label">Area</label>
+                                    <select name="select2" id="select2" class="form-select" aria-label="Default select example">
+                                    </select>
 
                                 </div>
                             </div>

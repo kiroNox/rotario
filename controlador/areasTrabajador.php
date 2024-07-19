@@ -2,6 +2,8 @@
 	if(is_file("vista/".$pagina.".php")){
 
 		$cl = new areasTrabajador();
+		$claseUsuarios= new Usuarios();
+		$claseAreas = new Areas;
 
 		if(!empty($_POST)){// si hay alguna consulta tipo POST
 			$accion = $_POST["accion"];// siempre se pasa un parametro con la accion que se va a realizar
@@ -40,6 +42,22 @@
 			else if($accion == "listar_areasTrabajador"){
 				if($permisos["usuarios"]["consultar"]){
 					echo json_encode( $cl->listar_areasTrabajador() );
+				}
+				else{
+					$cl->no_permision_msg();
+				}
+			}
+			else if($accion == "listar_usuarios"){
+				if($permisos["usuarios"]["consultar"]){
+					echo json_encode( $claseUsuarios->listar_usuarios() );
+				}
+				else{
+					$cl->no_permision_msg();
+				}
+			}
+			else if($accion == "listar_areas"){
+				if($permisos["usuarios"]["consultar"]){
+					echo json_encode( $claseAreas->listar_areas() );
 				}
 				else{
 					$cl->no_permision_msg();
