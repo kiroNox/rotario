@@ -2,7 +2,8 @@
 
 class Loging extends Conexion
 {
-	PRIVATE $cedula,$correo,$pass,$con;
+	PRIVATE $id,$cedula,$correo,$pass,$con,$keyword;
+	use Correos;
 	function __construct($con = '')
 	{
 		// al instanciar la clase puede hacerce con una conexion vieja o no 
@@ -11,7 +12,7 @@ class Loging extends Conexion
 		if(!($con instanceof PDO)){// si "con" no es una instancia de PDO
 			$this->con = $this->conecta();// crea la conexion 
 		}
-
+		$this->keyword = "Akdi3ac-1d53Ñdlaóeahewcxzxcjasi9eñlslñjdf";
 	}
 
 
@@ -116,6 +117,215 @@ class Loging extends Conexion
 
 	}
 
+	PUBLIC function reset_pass_request_s($correo){
+		$this->set_correo($correo);
+		return $this->reset_pass_request();
+	}
+
+	PRIVATE function reset_pass_request(){
+		try {
+			$this->validar_conexion($this->con);
+			$this->con->beginTransaction();
+			
+
+			$consulta = $this->con->prepare("SELECT * FROM trabajadores WHERE correo = ?;");
+			$consulta->execute([$this->correo]);
+
+
+			if(($resp = $consulta->fetch(PDO::FETCH_ASSOC))){
+
+				$resp["time"] = time();
+
+				$id = $resp["id_trabajador"];
+
+				$token = $resp = json_encode($resp);
+
+				$consulta = $this->con->prepare("UPDATE trabajadores SET token = ? WHERE id_trabajador = ?");
+				$consulta->execute([$token, $id]);
+
+
+
+
+
+
+
+				$iv_size = openssl_cipher_iv_length("aes-256-cbc");  // Obtener el tamaño del IV con OpenSSL
+				$iv = openssl_random_pseudo_bytes($iv_size);        // Generar un IV aleatorio con OpenSSL
+				$cifrado = openssl_encrypt($resp, "aes-256-cbc", $this->keyword, 0, $iv);
+
+				$texto_final = urlencode($cifrado.$iv);
+
+				$url = "?a=".$texto_final;
+
+				$url = URL_PROD.$url;
+				$data["email"] = $this->correo;
+				$data["url"] = $url;
+				
+
+				$this->enviar_correo($data,"reset_pass",$asunto='Restablecer Contraseña');
+
+			}
+			
+			$r['resultado'] = 'reset_pass_request';
+			$r['titulo'] = 'Éxito';
+			//$this->con->commit();
+		
+		} catch (Validaciones $e){
+			if($this->con instanceof PDO){
+				if($this->con->inTransaction()){
+					$this->con->rollBack();
+				}
+			}
+			$r['resultado'] = 'is-invalid';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+			$r['console'] =  $e->getMessage().": Code : ".$e->getLine();
+		} catch (Exception $e) {
+			if($this->con instanceof PDO){
+				if($this->con->inTransaction()){
+					$this->con->rollBack();
+				}
+			}
+		
+			$r['resultado'] = 'error';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+			//$r['mensaje'] =  $e->getMessage().": LINE : ".$e->getLine();
+		}
+		finally{
+			//$this->con = null;
+			$consulta = null;
+		}
+		return $r;
+	}
+
+	PUBLIC function valid_token_reset($token){
+		try {
+			$this->validar_conexion($this->con);
+			$this->con->beginTransaction();
+
+			
+			$consulta = $this->con->prepare("SELECT * FROM trabajadores WHERE id_trabajador = ? and token = ?;");
+			$consulta->execute([$token->id_trabajador,$token->token]);
+
+
+			if(!$consulta->fetch()){
+				throw new Exception("EL token es invalido o ya expiro", 1);
+			}
+			
+			$r['resultado'] = true;
+			$r['titulo'] = 'Éxito';
+			$r['mensaje'] =  "";
+			//$this->con->commit();
+		
+		} catch (Validaciones $e){
+			if($this->con instanceof PDO){
+				if($this->con->inTransaction()){
+					$this->con->rollBack();
+				}
+			}
+			$r['resultado'] = false;
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+			$r['console'] =  $e->getMessage().": Code : ".$e->getLine();
+		} catch (Exception $e) {
+			if($this->con instanceof PDO){
+				if($this->con->inTransaction()){
+					$this->con->rollBack();
+				}
+			}
+		
+			$r['resultado'] = false;
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+			//$r['mensaje'] =  $e->getMessage().": LINE : ".$e->getLine();
+		}
+		finally{
+			//$this->con = null;
+		}
+		return $r;
+	}
+
+
+	PUBLIC function change_pass($pass,$id){
+		$this->set_id($id);
+		$this->set_pass($pass);
+
+		try {
+			$this->validar_conexion($this->con);
+			$this->con->beginTransaction();
+			
+			$consulta = $this->con->prepare("UPDATE trabajadores set clave = ?, token = 1 WHERE id_trabajador = ?");
+
+			$this->pass = password_hash($this->pass, PASSWORD_DEFAULT);
+
+			$consulta->execute([$this->pass,$this->id]);
+
+
+			
+			$r['resultado'] = 'change_pass';
+			$r['titulo'] = 'Éxito';
+			$this->con->commit();
+		
+		} catch (Validaciones $e){
+			if($this->con instanceof PDO){
+				if($this->con->inTransaction()){
+					$this->con->rollBack();
+				}
+			}
+			$r['resultado'] = 'is-invalid';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+			$r['console'] =  $e->getMessage().": Code : ".$e->getLine();
+		} catch (Exception $e) {
+			if($this->con instanceof PDO){
+				if($this->con->inTransaction()){
+					$this->con->rollBack();
+				}
+			}
+		
+			$r['resultado'] = 'error';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+			//$r['mensaje'] =  $e->getMessage().": LINE : ".$e->getLine();
+		}
+		finally{
+			//$this->con = null;
+		}
+		return $r;
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	// setters y getters 
 
 
@@ -142,5 +352,18 @@ class Loging extends Conexion
 	}
 	PUBLIC function set_con($value){
 		$this->con = $value;
+	}
+
+	PUBLIC function get_keyword(){
+		return $this->keyword;
+	}
+	PUBLIC function set_keyword($value){
+		$this->keyword = $value;
+	}
+	PUBLIC function get_id(){
+		return $this->id;
+	}
+	PUBLIC function set_id($value){
+		$this->id = $value;
 	}
 } 

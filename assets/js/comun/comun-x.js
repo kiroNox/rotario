@@ -605,6 +605,8 @@ function iniciar_show_password(){// aplica el evento a todos los elementos que t
 	var ojo_cerrado = "bi-eye-slash-fill";
 	var icon_ini = "bi";
 	for (var x of btn){
+
+		
 		
 		if(x.dataset.inputpass){
 			if(document.getElementById(x.dataset.inputpass)){
@@ -895,7 +897,7 @@ document.addEventListener("DOMContentLoaded", function(){
 	if(true){
 		if(document.querySelector("#page-top > #wrapper:first-child")){
 			
-			//document.body.classList.add("dark-mode");
+			document.body.classList.add("dark-mode");
 
 
 			var darkmode_btn = crearElem("button","class,btn","Dark mode change");

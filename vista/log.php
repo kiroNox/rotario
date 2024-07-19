@@ -86,10 +86,53 @@
 				<span id="invalid-span-pass" class="invalid-span text-danger"></span>
 			</div>
 			<button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
+			<a href="#" data-toggle="modal" data-target="#modal_reset">He olvidado mi contraseña</a>
 			<p class="mt-5 mb-3 text-muted">&copy; 2024 – <?php echo date("Y"); ?></p>
 		</div>
 	</form>
 </main>
+
+
+<div class="modal fade" tabindex="-1" role="dialog" id="modal_reset">
+	<div class="modal-dialog modal-xl" role="document">
+		<div class="modal-content">
+			<div class="modal-header text-light bg-primary">
+				<h5 class="modal-title">Restablecer Contraseña</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="container text-center">
+				<h3>Introduzca su correo</h3>
+				<p>Si su correo esta registrado recibirá un correo para el restablecimiento de su contraseña</p>
+				
+			</div>
+			<div class="container" style="width: 500px">
+				<form action="" onsubmit="return false" id="f3">
+					<div class="row">
+						<div class="col">
+							<label for="reset_correo">Correo</label>
+							<input require type="email" class="form-control" id="reset_correo" name="correo" data-span="invalid-span-reset_correo">
+							<span id="invalid-span-reset_correo" class="invalid-span text-danger"></span>
+						</div>
+					</div>
+					<div class="row my-2">
+						<div class="col">
+							<button class="btn btn-primary" type="submit">Enviar</button>
+						</div>
+					</div>
+				</form>
+
+			</div>
+			<div class="modal-footer bg-light">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
 <script type="text/javascript">
 	iniciar_show_password();
 	document.getElementById('f1').onsubmit = function(e){
@@ -126,6 +169,41 @@
 		//alerta de json syntax error revisas la consola que ahi 
 		//deberia estar el error
 	}
+
+	eventoKeyup("reset_correo", V.expEmail, "El correo no es valido");
+
+	document.getElementById('f3').onsubmit = function(e){
+		e.preventDefault();
+
+		if(document.getElementById('reset_correo').validarme()){
+			var datos = new FormData($("#f3")[0]);
+			datos.append("accion","reset_pass_request");
+			enviaAjax(datos,function(respuesta, exito, fail){
+
+			
+				var lee = JSON.parse(respuesta);
+				if(lee.resultado == "reset_pass_request"){
+
+					muestraMensaje("", "Si el correo esta registrado se le sera enviado un correo con instrucciones para restablecer su contraseña ", "i");
+					
+				}
+				else if (lee.resultado == 'is-invalid'){
+					muestraMensaje(lee.titulo, lee.mensaje,"error");
+				}
+				else if(lee.resultado == "error"){
+					muestraMensaje(lee.titulo, lee.mensaje,"error");
+					console.error(lee.mensaje);
+				}
+				else if(lee.resultado == "console"){
+					console.log(lee.mensaje);
+				}
+				else{
+					muestraMensaje(lee.titulo, lee.mensaje,"error");
+				}
+			},"loader_body");
+		}
+	}
+	
 </script>
 	</body>
 </html>
