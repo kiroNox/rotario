@@ -25,42 +25,32 @@ class areasTrabajador extends Conexion
         try {
             $this->validar_conexion($this->con);
             $this->con->beginTransaction();
-            
             $consulta = $this->con->prepare("INSERT INTO `trabajador_area` (`id_area`, `id_trabajador`) VALUES (:id_area, :id_trabajador)");
             $consulta->bindValue(":id_area", $this->id_area);
-			$consulta->bindValue(":id_trabajador", $this->id_trabajador);
+            $consulta->bindValue(":id_trabajador", $this->id_trabajador);
             $consulta->execute();
-            
             $this->con->commit();
-            $r['resultado'] = 'registrar';
-            $r['titulo'] = 'Éxito';
-            $r['mensaje'] = "Trabajador registrado con éxito";
-        } catch (Validaciones $e) {
-            if ($this->con instanceof PDO) {
-                if ($this->con->inTransaction()) {
-                    $this->con->rollBack();
-                }
-            }
-            $r['resultado1'] =  $this->id_area;
-            $r['resultado2'] = $this->id_trabajador;
-            $r['resultado'] = 'is-invalid';
-            $r['titulo'] = 'Error';
-            $r['mensaje'] = $e->getMessage();
-            $r['console'] = $e->getMessage() . ": Code : " . $e->getLine();
+            return [
+                'resultado' => 200,
+                'titulo' => 'Éxito',
+                'mensaje' => "Trabajador asignado en el area correctamente!"
+            ];
         } catch (Exception $e) {
-            if ($this->con instanceof PDO) {
-                if ($this->con->inTransaction()) {
-                    $this->con->rollBack();
-                }
+            if ($this->con instanceof PDO && $this->con->inTransaction()) {
+                $this->con->rollBack();
             }
-            $r['resultado1'] =  $this->id_area;
-            $r['resultado2'] = $this->id_trabajador;
-            $r['resultado'] = 'error';
-            $r['titulo'] = 'Error';
-            $r['mensaje'] = $e->getMessage();
+            $resultado = [
+                'resultado1' => $this->id_area,
+                'resultado2' => $this->id_trabajador,
+                'resultado' => 'error',
+                'titulo' => 'Error',
+                'mensaje' => $e instanceof Validaciones ? 'is-invalid' : 'error',
+                'console' => $e->getMessage() . ": Code : " . $e->getLine()
+            ];
+            return $resultado;
         }
-        return $r;
     }
+    
 
     //crear un metodo para listar areasTrabajador   
     public function listar_areasTrabajador()

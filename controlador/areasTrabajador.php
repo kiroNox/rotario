@@ -9,13 +9,13 @@
 			$accion = $_POST["accion"];// siempre se pasa un parametro con la accion que se va a realizar
 			if($accion == "valid_cedula"){echo json_encode( $cl->valid_cedula($_POST["cedula"]) );}
 
-			else if($accion == "registrar_area_trabajador"){
+			else if($accion == "registrar"){
 				if(isset($permisos["usuarios"]["crear"]) and $permisos["usuarios"]["crear"] == "1"){
-					$resp = $cl->registrar_area_trabajador(
-						$_POST["trabajador_cedula"],
-						$_POST["trabajador_area"]
+					$resultado = $cl->registrar_area_trabajador(
+						$_POST["id_trabajador"],
+						$_POST["id_area"]
 					);
-					echo json_encode($resp);
+					echo json_encode($resultado);
 				}
 				else{
 					$cl->no_permision_msg();

@@ -35,7 +35,6 @@ $(document).ready(function () {
     //REGISTRAR
     if(document.getElementById('botonEnvio').value == 'Registrar'){
       datos.append("accion","create"); 
-      alert("hola");
 
       const descripcion = datos.get("descripcion");
       const codigo = datos.get("codigo");
