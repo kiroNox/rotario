@@ -305,6 +305,8 @@ class Facturar extends Conexion
 			$facturas = $consulta->fetchall(PDO::FETCH_ASSOC);
 			$consulta = null;
 
+			$this->con->commit();
+
 			foreach ($facturas as &$elem) {
 				$this->id = $elem["id_factura"];
 				$elem["detalles"] = $this->detalles_factura()["detalles"];

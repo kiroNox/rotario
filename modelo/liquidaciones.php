@@ -57,8 +57,9 @@ class Liquidaciones extends Conexion
 		return $this->valid_cedula_trabajador();
 	}
 
-	PUBLIC function calcular_liquidacion_s($cedula){
+	PUBLIC function calcular_liquidacion_s($cedula,$id_liquidacion){
 		$this->set_cedula($cedula);
+		$this->set_id_liquidacion($id_liquidacion);
 		return $this->calcular_liquidacion();
 	}
 
@@ -70,6 +71,22 @@ class Liquidaciones extends Conexion
 		return $this->registrar_liquidacion();
 	}
 
+	PUBLIC function modificar_liquidacion_s($id_liquidacion, $id_trabajador ,$fecha ,$motivo ,$monto ){
+		$this->set_id_liquidacion($id_liquidacion);
+		$this->set_id_trabajador($id_trabajador);
+		$this->set_fecha($fecha);
+		$this->set_motivo($motivo);
+		$this->set_monto($monto);
+		return $this->modificar_liquidacion();
+	}
+
+	PUBLIC function eliminar_liquidacion_s($id_liquidacion){
+		$this->set_id_liquidacion($id_liquidacion);
+		return $this->eliminar_liquidacion();
+	}
+
+
+
 
 	
 
@@ -78,20 +95,32 @@ class Liquidaciones extends Conexion
 			$cedula = $this->cedula;
 			$this->validar_conexion($this->con);
 			$this->con->beginTransaction();
-
-			Validaciones::validarCedula($cedula);
-
+			if($this->id_liquidacion===false){
 
 
-			$consulta = $this->con->prepare("SELECT 1 FROM trabajadores WHERE cedula = ? AND estado_actividad IS TRUE;");
-			$consulta->execute([$cedula]);
+				Validaciones::validarCedula($cedula);
 
-			if(!$consulta->fetch()){
-				throw new Exception("EL trabajador no existe o fue eliminado", 1);
+
+
+				$consulta = $this->con->prepare("SELECT 1 FROM trabajadores WHERE cedula = ? AND estado_actividad IS TRUE;");
+				$consulta->execute([$cedula]);
+
+				if(!$consulta->fetch()){
+					throw new Exception("EL trabajador no existe o fue eliminado", 1);
+				}
+
+				$consulta = null;
+
 			}
+			else{
+				$consulta = $this->con->prepare("SELECT 1 FROM liquidacion WHERE id_liquidacion = ?;");
+				$consulta->execute([$this->id_liquidacion]);
 
-			$consulta = null;
-
+				if(!$consulta->fetch()){
+					throw new Exception("La liquidación no existe o fue eliminada", 1);
+					
+				}
+			}
 
 
 
@@ -173,6 +202,14 @@ class Liquidaciones extends Conexion
 
 
 			// TODO validaciones
+
+			$consulta = $this->con->prepare("SELECT id_rol FROM trabajadores WHERE id_trabajador = ?;");
+
+			$consulta->execute([$this->id_trabajador]);
+
+			if($consulta->fetch(PDO::FETCH_ASSOC)["id_rol"] == '1'){
+				throw new Exception("No es posible realizar el proceso de liquidación del trabajador por su rol de administrador", 1);
+			}
 			
 			$consulta = $this->con->prepare("SELECT t.*,sb.id_sueldo_base FROM trabajadores as t LEFT JOIN sueldo_base as sb on sb.id_trabajador = t.id_trabajador WHERE t.id_trabajador = ?;");
 			$consulta->execute([$this->id_trabajador]);
@@ -195,11 +232,12 @@ class Liquidaciones extends Conexion
 			$consulta->bindValue(":descripcion",$this->motivo);
 			$consulta->bindValue(":fecha",$this->fecha);
 			$consulta->execute();
+			
+			$lastId = $this->con->lastInsertId();
 
 			$consulta = $this->con->prepare("UPDATE trabajadores set estado_actividad = 0 WHERE id_trabajador = ?");
-			//$consulta->execute([$this->id_trabajador]);
+			$consulta->execute([$this->id_trabajador]);
 
-			$lastId = $this->con->lastInsertId();
 
 
 
@@ -222,6 +260,8 @@ class Liquidaciones extends Conexion
 			$r['mensaje'] =  "La liquidación fue registra con éxito y el usuario fue deshabilitado";
 			$r["id_liquidacion_inserted"] = $lastId ;
 			$r['lista'] =  $liquidaciones["mensaje"];
+
+			Bitacora::reg($this->con,"Registró la liquidación con el Nº$lastId ");
 			$this->con->commit();
 		
 		} catch (Validaciones $e){
@@ -309,6 +349,121 @@ class Liquidaciones extends Conexion
 		}
 		finally{
 			//$this->con = null;
+		}
+		return $r;
+	}
+
+	PRIVATE function modificar_liquidacion(){
+		try {
+			$this->validar_conexion($this->con);
+			$this->con->beginTransaction();
+			
+			$consulta = $this->con->prepare("SELECT * FROM liquidacion WHERE id_liquidacion = ?;");
+			$consulta->execute([$this->id_liquidacion]);
+
+			if(!($resp = $consulta->fetch(PDO::FETCH_ASSOC))){
+				throw new Exception("La liquidación seleccionada no existe o fue eliminada", 1);
+			}
+
+
+			$consulta = $this->con->prepare("UPDATE liquidacion set monto = :monto, descripcion = :descripcion, fecha = :fecha" );
+
+			$consulta->bindValue(":monto",$this->monto);
+			$consulta->bindValue(":descripcion",$this->motivo);
+			$consulta->bindValue(":fecha",$this->fecha);
+
+			$consulta->execute();
+			Bitacora::reg($this->con,"La liquidacion Nº$this->id_liquidacion fue modificada");
+			$r['resultado'] = 'modificar_liquidacion';
+			$r['titulo'] = 'Éxito';
+			$r['mensaje'] =  "La liquidación ha sido modificada exitosamente";
+			$this->con->commit();
+		
+		} catch (Validaciones $e){
+			if($this->con instanceof PDO){
+				if($this->con->inTransaction()){
+					$this->con->rollBack();
+				}
+			}
+			$r['resultado'] = 'is-invalid';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+			$r['console'] =  $e->getMessage().": Code : ".$e->getLine();
+		} catch (Exception $e) {
+			if($this->con instanceof PDO){
+				if($this->con->inTransaction()){
+					$this->con->rollBack();
+				}
+			}
+		
+			$r['resultado'] = 'error';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+			//$r['mensaje'] =  $e->getMessage().": LINE : ".$e->getLine();
+		}
+		finally{
+			//$this->con = null;
+			$consulta = null;
+		}
+		return $r;
+	}
+
+	PRIVATE function eliminar_liquidacion(){
+		try {
+			$this->validar_conexion($this->con);
+			$this->con->beginTransaction();
+
+			$consulta = $this->con->prepare("SELECT * FROM liquidacion WHERE id_liquidacion = ?;");
+			$consulta->execute([$this->id_liquidacion]);
+
+			if(!($resp = $consulta->fetch(PDO::FETCH_ASSOC))){
+				throw new Exception("La liquidación no existe o fue eliminada", 1);
+			}
+
+			$consulta = $this->con->prepare("SELECT id_trabajador FROM liquidacion l WHERE l.id_liquidacion = ? and l.fecha = (select max(fecha) from liquidacion WHERE 1)");
+			$consulta->execute([$this->id_liquidacion]);
+
+			if($resp = $consulta->fetch(PDO::FETCH_ASSOC)){
+
+				$consulta = $this->con->prepare("UPDATE trabajadores set estado_actividad = 1 WHERE id_trabajador = ?");
+				$consulta->execute([$resp["id_trabajador"]]);
+
+
+			}
+		
+			$consulta = $this->con->prepare("DELETE FROM liquidacion WHERE id_liquidacion = ?");
+			$consulta->execute([$this->id_liquidacion]);
+
+
+			Bitacora::reg($this->con,"La liquidacion Nº$this->id_liquidacion fue eliminada");
+			$r['resultado'] = 'eliminar_liquidacion';
+			$this->con->commit();
+		
+		} catch (Validaciones $e){
+			if($this->con instanceof PDO){
+				if($this->con->inTransaction()){
+					$this->con->rollBack();
+				}
+			}
+			$r['resultado'] = 'is-invalid';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+			$r['console'] =  $e->getMessage().": Code : ".$e->getLine();
+		} catch (Exception $e) {
+			if($this->con instanceof PDO){
+				if($this->con->inTransaction()){
+					$this->con->rollBack();
+				}
+			}
+		
+			$r['resultado'] = 'error';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+			//$r['mensaje'] =  $e->getMessage().": LINE : ".$e->getLine();
+		}
+		finally{
+			//$this->con = null;
+			$consulta = null;
 		}
 		return $r;
 	}

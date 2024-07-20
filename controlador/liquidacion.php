@@ -34,7 +34,8 @@
 				if(isset($permisos["liquidacion"]["crear"]) and $permisos["liquidacion"]["crear"] == "1"){
 
 					echo json_encode( $cl->calcular_liquidacion_s(
-						$_POST["cedula"]
+						$_POST["cedula"],
+						(isset($_POST["id"]))?$_POST["id"]:false
 					) );
 
 				}
@@ -51,6 +52,19 @@
 						,$_POST["liquidaciones_fecha"]
 						,$_POST["liquidacion_motivo"]
 						,$_POST["liquidacion_monto_total"]
+					) );
+
+				}
+				else{
+					$cl->no_permision_msg();
+				}
+			}
+
+			else if($accion == "eliminar_liquidacion"){
+				if(isset($permisos["liquidacion"]["eliminar"]) and $permisos["liquidacion"]["eliminar"] == "1"){
+
+					echo json_encode( $cl->eliminar_liquidacion_s(
+						$_POST["id"]
 					) );
 
 				}

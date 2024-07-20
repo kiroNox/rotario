@@ -204,7 +204,7 @@
 					else{
 						muestraMensaje(lee.titulo, lee.mensaje,"error");
 					}
-				}).p.catch((a)=>{
+				}, "loader_body").p.catch((a)=>{
 					load_sueldos();
 					$("#modal_asignar").modal("hide");
 				});

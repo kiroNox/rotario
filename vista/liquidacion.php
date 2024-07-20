@@ -152,6 +152,51 @@
 		eventoMonto("liquidacion_monto_total");
 
 
+		rowsEventActions("tbody_liquidaciones" ,function(action,rowId,btn){
+			if(action=='eliminar'){
+
+				muestraMensaje("¿Seguro?", "Desea eliminar la liquidación ", "s",function(result){
+					if(result){
+
+						var datos = new FormData();
+						datos.append("accion","eliminar_liquidacion");
+						datos.append("id",rowId);
+						enviaAjax(datos,function(respuesta, exito, fail){
+						
+							var lee = JSON.parse(respuesta);
+							if(lee.resultado == "eliminar_liquidacion"){
+
+								muestraMensaje("La liquidación fue eliminada exitosamente", "", "s");
+
+								$("#modal_registrar_liquidacion").modal("hide");
+
+								load_liquidaciones();
+								
+							}
+							else if (lee.resultado == 'is-invalid'){
+								muestraMensaje(lee.titulo, lee.mensaje,"error");
+							}
+							else if(lee.resultado == "error"){
+								muestraMensaje(lee.titulo, lee.mensaje,"error");
+								console.error(lee.mensaje);
+							}
+							else if(lee.resultado == "console"){
+								console.log(lee.mensaje);
+							}
+							else{
+								muestraMensaje(lee.titulo, lee.mensaje,"error");
+							}
+						});
+					}
+				});
+				
+		
+			}
+		
+		});
+		
+
+
 		document.getElementById('btn_calcular').onclick=calcular_liquidacion;
 
 
@@ -173,7 +218,9 @@
 
 			document.getElementById('btn_calcular').disabled = false;
 
-		})
+		});
+
+
 
 		document.getElementById('f1').onsubmit=function(e){
 			e.preventDefault();
@@ -328,6 +375,8 @@
 					var acumulado = document.querySelector("#tbody_prestaciones tr:last-child td:last-child").innerText;
 					document.getElementById('liquidacion_monto_total').value = acumulado;
 					document.getElementById('liquidacion_monto_total').onchange();
+					document.getElementById('liquidacion_monto_total').classList.remove("is-valid");
+					document.getElementById('liquidacion_monto_total').readOnly=true;
 
 					document.getElementById('fecha_contratacion').innerHTML = `fecha de contratación <br>${lee.mensaje[0].creado}`;
 
@@ -496,11 +545,11 @@
 
 						var acciones = row.querySelector("td:nth-child(6)");
 						acciones.innerHTML = '';
-						var btn = crearElem("button", "class,btn btn-warning,data-action,modificar", "<span class='bi bi-pencil-square' title='Modificar'></span>")
-						acciones.appendChild(btn);
+						//var btn = crearElem("button", "class,btn btn-warning,data-action,modificar", "<span class='bi bi-pencil-square' title='Modificar'></span>")
+						//acciones.appendChild(btn);
 						btn = crearElem("button", "class,btn btn-danger ml-1,data-action,eliminar", "<span class='bi bi-trash' title='Eliminar'></span>")
 						acciones.appendChild(btn);
-						acciones.classList.add('text-nowrap','cell-action');
+						acciones.classList.add('text-nowrap','cell-action', 'text-center');
 					},
 					autoWidth: false
 					//searching:false,

@@ -65,7 +65,7 @@
 									<div class="col d-flex justify-content-end align-items-center">
 										<div>
 											<button class="btn btn-primary" id="btn_calcular_facturas">Calcular Facturas</button>
-											<button class="btn btn-primary" id="btn_txt">Imprimir TXT</button>
+											<button class="btn btn-primary" id="btn_txt">Descargar TXT</button>
 											<button class="btn btn-primary" id="btn_concluir_factura">Concluir Factura</button>
 										</div>
 									</div>
@@ -130,10 +130,30 @@
 					</div>
 					<div class="row">
 						<div class="col-12">
-							<table class="table table-bordered table-hover table-middle" id="table_detalles_factura">
+							<style>
+								#table_detalles_factura tbody tr:nth-last-child(-n+3) td:first-child{
+									border-bottom: none;
+									border-top: none;
+									text-align: right;
+								}
+								#table_detalles_factura tbody tr:nth-last-child(4) td:first-child{
+									border-bottom: none;
+									text-align: right;
+								}
+
+								#table_detalles_factura tr td:last-child{
+									text-align: right;
+								}
+								#table_detalles_factura tr td:last-child::after{
+									content: ' Bs';
+								}
+
+
+							</style>
+							<table class="table table-bordered border-dark table-middle" id="table_detalles_factura">
 								<thead class="bg-primary text-light">
 									<th>descripción</th>
-									<th>Monto</th>
+									<th style="width: 15ch">Monto</th>
 
 								</thead>
 							
@@ -144,7 +164,7 @@
 							</table>
 						</div>
 					</div>
-					<div class="row justify-content-end mb-2" style="padding-right: 12px">
+					<div class="row justify-content-end mb-2 d-none" style="padding-right: 12px">
 						<div class="text-right flex-shrink-1 ml-3 border-left" >
 							<p class="m-0 font-weight-bold border-bottom px-2" id="datos-5">Sueldo Base</p>
 							<p class="m-0 font-weight-bold border-bottom px-2" id="datos-6">Sueldo Integral</p>
@@ -222,31 +242,33 @@
 	<script>
 		document.getElementById('btn_concluir_factura').onclick=function(){
 			muestraMensaje("¿Seguro?", "¿Culminar el proceso de la factura?, Una vez concluidas enviara a los trabajadores un correo con los detalles de las facturas", "?",function(result){
-				var datos = new FormData();
-				datos.append("accion","concluir_facturas");
-				enviaAjax(datos,function(respuesta, exito, fail){
-				
-					var lee = JSON.parse(respuesta);
-					if(lee.resultado == "concluir_facturas"){
+				if(result){
+					var datos = new FormData();
+					datos.append("accion","concluir_facturas");
+					enviaAjax(datos,function(respuesta, exito, fail){
+					
+						var lee = JSON.parse(respuesta);
+						if(lee.resultado == "concluir_facturas"){
 
-						muestraMensaje("Éxito", "Las facturas han sido concluidas exitosamente", "s");
+							muestraMensaje("Éxito", "Las facturas han sido concluidas exitosamente", "s");
 
-						
-					}
-					else if (lee.resultado == 'is-invalid'){
-						muestraMensaje(lee.titulo, lee.mensaje,"error");
-					}
-					else if(lee.resultado == "error"){
-						muestraMensaje(lee.titulo, lee.mensaje,"error");
-						console.error(lee.mensaje);
-					}
-					else if(lee.resultado == "console"){
-						console.log(lee.mensaje);
-					}
-					else{
-						muestraMensaje(lee.titulo, lee.mensaje,"error");
-					}
-				});
+							
+						}
+						else if (lee.resultado == 'is-invalid'){
+							muestraMensaje(lee.titulo, lee.mensaje,"error");
+						}
+						else if(lee.resultado == "error"){
+							muestraMensaje(lee.titulo, lee.mensaje,"error");
+							console.error(lee.mensaje);
+						}
+						else if(lee.resultado == "console"){
+							console.log(lee.mensaje);
+						}
+						else{
+							muestraMensaje(lee.titulo, lee.mensaje,"error");
+						}
+					});
+				}
 			});
 
 		}
@@ -414,7 +436,7 @@
 
 		function cargar_detalles_facturas_c(detalles,factura){
 
-			data_table_detalles("table_detalles_factura",detalles)
+			data_table_detalles("table_detalles_factura",detalles,factura);
 			
 			document.getElementById('datos-1').innerHTML = factura.cedula;
 			document.getElementById('datos-2').innerHTML = factura.nombre;
@@ -428,7 +450,14 @@
 		}
 
 
-		function data_table_detalles(table,data){
+		function data_table_detalles(table,data,extra = ''){
+			if(extra != ''){
+				data.push({descripcion: "<b>Sueldo Base</b>", monto: extra.sueldo_base})
+				data.push({descripcion: "<b>Sueldo Integral</b>", monto: extra.suma_integral})
+				data.push({descripcion: "<b>Deducciones</b>", monto: extra.sueldo_deducido})
+				data.push({descripcion: "<b>Total A Pagar</b>", monto: extra.sueldo_total})
+			}
+
 			if ($.fn.DataTable.isDataTable(`#${table}`)) {
 				$(`#${table}`).DataTable().destroy();
 			}
