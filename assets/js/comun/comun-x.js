@@ -896,8 +896,9 @@ function fetchNotifications() {
         data: { accion: 'getNotifications' },
         dataType: 'json',
         success: function(data) {
+			console.log(data);
             const alertsDropdown = $('#alertsDropdown');
-            const alertList = $('.dropdown-list');
+            const alertList = $('#contenido_notificaciones');
             alertList.empty(); // Clear previous alerts
 
             let alertCount = 0;
@@ -905,7 +906,7 @@ function fetchNotifications() {
                 alertCount++;
 
                 const alertItem = $(`
-                    <a class="dropdown-item d-flex align-items-center" href="#">
+                    <a class="dropdown-item d-flex align-items-center" href="?p=notificaciones" data-id="${notification.id}">
                         <div class="mr-3">
                             <div class="icon-circle bg-warning">
                                 <i class="fas fa-exclamation-triangle text-white"></i>
@@ -918,11 +919,20 @@ function fetchNotifications() {
                     </a>
                 `);
 
+                alertItem.on('click', function() {
+                    markAsRead($(this).data('id'));
+                });
+
                 alertList.append(alertItem);
             });
 
             const badgeCounter = alertsDropdown.find('.badge-counter');
             badgeCounter.text(alertCount > 3 ? '3+' : alertCount);
+            if (alertCount === 0) {
+                badgeCounter.hide();
+            } else {
+                badgeCounter.show();
+            }
         },
         error: function(error) {
             console.error('Error fetching notifications:', error);
@@ -930,6 +940,24 @@ function fetchNotifications() {
     });
 }
 
+function markAsRead(id) {
+    $.ajax({
+        url: 'controlador/notificacion.php',
+        method: 'POST',
+        data: { accion: 'markAsRead', id: id },
+        dataType: 'json',
+        success: function(response) {
+            if (response.resultado === 'exito') {
+                fetchNotifications(); // Refresh notifications
+            } else {
+                console.error('Error marking notification as read:', response.mensaje);
+            }
+        },
+        error: function(error) {
+            console.error('Error marking notification as read:', error);
+        }
+    });
+}
 // Llamar a la función fetchNotifications cada 5 minutos
 
 

@@ -44,7 +44,7 @@
                     <div class="row">
 
 <!-- Area Chart -->
-<div class="col-xl-8 col-lg-7">
+<div class="col-xl-12 col-lg-7">
     <div class="card shadow mb-4">
         <!-- Card Header - Dropdown -->
         <div
@@ -60,9 +60,36 @@
         </div>
         <!-- Card Body -->
         <div class="card-body">
-            <div >
-                <canvas id="grafica"></canvas>
+            <div class="row">
+                <div class="col-4">      
+
+                    <form id="filterForm">
+                        <div class="col-12" style="    padding-top: 19%;"> 
+                            <div class="col-7">
+                                <label for="fecha_inicio">Fecha Inicio:</label>
+                                <input type="date" class="form-control" id="fecha_inicio" name="fecha_inicio" required>
+                            </div>
+                            <div class="col-7">
+                                <label for="fecha_fin">Fecha Fin:</label>
+                                <input type="date" class="form-control" id="fecha_fin" name="fecha_fin" required>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class=" btn-primary">Filtrar</button>
+                            </div>
+                        </div>
+                        <div class="col-12" style="    padding-top: 19%;">
+                            <p id="porce"></p>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-8">     
+                        <div >
+                            <canvas id="grafica"></canvas>
+                        </div>
+                    </div>    
             </div>
+                
+        
         </div>
     </div>
 </div>

@@ -9,7 +9,7 @@
             if ($accion == "getUpcomingVacations") {
                 $upcomingVacations = $cl->getUpcomingVacations();
                 echo json_encode($upcomingVacations);
-            } elseif ($accion == "getNotifications") {
+            } elseif ($accion == "obtener_noti") {
                 $notificaciones = $cl->obtenerNotificaciones();
                 echo json_encode($notificaciones);
             }
@@ -17,7 +17,7 @@
             $cl->set_con(null);
             exit;
         }
-            Bitacora::ingreso_modulo("Bitácora");
+            Bitacora::ingreso_modulo("Notificaciones");
             require_once("vista/".$pagina.".php");
         }
     
