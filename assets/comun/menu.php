@@ -165,7 +165,7 @@
     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseAdministracion"
         aria-expanded="true" aria-controls="collapseAdministracion">
         <i class="fas fa-fw fa-folder"></i>
-        <span>Configuración</span>
+        <span>Seguridad</span>
     </a>
     <div id="collapseAdministracion" class="collapse" aria-labelledby="headingNomina" data-parent="#accordionSidebar">
         <div class="bg-white py-2 collapse-inner rounded">

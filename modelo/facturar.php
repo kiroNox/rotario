@@ -84,15 +84,24 @@ class Facturar extends Conexion
 
 			$consulta = null;
 
-			$consulta = $this->con->prepare("SELECT descripcion, monto from detalles_factura as d WHERE d.id_factura = :id AND d.prima IS true
-			UNION
-			SELECT descripcion, CONCAT('-',monto) from detalles_factura as d WHERE d.id_factura = :id AND (d.prima IS FALSE OR d.islr IS TRUE);");
+			 $consulta = $this->con->prepare("SELECT descripcion, monto from detalles_factura as d WHERE d.id_factura = :id AND d.prima IS true
+			 UNION
+			 SELECT descripcion, CONCAT('-',monto) from detalles_factura as d WHERE d.id_factura = :id AND (d.prima IS FALSE OR d.islr IS TRUE);");
+			$consulta->bindValue(":id",$this->id);;
+			$consulta->execute();
+
+			if(!($resp2 = $consulta->fetchall(PDO::FETCH_ASSOC))){// TODO quitar esto
+
+
+			$consulta = $this->con->prepare("call calcular_detalles(:id)");
+
 
 			$consulta->bindValue(":id",$this->id);;
 			$consulta->execute();
 
 			$resp2 = $consulta->fetchall(PDO::FETCH_ASSOC);
 
+			}
 
 			
 			$r['resultado'] = 'detalles_factura';

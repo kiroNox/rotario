@@ -20,6 +20,8 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `rotario_produccion`
 --
+CREATE DATABASE IF NOT EXISTS `rotario-produccion` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+USE `rotario-produccion`;
 
 DELIMITER $$
 --
@@ -2960,24 +2962,28 @@ CREATE TABLE `liquidacion` (
 
 CREATE TABLE `modulos` (
   `id_modulos` int(11) NOT NULL,
-  `nombre` varchar(45) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+  `nombre` varchar(45) NOT NULL,
+  `descripcion` varchar(45) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Volcado de datos para la tabla `modulos`
 --
 
-INSERT INTO `modulos` (`id_modulos`, `nombre`) VALUES
-(1, 'usuarios'),
-(2, 'areas'),
-(3, 'permisos'),
-(4, 'asistencias'),
-(5, 'hijos'),
-(6, 'bitacora'),
-(7, 'roles'),
-(8, 'sueldo'),
-(9, 'deducciones'),
-(10, 'primas');
+INSERT INTO `modulos` (`id_modulos`, `nombre`, `descripcion`) VALUES
+(1, 'usuarios', 'Gestionar Trabajadores'),
+(2, 'areas', 'Gestionar Areas'),
+(3, 'permisos', 'Gestionar Permisos'),
+(4, 'asistencias', 'Control de asistencias'),
+(5, 'hijos', 'Gestionar Hijos'),
+(6, 'bitacora', 'Bitacora'),
+(7, 'roles', 'Gestionar Roles'),
+(8, 'sueldo', 'Gestionar Sueldo'),
+(9, 'deducciones', 'Gestionar Deducciones'),
+(10, 'primas', 'Gestionar Primas'),
+(11, 'educacion', 'Gestionar Nivel Educativo'),
+(12, 'liquidacion', 'Gestionar Liquidaciones'),
+(13, 'facturas', 'Gestionar Facturas');
 
 -- --------------------------------------------------------
 
@@ -3035,7 +3041,12 @@ INSERT INTO `permisos` (`id_rol`, `id_modulos`, `crear`, `modificar`, `eliminar`
 (1, 7, 1, 1, 1, 1),
 (1, 8, 1, 1, 1, 1),
 (1, 9, 1, 1, 1, 1),
-(1, 10, 1, 1, 1, 1);
+(1, 10, 1, 1, 1, 1),
+(1, 11, 1, 1, 1, 1),
+(1, 12, 1, 1, 1, 1),
+(1, 13, 1, 1, 1, 1),
+(2, 1, 0, 0, 0, 0),
+(2, 11, 0, 0, 0, 0);
 
 -- --------------------------------------------------------
 

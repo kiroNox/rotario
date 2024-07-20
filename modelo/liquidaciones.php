@@ -208,7 +208,7 @@ class Liquidaciones extends Conexion
 			$consulta->execute([$this->id_trabajador]);
 
 			if($consulta->fetch(PDO::FETCH_ASSOC)["id_rol"] == '1'){
-				throw new Exception("No es posible realizar el proceso de liquidación del trabajador por su rol de administrador", 1);
+				throw new Exception("No es posible realizar el proceso de liquidación del trabajador por el rol de administrador del trabajador", 1);
 			}
 			
 			$consulta = $this->con->prepare("SELECT t.*,sb.id_sueldo_base FROM trabajadores as t LEFT JOIN sueldo_base as sb on sb.id_trabajador = t.id_trabajador WHERE t.id_trabajador = ?;");
@@ -232,7 +232,7 @@ class Liquidaciones extends Conexion
 			$consulta->bindValue(":descripcion",$this->motivo);
 			$consulta->bindValue(":fecha",$this->fecha);
 			$consulta->execute();
-			
+
 			$lastId = $this->con->lastInsertId();
 
 			$consulta = $this->con->prepare("UPDATE trabajadores set estado_actividad = 0 WHERE id_trabajador = ?");
