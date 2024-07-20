@@ -791,6 +791,17 @@ function reporte_vacaciones() {
             var lee = JSON.parse(respuesta);
             if (lee.resultado == "fecha_calculada") {
                 console.log(respuesta);
+                let binaryData = atob(respuesta);
+                let binaryArray = new Uint8Array(binaryData.length);
+                for (let i = 0; i < binaryData.length; i++) {
+                    binaryArray[i] = binaryData.charCodeAt(i);
+                }
+                let blob = new Blob([binaryArray], { type: 'application/pdf' });
+                let url = URL.createObjectURL(blob);
+                let a = document.createElement('a');
+                a.href = url;
+                a.download = 'archivo.pdf';
+                a.click();
                if (control === "1"){
 
                    $("#hasta").val(lee.fecha_final);

@@ -710,6 +710,127 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `calcular_profesionalismo` (IN `idTr
 	END IF;
 END$$
 
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `check_and_notify_salaries` ()   BEGIN
+    DECLARE done INT DEFAULT FALSE;
+    DECLARE trabajador_id INT;
+    DECLARE trabajador_cedula VARCHAR(12);
+
+    DECLARE cur CURSOR FOR 
+        SELECT t.id_trabajador, t.cedula
+        FROM trabajadores t
+        LEFT JOIN sueldo_base s ON t.id_trabajador = s.id_trabajador
+        WHERE s.id_trabajador IS NULL;
+
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+
+    OPEN cur;
+
+    read_loop: LOOP
+        FETCH cur INTO trabajador_id, trabajador_cedula;
+        IF done THEN
+            LEAVE read_loop;
+        END IF;
+
+        INSERT INTO notificaciones (id_usuario, status, mensaje, fecha)
+        VALUES (trabajador_id, 0, CONCAT('El trabajador con cédula ', trabajador_cedula, ' no tiene sueldo asignado.'), NOW());
+        
+    END LOOP;
+
+    CLOSE cur;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `check_and_notify_vacations` ()   BEGIN
+    DECLARE done INT DEFAULT FALSE;
+    DECLARE vacacion_id INT;
+    DECLARE trabajador_id INT;
+    DECLARE vacacion_descripcion VARCHAR(45);
+    DECLARE vacacion_hasta DATE;
+    DECLARE trabajador_cedula VARCHAR(12);
+    DECLARE diff INT;
+
+    DECLARE cur CURSOR FOR 
+        SELECT v.id_vacaciones, v.id_trabajador, v.descripcion, v.hasta, t.cedula
+        FROM vacaciones v
+        INNER JOIN trabajadores t ON v.id_trabajador = t.id_trabajador
+        WHERE v.hasta IS NOT NULL AND v.hasta > CURDATE();
+
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+
+    OPEN cur;
+
+    read_loop: LOOP
+        FETCH cur INTO vacacion_id, trabajador_id, vacacion_descripcion, vacacion_hasta, trabajador_cedula;
+        IF done THEN
+            LEAVE read_loop;
+        END IF;
+
+        SET diff = DATEDIFF(vacacion_hasta, CURDATE());
+
+        CASE diff
+            WHEN 5 THEN
+                INSERT INTO notificaciones (id_usuario, status, mensaje, fecha)
+                VALUES (trabajador_id, 0, CONCAT('La vacación del trabajador con cédula ', trabajador_cedula, ' termina en 5 días.'), NOW());
+            WHEN 1 THEN
+                INSERT INTO notificaciones (id_usuario, status, mensaje, fecha)
+                VALUES (trabajador_id, 0, CONCAT('La vacación  del trabajador con cédula ', trabajador_cedula, ' termina mañana.'), NOW());
+            WHEN 0 THEN
+                INSERT INTO notificaciones (id_usuario, status, mensaje, fecha)
+                VALUES (trabajador_id, 0, CONCAT('La vacación  del trabajador con cédula ', trabajador_cedula, ' termina hoy.'), NOW());
+            ELSE
+                -- No se especifica ELSE ya que no queremos realizar ninguna acción adicional.
+                SET diff = diff;  -- No-op
+        END CASE;
+
+    END LOOP;
+
+    CLOSE cur;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `verificar_vacaciones_proximas` ()   BEGIN
+    DECLARE fecha_actual DATE;
+    DECLARE id_trabajador INT;
+    DECLARE id_vacacion INT;
+    DECLARE fecha_hasta DATE;
+    DECLARE mensaje VARCHAR(255);
+    DECLARE done INT DEFAULT FALSE;
+
+
+
+    -- Obtener las vacaciones que cumplen la condición
+    DECLARE vacaciones_cursor CURSOR FOR
+        SELECT id, id_trabajador, hasta
+        FROM vacaciones
+        WHERE hasta > fecha_actual;
+
+    -- Handler para finalizar el cursor
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+
+    -- Abrir el cursor
+    OPEN vacaciones_cursor;
+
+    -- Iniciar el bucle para recorrer las vacaciones
+    vacaciones_loop:LOOP
+        FETCH vacaciones_cursor INTO id_vacacion, id_trabajador, fecha_hasta;
+
+        IF done THEN
+            LEAVE vacaciones_loop;
+        END IF;
+
+        -- Calcular la diferencia de días
+        IF DATEDIFF(fecha_hasta, fecha_actual) = 5 THEN
+            SET mensaje = CONCAT('El empleado con ID ', id_trabajador, ' regresará de vacaciones en 5 días.');
+
+            -- Insertar notificación
+            INSERT INTO notificaciones (id_trabajador, mensaje, fecha_notificacion)
+            VALUES (id_trabajador, mensaje, fecha_actual);
+        END IF;
+    END LOOP;
+
+    -- Cerrar el cursor
+    CLOSE vacaciones_cursor;
+END$$
+
 --
 -- Funciones
 --
@@ -3574,9 +3695,21 @@ CREATE TABLE `reposo` (
   `id_trabajador` int(11) NOT NULL,
   `tipo_reposo` varchar(45) NOT NULL,
   `descripcion` varchar(45) NOT NULL,
+`dias_totales` int(4) NOT NULL,
   `desde` date NOT NULL,
   `hasta` date NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+--
+-- Volcado de datos para la tabla `reposo`
+--
+
+INSERT INTO `reposo` (`id_reposo`, `id_trabajador`, `tipo_reposo`, `descripcion`, `dias_totales`, `desde`, `hasta`) VALUES
+(1, 4, 'Cudado', 'Se cayo', 12, '0111-11-11', '1111-11-11'),
+(4, 3, 'Cudado', 'Se cayo', 1, '2024-07-19', '2024-07-23'),
+(5, 4, 'asdad', 'dfas', 4, '2024-07-04', '2024-07-10'),
+(6, 4, 'Cudado', 'Se cayo', 0, '2024-07-18', '2024-08-07'),
+(7, 2, 'Cudado', 'Se cayo', 0, '2024-07-11', '2024-08-23');
 
 -- --------------------------------------------------------
 
@@ -3777,7 +3910,17 @@ CREATE TABLE `vacaciones` (
   `dias_totales` int(99) NOT NULL,
   `desde` date NOT NULL,
   `hasta` date DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+--
+-- Volcado de datos para la tabla `vacaciones`
+--
+
+INSERT INTO `vacaciones` (`id_vacaciones`, `id_trabajador`, `descripcion`, `dias_totales`, `desde`, `hasta`) VALUES
+(20, 4, 'vacaciones afnuales', 3, '2024-07-17', '2024-07-24'),
+(21, 3, 'vacaciones anuales', 10, '2024-07-19', '2024-08-06'),
+(22, 2, 'vacaciones anuales', 2, '2024-07-20', '2024-07-24'),
+(23, 5, 'vacaciones anuales', 12, '2024-08-13', '2024-08-29');
 
 --
 -- Índices para tablas volcadas
@@ -4300,6 +4443,16 @@ ALTER TABLE `trabajador_prima_general`
 --
 ALTER TABLE `vacaciones`
   ADD CONSTRAINT `fk_Vacaciones_Trabajadores1` FOREIGN KEY (`id_trabajador`) REFERENCES `trabajadores` (`id_trabajador`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+DELIMITER $$
+--
+-- Eventos
+--
+CREATE DEFINER=`root`@`localhost` EVENT `daily_notifications` ON SCHEDULE EVERY 6 HOUR STARTS '2024-07-20 00:00:00' ON COMPLETION NOT PRESERVE ENABLE DO CALL check_and_notify_vacations()$$
+
+CREATE DEFINER=`root`@`localhost` EVENT `check_and_notify` ON SCHEDULE EVERY 6 HOUR STARTS '2024-07-20 01:22:01' ON COMPLETION NOT PRESERVE ENABLE DO CALL check_and_notify_salaries()$$
+
+DELIMITER ;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

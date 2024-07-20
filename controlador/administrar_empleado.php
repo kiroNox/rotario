@@ -1,14 +1,14 @@
 <?php
 
-
+require_once 'vendor/autoload.php';
+use Dompdf\Dompdf;
 
 	if (is_file("vista/" . $pagina . ".php")) {
 
 		$cl = new administrar_empleados;
 
 		function generar_reporte_vacaciones_anual($cl,$year) {
-			require_once 'vendor/autoload.php';
-			$dompdf = new \Dompdf\Dompdf();
+			
 			
 			
 			$datos = $cl->obtener_vacaciones_anuales($year);
@@ -43,13 +43,19 @@
 			$html .= '  </tbody>
 					  </table>';
 			
-			// Cargar el HTML en DomPDF
-			$dompdf->loadHtml($html);
-			$dompdf->setPaper('A4', 'landscape');
+					  $dompdf = new Dompdf\Dompdf();
+                
+					  // Definimos el tamaño y orientación del papel que queremos.
+					  $dompdf->set_paper("A4", "portrait");
+					  
+					  // Cargamos el contenido HTML.
+					  $dompdf->load_html($html);
 			$dompdf->render();
-			
-			// Enviar el PDF al navegador
-			$dompdf->stream('reporte_vacaciones_anual_' . $year . '.pdf', array("Attachment" => false));
+			$pdfOutput = $dompdf->output();
+                $base64Data = base64_encode($pdfOutput);
+
+                // Imprimir la cadena base64 para que JavaScript pueda capturarla
+                echo $base64Data;
 		}
 	
 		if (!empty($_POST)) { // Si hay alguna consulta tipo POST
