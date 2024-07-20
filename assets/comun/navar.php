@@ -40,15 +40,15 @@
                                             <button class="btn btn-primary" type="button">
                                                 <i class="fas fa-search fa-sm"></i>
                                             </button>
+                                            </div>
                                         </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </li>
-
-                        <!-- Nav Item - Alerts -->
-                        <li class="nav-item dropdown no-arrow mx-1">
-                            <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button"
+                                    </form>
+                                </div>
+                            </li>
+                            
+                            <!-- Nav Item - Alerts -->
+                            <li class="nav-item dropdown no-arrow mx-1">
+                                <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fas fa-bell fa-fw"></i>
                                 <!-- Counter - Alerts -->
@@ -56,24 +56,24 @@
                             </a>
                             <!-- Dropdown - Alerts -->
                             <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
-                                aria-labelledby="alertsDropdown">
-                                <h6 class="dropdown-header">
-                                    Alerts Center
-                                </h6>
-                                <!-- Las notificaciones se agregarán aquí dinámicamente -->
-                                <div class="dropdown-list"></div>
-                                <a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
-                            </div>
-                        </li>
-
-                        <div class="topbar-divider d-none d-sm-block"></div>
-
-                        <!-- Nav Item - User Information -->
-                        <li class="nav-item dropdown no-arrow">
-                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-intro="Desde aqui podemos cerrar la sesión actual" data-step="4">
-                                <span class="mr-2 d-none d-lg-inline text-gray-600 small"><?=$_SESSION["usuario_rotario_name"] ?></span>
-                                <!-- <img class="img-profile rounded-circle" src=""> -->
+                            aria-labelledby="alertsDropdown">
+                            <h6 class="dropdown-header">
+                                Notificaciones
+                            </h6>
+                            <!-- Las notificaciones se agregarán aquí dinámicamente -->
+                            <div class="dropdown-list" id="contenido_notificaciones"></div>
+                            <a class="dropdown-item text-center small text-gray-500" href="?p=notificaciones">Mostrar todas</a>
+                        </div>
+                    </li>
+                    
+                    <div class="topbar-divider d-none d-sm-block"></div>
+                    
+                    <!-- Nav Item - User Information -->
+                    <li class="nav-item dropdown no-arrow">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-intro="Desde aqui podemos cerrar la sesión actual" data-step="4">
+                        <span class="mr-2 d-none d-lg-inline text-gray-600 small"><?=$_SESSION["usuario_rotario_name"] ?></span>
+                        <!-- <img class="img-profile rounded-circle" src=""> -->
                                 <span class="img-profile rounded-circle bi bi-person-circle d-flex justify-content-center align-items-center" style="font-size: 2rem"></span>
                             </a>
                             <!-- Dropdown - User Information -->

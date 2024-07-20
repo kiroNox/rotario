@@ -1,18 +1,17 @@
 <?php 
 
-class notificaciones extends Conexion {
+class notificacion extends Conexion {
     private $con;
 
     function __construct($con = '')
-	{
-		// al instanciar la clase puede hacerce con una conexion vieja o no 
-		// se pasaria como argumento (para controlar transacciones)
-		// "con" = conexion
-		if(!($con instanceof PDO)){// si "con" no es una instancia de PDO
-			$this->con = $this->conecta();// crea la conexion 
-		}
-
-	}
+    {
+        // al instanciar la clase puede hacerce con una conexion vieja o no 
+        // se pasaria como argumento (para controlar transacciones)
+        // "con" = conexion
+        if(!($con instanceof PDO)){// si "con" no es una instancia de PDO
+            $this->con = $this->conecta();// crea la conexion 
+        }
+    }
 
     public function crearNotificacion($idTrabajador, $mensaje) {
         try {
@@ -43,7 +42,7 @@ class notificaciones extends Conexion {
     public function obtenerNotificaciones() {
         try {
             $this->validar_conexion($this->con);
-            $consulta = $this->con->prepare("SELECT id, id_usuario, status, mensaje, fecha FROM notificaciones ORDER BY fecha DESC");
+            $consulta = $this->con->prepare("SELECT id, id_usuario, status, mensaje, fecha FROM notificaciones WHERE status = 'pending' ORDER BY fecha DESC");
             $consulta->execute();
             $notificaciones = $consulta->fetchAll(PDO::FETCH_ASSOC);
             return $notificaciones;
@@ -52,14 +51,23 @@ class notificaciones extends Conexion {
         }
     }
 
-    PUBLIC function get_con(){
-		return $this->con;
-	}
-	PUBLIC function set_con($value){
-		$this->con = $value;
-	}
+    public function marcarComoLeida($id) {
+        try {
+            $this->validar_conexion($this->con);
+            $consulta = $this->con->prepare("UPDATE notificaciones SET status = '1' WHERE id = :id");
+            $consulta->bindValue(":id", $id);
+            $consulta->execute();
+            return ['resultado' => 'exito', 'mensaje' => 'Notificación marcada como leída'];
+        } catch (Exception $e) {
+            return ['resultado' => 'error', 'mensaje' => $e->getMessage()];
+        }
+    }
+
+    public function get_con(){
+        return $this->con;
+    }
+    public function set_con($value){
+        $this->con = $value;
+    }
 }
-
-
-
- ?>
+?>

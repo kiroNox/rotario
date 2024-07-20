@@ -1,6 +1,6 @@
 function load_notifications() {
     var datos = new FormData();
-    datos.append("accion", "getNotifications");
+    datos.append("accion", "obtener_noti");
 
     enviaAjax(datos, function(respuesta, exito, fail) {
         var lee = JSON.parse(respuesta);
