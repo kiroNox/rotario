@@ -18,7 +18,7 @@
                     <div class="row">
 
                         <div class="col-6">
-                            <h1 class="h3 mb-2 text-gray-800">Asistencias</h1>
+                            <h1 class="h3 mb-2 text-gray-800">Asistencias 88</h1>
                             <p class="mb-4">Las asistencias totales de los trabajadores
 
                         </div>
@@ -51,7 +51,7 @@
                                     </thead>
                                     <tbody class="table-cell-aling-middle" id="tbody_asistencia">
                                         <tr>
-                                            <td colspan="8" class="text-center">Cargando</td>
+                                            <td colspan="10" class="text-center">Cargando</td>
                                         </tr>
                                     </tbody>
                                 </table>

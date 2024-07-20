@@ -4,7 +4,7 @@
 class asistencia extends Conexion
 {
 
-    private $con, $id_area, $id_trabajador, $codigo, $descripcion, $desde, $hasta, $id_trabajador_area, $id;
+    private $con, $id_area, $id_trabajador, $codigo, $descripcion, $desde, $hasta, $id_trabajador_area, $id, $id_asistencia;
 
     public function __construct($con = '')
     { {
@@ -22,28 +22,27 @@ class asistencia extends Conexion
             $this->validar_conexion($this->con);
 
             $sql = "SELECT 
+                    asist.id_asistencia, 
                     t.nombre, 
                     t.apellido, 
                     t.cedula, 
-                    a.codigo, 
+                    a.codigo , 
                     a.descripcion, 
                     asist.fecha_entrada, 
                     asist.fecha_salida
                 FROM 
                     asistencias asist
                 INNER JOIN 
-                    trabajadores t ON asist.id_trabajador_area = t.id_trabajador
+                    trabajador_area ta ON asist.id_trabajador_area = ta.id_trabajador_area
                 INNER JOIN 
-                    areas a ON t.id_trabajador = a.id_area;
+                    trabajadores t ON ta.id_trabajador = t.id_trabajador
+                INNER JOIN 
+                    areas a ON ta.id_area = a.id_area;
 
             ";
             $stmt = $this->con->prepare($sql);
             $stmt->execute();
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-
-
-
             $r['resultado'] = 'listar_asistencias';
             $r['mensaje'] = $result;
             //$this->con->commit();
@@ -75,53 +74,45 @@ class asistencia extends Conexion
         return $r;
     }
 
-    public function eliminar_trabajadorArea($id)
+    public function eliminar_asistencias($id_asistencia)
     {
-        $this->set_id($id);
-        return $this->eliminar_trabajadorAreas();
+        $this->set_id($id_asistencia);
+        echo ($id_asistencia);
+        return $this->eliminar_asistencia();
     }
 
     /* crea la funcion privada de eliminar */
-    private function eliminar_trabajadorAreas()
+    private function eliminar_asistencia()
     {
         try {
-            $this->validar_conexion($this->con);
             $this->con->beginTransaction();
-            $consulta = $this->con->prepare("DELETE FROM trabajador_area WHERE id_trabajador_area = ?");
-            $consulta->execute([$this->id]);
-
-            $r['resultado'] = 'eliminar_trabajadorArea';
+            // Eliminar de la base de datos
+            $consulta = $this->con->prepare("DELETE FROM `asistencias` WHERE id_asistencia = :id");
+            $consulta->bindValue(":id", $this->id);
+            $consulta->execute();
             $this->con->commit();
-
-        } catch (Validaciones $e) {
-            if ($this->con instanceof PDO) {
-                if ($this->con->inTransaction()) {
-                    $this->con->rollBack();
-                }
-            }
-            $r['resultado'] = 'is-invalid';
-            $r['titulo'] = 'Error';
-            $r['mensaje'] = $e->getMessage();
-            $r['console'] = $e->getMessage() . ": Code : " . $e->getLine();
+            return [
+                'resultado' => 200,
+                'titulo' => 'eliminado',
+                'mensaje' => 'Asistencia eliminada correctamente.'
+            ];
         } catch (Exception $e) {
-            if ($this->con instanceof PDO) {
-                if ($this->con->inTransaction()) {
-                    $this->con->rollBack();
-                }
+            if ($this->con instanceof PDO && $this->con->inTransaction()) {
+                $this->con->rollBack();
             }
-
-            $r['resultado'] = 'error';
-            $r['titulo'] = 'Error';
-            $r['mensaje'] = $e->getMessage();
-            //$r['mensaje'] =  $e->getMessage().": LINE : ".$e->getLine();
-        } finally {
-            //$this->con = null;
+            throw $e;
         }
-        return $r;
     }
 
 
-
+    public function set_id_asistencia($value)
+    {
+        $this->id_asistencia = $value;
+    }
+    public function get_id_asistencia()
+    {
+        return $this->id_asistencia;
+    }
     public function get_id()
     {
         return $this->id;

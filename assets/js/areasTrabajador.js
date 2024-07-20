@@ -9,7 +9,6 @@ $(document).ready(function () {
     datos.append("accion", "listar_areasTrabajador");
     enviaAjax(datos, function (respuesta, exito, fail) {
       var lee = JSON.parse(respuesta);
-      console.log(lee);
 
       if (lee.resultado == "listar_areasTrabajador") {
         if ($.fn.DataTable.isDataTable("#tabla_asistencias")) {
@@ -82,6 +81,8 @@ $(document).ready(function () {
   rowsEvent(
     "tbody_asistencias",
     (target, cell) => {
+      const id = cell.parentNode;
+      console.log(id,"soy id de areas trabajador js");
       if (!cell.parentNode.dataset.id) return false;
       if (cell.classList.contains("cell-action")) {
         let count = 0;
@@ -166,6 +167,7 @@ $(document).ready(function () {
     }
   };
 
+  // LISTAR USUARIOS
   listar_usuarios();
   function listar_usuarios() {
     var datos = new FormData();
