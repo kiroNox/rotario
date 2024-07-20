@@ -272,7 +272,7 @@ class Autorizaciones extends Conexion
 					$consulta = $this->con->prepare("SELECT
 						m.id_modulos,
 						r.id_rol,
-		    m.descripcion AS modulo,
+		    m.nombre AS modulo,
 		    m.nombre as nombre,
 		    IF(p.crear IS NULL,0,p.crear) as crear,
 		    IF(p.modificar IS NULL, 0 , p.modificar) as modificar,
@@ -287,7 +287,7 @@ class Autorizaciones extends Conexion
 		    p.id_modulos = m.id_modulos AND
 		    p.id_rol = r.id_rol
 		WHERE
-		    r.id_rol = ? and m.descripcion <> 'no'");
+		    r.id_rol = ?");
 
 			$consulta->execute([$this->id]);
 

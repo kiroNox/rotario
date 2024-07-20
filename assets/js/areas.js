@@ -26,20 +26,21 @@ $(document).ready(function () {
       },
     });
   }
-  function cerrarModal() {
-    $('#exampleModalCenter').modal('hide'); // Cierra el modal
-  }
+ 
   // Función AJAX reutilizable
 
   // Evento para el botón de envío
   $("#botonEnvio").on("click", function () {
-   
-
     let datos = new FormData($("#formularioAreas")[0]);
-    const descripcion = datos.get("descripcion");
-    const codigo = datos.get("codigo");
+    //REGISTRAR
+    if(document.getElementById('botonEnvio').value == 'Registrar'){
+      datos.append("accion","create"); 
+      alert("hola");
+
+      const descripcion = datos.get("descripcion");
+      const codigo = datos.get("codigo");
+
     let error = false;
-    datos.append("accion", "create");
     // Validar los campos
     if (descripcion == "") {
       document.getElementById("error_descripcion").innerHTML = "Por favor, complete todos los campos.";
@@ -54,7 +55,8 @@ $(document).ready(function () {
       document.getElementById("error_codigo").innerHTML = "";
     }
     if(error == "true"){ console.log("hola"); return;}
-    console.log("hola");
+
+    console.log(JSON.stringify(datos),"hola 2");
 
     // Llamar a la función AJAX
     realizarSolicitudAjax(
@@ -66,7 +68,72 @@ $(document).ready(function () {
     );
     cargar_areas();
     cerrarModal();
+
+    return
+    }
+    //MODIFICAR
+    else if (document.getElementById('botonEnvio').value == 'Modificar'){
+      datos.append("id",document.getElementById('id').value);
+      datos.append("accion","update");
+      const descripcion = datos.get("descripcion");
+      const codigo = datos.get("codigo");
+
+    let error = false;
+    // Validar los campos
+    if (descripcion == "") {
+      document.getElementById("error_descripcion").innerHTML = "Por favor, complete todos los campos.";
+      error = "true";
+    } else {
+      document.getElementById("error_descripcion").innerHTML = "";
+    }
+    if (codigo == "") {
+      document.getElementById("error_codigo").innerHTML = "Por favor, complete todos los campos.";
+      error = "true";
+    } else {
+      document.getElementById("error_codigo").innerHTML = "";
+    }
+    if(error == "true"){ console.log("hola"); return;}
+
+    console.log(JSON.stringify(datos),"hola 2");
+
+    // Llamar a la función AJAX
+    realizarSolicitudAjax(
+      "",
+      "POST",
+      datos,
+      "Área registrada correctamente",
+      "Hubo un problema al registrar el área."
+    );
+    cargar_areas();
+    cerrarModal();
+    return;
+    }
+
+ 
+
+    
   });
+
+  // Modales 
+  function cerrarModal() {
+    $('#exampleModalCenter').modal('hide'); // Cierra el modal
+  }
+
+  function abrirModalModificar(datos) {
+
+
+    document.getElementById('formularioAreas').value = datos.id_area;
+    document.getElementById('descripcion').value = datos.descripcion;
+    document.getElementById('codigo').value = datos.codigo;
+    document.getElementById('id').value = datos.id_area;
+
+    document.getElementById('botonEnvio').value = 'Modificar';
+    document.getElementById('botonEnvio').classList.replace("btn-primary", "btn-warning");
+    document.getElementById('botonEnvio').classList.add("text-dark");
+    document.querySelector("#exampleModalCenter h5.modal-title").innerHTML = 'Modificar';
+
+    $("#exampleModalCenter").modal("show");
+}
 
   // Funcion para los botones eliminar y modificar de la lista
   
@@ -126,45 +193,27 @@ $(document).ready(function () {
          }
          else if (target.dataset.action == 'modificar'){ // MODIFICAR
           var datos = new FormData();
-          datos.append("accion","get_hijo");
+          datos.append("accion","show");
           datos.append("id",cell.parentNode.dataset.id);
-          enviaAjax(datos,function(respuesta, exito, fail){
           
+          enviaAjax(datos,function(respuesta, exito, fail){
             var lee = JSON.parse(respuesta);
-            if(lee.resultado == "get_hijo"){
-
-              document.getElementById('form_id_hijo').value = lee.mensaje.id_hijo;
-              document.getElementById('madre_cedula').value = lee.mensaje.cedulaMadre;
-              document.getElementById('padre_cedula').value = lee.mensaje.cedulaPadre;
-              document.getElementById('nombre').value = lee.mensaje.nombre;
-              document.getElementById('fecha_nacimiento').value = lee.mensaje.fecha_nacimiento;
-              document.getElementById('genero').value = lee.mensaje.genero;
-              document.getElementById('discapacitado').checked = (lee.mensaje.discapacidad == '1')?true:false;
-              document.getElementById('observacion').value = lee.mensaje.observacion;
-              document.getElementById('nombre-padre').innerHTML = lee.mensaje.nombrePadre;
-              document.getElementById('nombre-madre').innerHTML = lee.mensaje.nombreMadre;
-
-              document.getElementById('submit_btn').value = 'Modificar';
-              document.getElementById('submit_btn').classList.replace("btn-primary", "btn-warning");
-              document.getElementById('submit_btn').classList.add("text-dark");
-
-              document.querySelector("#modal_registar_hijos h5.modal-title").innerHTML = 'Modificar Hijo';
-
-
-              $("#modal_registar_hijos").modal("show");
+            if(lee.estado == 200){
+                abrirModalModificar(lee.datos);
+                return;
             }
             else if (lee.resultado == 'is-invalid'){
-              muestraMensaje(lee.titulo, lee.mensaje,"error");
+                muestraMensaje(lee.titulo, lee.mensaje,"error");
             }
             else if(lee.resultado == "error"){
-              muestraMensaje(lee.titulo, lee.mensaje,"error");
-              console.error(lee.mensaje);
+                muestraMensaje(lee.titulo, lee.mensaje,"error");
+                console.error(lee.mensaje);
             }
             else if(lee.resultado == "console"){
-              console.log(lee.mensaje);
+                console.log(lee.mensaje);
             }
             else{
-              muestraMensaje(lee.titulo, lee.mensaje,"error");
+                muestraMensaje(lee.titulo, lee.mensaje,"error");
             }
           });
          }
@@ -185,7 +234,6 @@ $(document).ready(function () {
       "Hubo un problema al listando el área.",
       (respuesta) => {
         let lee = JSON.parse(respuesta);
-        console.log(lee);
         if ($.fn.DataTable.isDataTable("#tabla_areas")) {
           $("#tabla_areas").DataTable().destroy();
         }

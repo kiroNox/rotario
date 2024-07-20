@@ -33,6 +33,20 @@ class Areas extends Conexion
         $this->set_id($id);
         return $this->eliminar_area_privada();
     }
+
+    //crea el metodo privado para buscar un area
+
+    public function show_area($id){
+        try {
+            $consulta = $this->con->prepare("SELECT * FROM areas WHERE id_area = :id");
+            $consulta->bindValue(":id", $id);
+            $consulta->execute();
+            return $consulta->fetch(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+
     
     /* crea la funcion privada de eliminar */
     private function eliminar_area_privada(){
@@ -56,26 +70,38 @@ class Areas extends Conexion
         }        
     }
     
-    public function actualizar_area($id, $descripcion, $codigo){
+    public function actualizar_areas($id, $descripcion, $codigo){
         $this->set_id($id);
         $this->set_descripcion($descripcion);
         $this->set_descripcion($codigo);
-        return $this->actualizar_area_privada();            
+        echo("descripcion88 : " .$descripcion. "codigo88 : ". $codigo ); 
+        
+
+      //return $this->actualizar_area_privada();            
 
     }
-    private function actualizar_area_privada(){
+    public function actualizar_area($id, $descripcion, $codigo) {
         try {
             $this->con->beginTransaction();
+            
+            // Depuración: Verificar los valores antes de la consulta
+            $this->set_id($id);
+            $this->set_descripcion($descripcion);
+            $this->set_codigo($codigo); // Corregido aquí
+            echo("descripcion : " . $descripcion . " codigo : " . $codigo . " id : " . $id);
+            
             // Actualizar en la base de datos
-            $consulta = $this->con->prepare("UPDATE areas SET codigo = :codigo, descripcion = :descripcion WHERE id = :id");
-            $consulta->bindValue(":id", $this->id);
+            $consulta = $this->con->prepare("UPDATE areas SET `codigo` = :codigo, `descripcion` = :descripcion WHERE id_area = :id_area");
+            $consulta->bindValue(":id_area", $this->id);
             $consulta->bindValue(":codigo", $this->codigo);
             $consulta->bindValue(":descripcion", $this->descripcion);
             $consulta->execute();
+            
             $this->con->commit();
+            
             return [
                 'resultado' => 'actualizar',
-                'titulo' => 'Éxito',
+                'titulo' => 200,
                 'mensaje' => 'Área actualizada correctamente.'
             ];
         } catch (Exception $e) {
@@ -115,6 +141,14 @@ class Areas extends Conexion
     public function set_descripcion($value)
     {
         $this->descripcion = $value;
+    }
+    public function get_codigo()
+    {
+        return $this->codigo;
+    }
+    public function set_codigo($value)
+    {
+        $this->codigo = $value;
     }
     public function get_id()
     {
