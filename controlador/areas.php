@@ -52,22 +52,40 @@ if (is_file("vista/" . $pagina . ".php")) {
                 break;
                     //actualizar
             case "update":
-                $respuesta = $claseAreas->actualizar_area(
-                    $_POST["id"],
-                    $_POST["codigo"],
-                    $_POST["descripcion"]
-                );
-                echo json_encode($respuesta);
+                $descripcion=$_POST["descripcion"];
+                $codigo=$_POST["codigo"];
+                $id=$_POST["id"];
+                
+                
+                if($descripcion && $codigo && $id){
+                    $respuesta=$claseAreas->actualizar_area($id,$descripcion,$codigo);
+                   echo json_encode($respuesta);
+                }else{
+                    echo json_encode([
+                        'resultado' => 'error',
+                        'titulo' => 'Error',
+                        'mensaje' => 'Faltan parámetros en la solicitud.'
+                    ]);
+                }
+                               
                 break;
                 // listar
             case "list":
                 $areas = $claseAreas->listar_areas();
                 echo json_encode([
-                    'estado' => 200,
+                    'estado' => 200,    
                     'datos' => $areas,
                     'mensaje' => 'Áreas listadas correctamente.'
                 ]);
                 break;
+                case "show":
+                    $areas = $claseAreas->show_area(id: $_POST['id']);
+                    echo json_encode([
+                        'estado' => 200,
+                        'datos' => $areas,
+                        'mensaje' => 'Áreas buscada correctamente.'
+                    ]);
+                    break;
             default:
                 echo json_encode([
                     'resultado' => 'error',

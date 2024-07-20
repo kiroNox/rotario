@@ -12,6 +12,7 @@
     
     <!-- Custom fonts for this template-->
     <?php require_once 'assets/comun/head.php'; ?>
+    <link href="vendor/intro.js-7.2.0/package/minified/introjs.min.css" rel="stylesheet" type="text/css">
     <link
     href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
     rel="stylesheet">
@@ -43,22 +44,22 @@
 <div class="container-fluid">
     
     <!-- Page Heading -->
-    <h1 class="h3 mb-4 text-gray-800">Administración de Ausencias</h1>
+    <h1 class="h3 mb-4 text-gray-800" data-title="Modulo Ausencias" data-intro="En este modulo se trabajaran las vacaciones, reposos y permisos" class="card-demo">Administración de Ausencias</h1>
     
     <!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-whatever="@mdo">Registro</button>-->   
  
   
     <div class="row">
         
-        <div class="col-lg-12">
+        <div class="col-lg-12" >
             
             <!-- Circle Buttons -->
-            <div class="card shadow mb-4">
+            <div class="card shadow mb-4" >
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">Resumen de trabajador</h6>
                 </div>
-                <div class="card-body">
-                    <div class="row">
+                <div class="card-body" >
+                    <div class="row" data-intro="En estas tarjetas podemos ver un resumen de las Ausencias vigentes">
                         
                         <!-- Earnings (Monthly) Card Example -->
                         <div class="col-xl-4 col-md-6 mb-4">
@@ -120,7 +121,7 @@
                             <div class="card-header py-3">
                                 <h6 class="m-0 font-weight-bold text-primary">Listado de trabajadores</h6>
                             </div>
-                            <div class="card-body">
+                            <div class="card-body" data-intro="Aqui tenemos un listado de trabajadores para gestionar sus Ausencias">
                                 <div class="tab-pane " id="nav-consultar_usuarios" role="tabpanel" aria-labelledby="nav-consultar_usuarios-tab">
 
                                     <table class="table table-bordered table-hover" id="tabla_trabajadores" width="100%" cellspacing="0">
@@ -129,7 +130,7 @@
                                                 <th>Cedula</th>
                                                 <th>Nombre</th>
                                                 <th>Apellido</th>
-                                                <th>Acciones</th>
+                                                <th >Acciones</th>
                                             </tr>
                                         </thead>
                                         <tbody id="tbody_trabajadores" class="row-cursor-pointer">
@@ -440,6 +441,7 @@ aria-hidden="true">
 
    
 <script src="assets/js/sb-admin-2.min.js"></script>
+<script src="vendor/intro.js-7.2.0/package/minified/intro.min.js"></script>
 
 
 

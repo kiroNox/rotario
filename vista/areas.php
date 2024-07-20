@@ -123,16 +123,19 @@
                                         <label for="codigo" class="form-label">Codigo</label>
                                         <input type="text" class="form-control" name="codigo" id="codigo" required>
                                         <p class="text-danger" id="error_codigo"></p> 
+                                        <input id="id" type="hidden" value="">
+
                                     </div>
                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                                    <button type="button" id="botonEnvio" class="btn btn-primary">Registro</button>
+                                    <button type="button" id="botonEnvio" value="Registrar" class="btn btn-primary">Registro</button>
+                                 
                                 </form>
                             </div>
                         </div>
 
                     </div>
                 </div>
-            </div>
+            </div>          
             <!-- modal -->
     </div>
 </body>

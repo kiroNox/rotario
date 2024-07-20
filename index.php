@@ -18,6 +18,7 @@
 		require_once("vendor/autoload.php");
 		require_once ("modelo/loader.php");
 		require_once "modelo/verificador.php";
+		require_once "modelo/notificacion.php";
 		require_once("controlador/$pagina.php");
 	}
 	else{

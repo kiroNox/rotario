@@ -86,13 +86,12 @@
 					$cl->no_permision_msg();
 				}
 			}
-			else if($accion == "eliminar_trabajadorarea"){
+			else if($accion == "eliminar"){
 				if(isset($permisos["usuarios"]["eliminar"]) and $permisos["usuarios"]["eliminar"] == "1"){
-					echo json_encode( $cl->eliminar_trabajadorArea($_POST["id"]) );
+					echo json_encode( $cl->eliminar_asistencias($_POST["id"]) );
+					return;
 				}
-				else{
-					$cl->no_permision_msg();
-				}
+				
 			}
 
 			else if($accion == "get_user"){

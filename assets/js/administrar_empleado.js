@@ -1,6 +1,7 @@
 $(document).ready(function() {
     
     // Cargar datos y actualizar tarjetas al inicio
+    introJs().setOption("dontShowAgain", true).start();
     cargarVacaciones();
     cargarReposos();
     cargarPermisos();
