@@ -12,6 +12,7 @@ class generar extends Conexion
     }
 
     public function obtenerDatosTrabajador($id_trabajador) {
+
         $sql = "SELECT nombre, apellido, cedula, creado FROM trabajadores WHERE id_trabajador = :id_trabajador";
         $stmt = $this->con->prepare($sql);
         $stmt->bindParam(':id_trabajador', $id_trabajador, PDO::PARAM_INT);

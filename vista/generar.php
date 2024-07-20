@@ -131,6 +131,17 @@
                 var formData = { accion: 'generarConstancia', id_trabajador: id_trabajador };
                 $.post('', formData, function(response) {
                     console.log(response);
+                    let binaryData = atob(response);
+                let binaryArray = new Uint8Array(binaryData.length);
+                for (let i = 0; i < binaryData.length; i++) {
+                    binaryArray[i] = binaryData.charCodeAt(i);
+                }
+                let blob = new Blob([binaryArray], { type: 'application/pdf' });
+                let url = URL.createObjectURL(blob);
+                let a = document.createElement('a');
+                a.href = url;
+                a.download = 'archivo.pdf';
+                a.click();
                 });
             });
         });
