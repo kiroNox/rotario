@@ -555,7 +555,13 @@
 								previous: "Anterior",
 							},
 						},
-						//columns:[{data:"columnJSON"}],
+						columns:[
+						{data:"cedula"}
+						,{data:"nombre"}
+						,{data:"fecha"}
+						,{data:"sueldo_total"}
+						,{data:"extra"}
+						],
 						data:lista1,
 						createdRow: function(row,data){
 							// row.querySelector("td:nth-child(1)").innerText;
@@ -606,7 +612,13 @@
 								previous: "Anterior",
 							},
 						},
-						//columns:[{data:"columnJSON"}],
+						columns:[
+						{data:"cedula"}
+						,{data:"nombre"}
+						,{data:"fecha"}
+						,{data:"sueldo_total"}
+						,{data:"extra"}
+						],
 						data:lista2,
 						createdRow: function(row,data){
 						// row.querySelector("td:nth-child(1)").innerText;
