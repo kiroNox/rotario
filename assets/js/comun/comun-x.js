@@ -64,13 +64,20 @@ function muestraMensaje(titulo, mensaje = '', icono = '', customProp = false, fu
 			obj[p] = customProp[p];
 		}
 	}
-	if(typeof func === 'function'){
-		Swal.fire(obj).then((result)=>{
-			func(result.isConfirmed,result);
-		});
+	if(!obj.ignore){
+		if(typeof func === 'function'){
+			Swal.fire(obj).then((result)=>{
+				func(result.isConfirmed,result);
+			});
+		}
+		else{
+			Swal.fire(obj);
+		}
 	}
 	else{
-		Swal.fire(obj);
+		if(typeof func === 'function'){
+			func(true);
+		}
 	}
 }
 let ajaxCounterConsult = 0;
@@ -428,7 +435,7 @@ class Validaciones{
 		this.expCedula_opt = /(?:(?:^[0-9]{7,8}$)|(?:^[ve][-\s]?[0-9]{7,8}$)|(?:^[jg][-\s]?[0-9]{8,10}$))/i;
 		this.expHora = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/;
 		this.expTelefono = /^[0-9]{4}[-\s]?[0-9]{7}$/;
-		this.expEmail = /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/;
+		this.expEmail = /^[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$/;
 		this.expMonto = /^\d{1,3}(?:[\s]\d{3})*[,]\d{2}$/;
 		this.expPass = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{6,20}$/
 		
@@ -844,9 +851,12 @@ function rowsEventActions(tbody,func){
 
 
 FormData.prototype.consoleAll = function() {
+	var obj = {};
 	for( let [key,value] of this){
-		console.log(`${key} :: '${value}'`);
+		obj[key] = value;
+		//console.log(`${key} :: '${value}'`);
 	}
+	console.table(obj);
 };
 FormData.prototype.groupby = function(name) {
 	var temp = [];
@@ -879,6 +889,8 @@ FormData.prototype.removeSpace = function() {
 
 function add_event_to_label_checkbox(){
 	for(var x of document.querySelectorAll("label.check-button")){
+
+		x.setAttribute("tabindex","0");
 		
 		x.onkeypress=function(e){
 			if(e.key == 'Enter'){
@@ -896,7 +908,7 @@ function fetchNotifications() {
         data: { accion: 'getNotifications' },
         dataType: 'json',
         success: function(data) {
-			console.log(data);
+			//console.log(data);
             const alertsDropdown = $('#alertsDropdown');
             const alertList = $('#contenido_notificaciones');
             alertList.empty(); // Clear previous alerts
@@ -969,13 +981,21 @@ document.addEventListener("DOMContentLoaded", function(){
 
 	if(true){
 		if(document.querySelector("#page-top > #wrapper:first-child")){
-			
-			//document.body.classList.add("dark-mode");
+			if(getCookie("modo_oscuro")){
+				document.body.classList.add("dark-mode");
+			}
 
 
 			var darkmode_btn = crearElem("button","class,btn","Dark mode change");
 			darkmode_btn.onclick=function(){
-				document.body.classList.toggle("dark-mode");
+				if(document.body.classList.contains("dark-mode")){
+					document.body.classList.remove("dark-mode");
+					document.cookie = "modo_oscuro=; expires=Thu, 01 Jan 1970 00:00:00 UTC"; // se elimina la cookie
+				}
+				else{
+					document.body.classList.add("dark-mode");
+					document.cookie = "modo_oscuro=dark-mode; expires=" + new Date(Date.now() + 365*24*60*60*1000).toUTCString();// en un año XD
+				}
 			}
 
 			document.body.appendChild(crearElem("div","class,darkmode_btn-container",darkmode_btn));
@@ -984,3 +1004,11 @@ document.addEventListener("DOMContentLoaded", function(){
 	}
 	// TODO quitar esto;
 });
+
+
+function getCookie(name) {
+    const value = "; " + document.cookie;
+    const parts = value.split("; " + name + "=");
+    if (parts.length === 2) return parts.pop().split(";").shift();
+}
+

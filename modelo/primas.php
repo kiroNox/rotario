@@ -6,6 +6,8 @@ class Primas extends Conexion
 	PRIVATE $con, $id, $descripcion ,$monto ,$hijo_menor ,$hijo_discapacidad ,$porcentaje;
 	PRIVATE $year, $escala, $cedula;
 	PRIVATE $mensual, $dedicada, $sector_salud, $trabajadores;
+	PRIVATE $id_trabajador;
+	USE Calculadora;
 
 	function __construct($con = '')
 	{
@@ -292,37 +294,40 @@ class Primas extends Conexion
 	}
 
 	PUBLIC function valid_cedula_trabajador_s($cedula){
+
+
 		$this->set_cedula($cedula);
 
 		return $this->valid_cedula_trabajador();
 	}
 
-	PUBLIC function registra_prima_general_s($descripcion ,$monto ,$porcentaje ,$mensual ,$dedicada ,$trabajadores ,$sector_salud ){
+	PUBLIC function registra_prima_general_s($descripcion ,$mensual ,$dedicada ,$trabajadores ,$sector_salud, $formula ){
 
 
 		$this->set_descripcion($descripcion);
-		$this->set_monto($monto);
-		$this->set_porcentaje($porcentaje);
+		//$this->set_monto($monto);
+		//$this->set_porcentaje($porcentaje);
 		$this->set_mensual($mensual);
 		$this->set_dedicada($dedicada);
 		$this->set_trabajadores($trabajadores);
 		$this->set_sector_salud($sector_salud);
-
+		$this->set_obj_formula($formula);
 
 
 
 		return $this->registra_prima_general();
 	}
-	PUBLIC function modificar_prima_general_s($id, $descripcion ,$monto ,$porcentaje ,$mensual ,$dedicada ,$trabajadores ,$sector_salud ){
+	PUBLIC function modificar_prima_general_s($id, $descripcion, $mensual ,$dedicada ,$trabajadores ,$sector_salud, $formula ){
 
 		$this->set_id($id);
 		$this->set_descripcion($descripcion);
-		$this->set_monto($monto);
-		$this->set_porcentaje($porcentaje);
+		// $this->set_monto($monto);
+		// $this->set_porcentaje($porcentaje);
 		$this->set_mensual($mensual);
 		$this->set_dedicada($dedicada);
 		$this->set_trabajadores($trabajadores);
 		$this->set_sector_salud($sector_salud);
+		$this->set_obj_formula($formula);
 
 
 
@@ -980,15 +985,18 @@ class Primas extends Conexion
 	PRIVATE function valid_cedula_trabajador(){
 		try {
 			$this->validar_conexion($this->con);
-			
+
+
 			Validaciones::validarCedula($this->cedula);
 
 			$consulta = $this->con->prepare("SELECT nombre, apellido, id_trabajador FROM trabajadores WHERE cedula = ?;");
 			$consulta->execute([$this->cedula]);
 			if($resp = $consulta->fetch(PDO::FETCH_ASSOC)){
-				$nombre = preg_replace("/^\s*\b(\w+).*/", "$1", $resp["nombre"]);
-				$nombre .= preg_replace("/^\s*\b(\w+).*/", " $1", $resp["apellido"]);
+				$nombre = preg_replace("/^\s*\b(\w+).*/u", "$1", $resp["nombre"]);
+				$nombre .= preg_replace("/^\s*\b(\w+).*/u", " $1", $resp["apellido"]);
 				
+				
+
 				$r['resultado'] = 'valid_cedula_trabajador';
 				$r['mensaje'] =  $nombre;
 				$r['id'] = $resp["id_trabajador"];
@@ -1037,18 +1045,33 @@ class Primas extends Conexion
 			
 			// TODO validaciones
 
+			if($this->obj_formula["tipo"] == "lista"){
+				$id_formula = $this->calc_guardar_formula_lista($this->obj_formula["lista"], $this->obj_formula["nombre"], $this->obj_formula["descripcion"], false, true);
+			}
+			else{
+				$id_formula = $this->calc_guardar_formula($this->obj_formula["formula"], $this->obj_formula["nombre"], $this->obj_formula["descripcion"], $this->obj_formula["variables"], $this->obj_formula["condicional"], 0, false, true);
+			}
+
+
+			if($id_formula["resultado"] == 'error'){
+				throw new Exception($id_formula["mensaje"],$id_formula["code"]);
+			}
+
+			$id_formula = $id_formula["last"];
+
 
 
 			$consulta = $this->con->prepare("INSERT INTO `primas_generales`
-				(`descripcion`, `monto`, `porcentaje`, `sector_salud`, `dedicada`) 
+				(`descripcion`, `monto`, `porcentaje`, `sector_salud`, `dedicada`, `id_formula`) 
 				VALUES 
-				(:descripcion,:monto,:porcentaje,:sector_salud,:dedicada)");
+				(:descripcion, NULL, NULL, :sector_salud, :dedicada, :id_formula)");
 
 			$consulta->bindValue(":descripcion",$this->descripcion);
-			$consulta->bindValue(":monto",$this->monto);
-			$consulta->bindValue(":porcentaje",$this->porcentaje);
+			//$consulta->bindValue(":monto",$this->monto);
+			//$consulta->bindValue(":porcentaje",$this->porcentaje);
 			$consulta->bindValue(":sector_salud",$this->sector_salud);
 			$consulta->bindValue(":dedicada",$this->dedicada);
+			$consulta->bindValue(":id_formula",$id_formula);
 
 			$consulta->execute();
 
@@ -1130,10 +1153,8 @@ class Primas extends Conexion
 			$r['resultado'] = 'error';
 			$r['titulo'] = 'Error';
 			$r['mensaje'] =  $e->getMessage();
-			//$r['mensaje'] =  $e->getMessage().": LINE : ".$e->getLine();
 		}
 		finally{
-			//$this->con = null;
 			$consulta=null;
 		}
 		return $r;
@@ -1158,27 +1179,78 @@ class Primas extends Conexion
 			$consulta = null;
 
 
+			$diff = '';
+			$consulta = $this->con->prepare("SELECT descripcion, dedicada, id_formula FROM primas_generales WHERE id_primas_generales = ?;");
+			$consulta->execute([$this->id]);
+
+
+			$temp = $consulta->fetch(PDO::FETCH_ASSOC);
+
+			$id_formula = isset($temp["id_formula"]) ? $temp["id_formula"] : false;
+
+			Bitacora::get_diff($diff,"Descripción", $temp["descripcion"], $this->descripcion);
+			//Bitacora::get_diff($diff,"Status de medico", $temp["sector_salud"], $this->sector_salud, ["Verdadero", "Falso"] );
+			Bitacora::get_diff($diff,"Dedicada", $temp["dedicada"], $this->dedicada, ["Dedicada", "Global"] );
+
+
+
+
+
+			if($this->obj_formula["tipo"] == "lista"){
+				$id_formula = $this->calc_guardar_formula_lista($this->obj_formula["lista"], $this->obj_formula["nombre"], $this->obj_formula["descripcion"], false, true, $id_formula);
+			}
+			else{
+				$id_formula = $this->calc_guardar_formula($this->obj_formula["formula"], $this->obj_formula["nombre"], $this->obj_formula["descripcion"], $this->obj_formula["variables"], $this->obj_formula["condicional"], 0, false, true, $id_formula);
+			}
+
+
+			if($id_formula["resultado"] == 'error'){
+				throw new Exception($id_formula["mensaje"],$id_formula["code"]);
+			}
+
+			$id_formula = $id_formula["last"];
+			
+
+
+
+
+
+
+
 			$consulta = $this->con->prepare("UPDATE primas_generales 
 				SET 
 				`descripcion`= :descripcion
-				,`monto`= :monto
-				,`porcentaje`= :porcentaje
-				,`sector_salud`= :sector_salud
 				,`dedicada`= :dedicada
+				, `id_formula` = :id_formula
 
 				WHERE id_primas_generales = :id");
 
 
 			$consulta->bindValue(":descripcion",$this->descripcion);
-			$consulta->bindValue(":monto",$this->monto);
-			$consulta->bindValue(":porcentaje",$this->porcentaje);
-			$consulta->bindValue(":sector_salud",$this->sector_salud);
+			// $consulta->bindValue(":sector_salud",$this->sector_salud);
 			$consulta->bindValue(":dedicada",$this->dedicada);
+			$consulta->bindValue(":id_formula",$id_formula);
 			$consulta->bindValue(":id",$this->id);
 
 			$consulta->execute();
 
 			$consulta = null;
+
+			$consulta = $this->con->prepare("SELECT CONCAT('user_',t.id_trabajador) as id,cedula FROM trabajador_prima_general as pgt LEFT JOIN trabajadores as t on t.id_trabajador = pgt.id_trabajador WHERE id_primas_generales = ?;");
+			$consulta->execute([$this->id]);
+
+			$valor = $consulta->fetchall(PDO::FETCH_ASSOC);
+			$lista_trabajadores_tabla = [];
+
+			foreach ($valor as $elem) {
+				$lista_trabajadores_tabla[$elem['id']] = ["control"=> 'Eliminado',"mensaje"=>"'".$elem["cedula"]."' fue eliminado de la lista dedicada <br>"];
+			}
+
+
+
+
+
+
 
 			$consulta = $this->con->prepare("DELETE FROM trabajador_prima_general WHERE id_primas_generales = :id");
 			$consulta->bindValue(":id",$this->id);
@@ -1196,11 +1268,21 @@ class Primas extends Conexion
 
 					$id_trabajador = $this->valid_cedula_trabajador();
 
+
 					if($id_trabajador['resultado'] != "valid_cedula_trabajador"){throw new Exception($id_trabajador['mensaje'], 1); }
 
 
 					$id_trabajador = $id_trabajador["id"];
 
+
+
+					if(isset($lista_trabajadores_tabla["user_".$id_trabajador])){
+						$lista_trabajadores_tabla["user_".$id_trabajador]["control"] = 'ignorar';
+					}
+					else{
+						$lista_trabajadores_tabla["user_".$id_trabajador]["control"] = 'add';
+						$lista_trabajadores_tabla["user_".$id_trabajador]["mensaje"] = "'$elem' fue agregada a la lista dedicada<br>";
+					}
 
 
 					$consulta = $this->con->prepare("INSERT INTO `trabajador_prima_general`
@@ -1221,12 +1303,12 @@ class Primas extends Conexion
 
 
 
-				$generales = $this->load_primas_generales();
-				if($generales['resultado'] != "load_primas_generales"){throw new Exception($generales['mensaje'], 1); }
 
 			}
 
-
+			$generales = $this->load_primas_generales();
+			if($generales['resultado'] != "load_primas_generales"){throw new Exception($generales['mensaje'], 1); }
+			
 
 			
 			$r['resultado'] = 'modificar_prima_general';
@@ -1234,7 +1316,14 @@ class Primas extends Conexion
 			$r['mensaje'] =  "La prima fue modificada exitosamente";
 			$r['lista'] =  $generales["mensaje"];
 
-			Bitacora::reg($this->con,"Modificó la prima general ($resp)");
+			foreach ($lista_trabajadores_tabla as $elem) {
+				if($elem["control"] !== 'ignorar'){
+					$diff .= $elem["mensaje"];
+				}
+			}
+
+			Bitacora::reg($this->con,"Modificó la prima general ($resp) <br>".$diff);
+
 			$this->con->commit();
 		
 		} catch (Validaciones $e){
@@ -1317,6 +1406,18 @@ class Primas extends Conexion
 			}
 
 
+			$consulta = $this->con->prepare("SELECT df.* ,f.nombre ,f.descripcion FROM detalles_formulas AS df LEFT JOIN primas_generales AS pg ON pg.id_formula = df.id_formula LEFT JOIN formulas as f on f.id_formula = df.id_formula WHERE pg.id_primas_generales = ?;");
+			$consulta->execute([$this->id]);
+
+			$resp["calc_formula"] = null;
+			if( $resp_formulas = $consulta->fetchall(PDO::FETCH_ASSOC) ){
+
+				$resp["calc_formula"] = $resp_formulas;
+
+			}
+			$consulta = null;
+
+
 
 			
 			$r['resultado'] = 'get_prima_general';
@@ -1346,7 +1447,7 @@ class Primas extends Conexion
 			$this->validar_conexion($this->con);
 			$this->con->beginTransaction();
 			
-			$consulta = $this->con->prepare("SELECT descripcion FROM primas_generales WHERE id_primas_generales = ?;");
+			$consulta = $this->con->prepare("SELECT descripcion, id_formula FROM primas_generales WHERE id_primas_generales = ?;");
 
 			$consulta->execute([$this->id]);
 
@@ -1356,8 +1457,32 @@ class Primas extends Conexion
 
 			$consulta = null;
 
+			$consulta = $this->con->prepare("SELECT f.nombre FROM usando AS u LEFT JOIN formulas as f on f.id_formula = u.id_formula_uno WHERE u.id_formula_dos = ?");
+			$consulta->execute([$resp["id_formula"]]);
+
+			if($lista = $consulta->fetchall(PDO::FETCH_ASSOC)){
+				$msg = '';
+				foreach ($lista as $elem) {
+					$nombre = $elem["nombre"];
+					$msg .= "'$nombre'<ENDL>";
+				}
+
+				throw new Exception("La prima no puede ser eliminada ya que su formula esta siendo utilizada por las siguientes formulas.<ENDL>".$msg, 1);
+				
+			}
+
+
+
 			$consulta = $this->con->prepare("DELETE FROM primas_generales WHERE id_primas_generales = ?");
 			$consulta->execute([$this->id]);
+
+
+			$consulta = $this->con->prepare("DELETE FROM formulas WHERE id_formula = ?");
+			$consulta->execute([$resp["id_formula"]]);
+
+
+
+
 
 
 
@@ -1501,5 +1626,10 @@ class Primas extends Conexion
 		$value = json_decode($value);
 		$this->trabajadores = $value;
 	}
-
+	PUBLIC function get_id_trabajador(){
+		return $this->id_trabajador;
+	}
+	PUBLIC function set_id_trabajador($value){
+		$this->id_trabajador = $value;
+	}
 } 

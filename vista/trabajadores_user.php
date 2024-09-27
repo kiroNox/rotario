@@ -157,17 +157,28 @@
 													<input required type="radio" class="form-check-inline" id="comision_servicios_no_modificar" name="comision_servicios" data-span="invalid-span-comision_servicios_modificar" value="false">
 													<span id="invalid-span-comision_servicios_modificar" class="invalid-span text-danger"></span>
 												</div>
-												<div class="col-lg-4 col-12">
-													<label for="discapacidad_modificar" class="d-block mb-3">Discapacidad</label>
-													<input type="checkbox" id="discapacidad_modificar" name="discapacidad" data-span="invalid-span-discapacidad_modificar">
-													<span id="invalid-span-discapacidad_modificar" class="invalid-span text-danger"></span>
+												<div class="col-lg-2 col-12">
+													<label for="genero_trabajador_modificar">Genero</label>
+													<select required name="genero_trabajador" class="form-control" id="genero_trabajador_modificar" data-span="invalid-span-genero_trabajador_modificar">
+														<option value=""> - SELECCIONE - </option>
+														<option value="F">Femenino</option>
+														<option value="M">Masculino</option>
+													</select>
 												</div>
-												<div class="col-lg-8 col-12">
-
-													<label for="discapacidad_info_modificar">Discapacidad</label>
-													<input type="text" class="form-control" id="discapacidad_info_modificar" name="discapacidad_info" data-span="invalid-span-discapacidad_info_modificar" maxlength="50">
-													<span id="invalid-span-discapacidad_info_modificar" class="invalid-span text-danger"></span>
-													
+												<div class="col-lg-10 col-12">
+													<div class="row">
+														<div class="col-lg-2 col-12">
+															<label for="discapacidad_modificar" class="d-block mb-3">Discapacidad</label>
+															<input type="checkbox" id="discapacidad_modificar" name="discapacidad" data-span="invalid-span-discapacidad_modificar" class="check-button">
+															<label for="discapacidad_modificar" class="check-button"></label>
+															<span id="invalid-span-discapacidad_modificar" class="invalid-span text-danger"></span>
+														</div>
+														<div class="col">
+															<label for="discapacidad_info_modificar">Discapacidad</label>
+															<input type="text" class="form-control" id="discapacidad_info_modificar" name="discapacidad_info" data-span="invalid-span-discapacidad_info_modificar" maxlength="50">
+															<span id="invalid-span-discapacidad_info_modificar" class="invalid-span text-danger"></span>
+														</div>
+													</div>
 												</div>
 
 												<div class="col-lg-6 col-12">
@@ -275,17 +286,28 @@
 														<input type="radio" class="form-check-inline" id="comision_servicios_no" name="comision_servicios" data-span="invalid-span-comision_servicios" value="false">
 														<span id="invalid-span-comision_servicios" class="invalid-span text-danger"></span>
 													</div>
-													<div class="col-lg-4 col-12">
-														<label for="discapacidad" class="d-block mb-3">Discapacidad</label>
-														<input type="checkbox" id="discapacidad" name="discapacidad" data-span="invalid-span-discapacidad">
-														<span id="invalid-span-discapacidad" class="invalid-span text-danger"></span>
+													<div class="col-lg-2 col-12">
+														<label for="genero_trabajador">Genero</label>
+														<select required name="genero_trabajador" id="genero_trabajador" class="form-control" data-span="invalid-span-genero_trabajador">
+															<option value=""> - SELECCIONE - </option>
+															<option value="F">Femenino</option>
+															<option value="M">Masculino</option>
+														</select>
 													</div>
-													<div class="col-lg-8 col-12">
-
-														<label for="discapacidad_info">Discapacidad</label>
-														<input type="text" class="form-control" id="discapacidad_info" name="discapacidad_info" data-span="invalid-span-discapacidad_info" maxlength="50">
-														<span id="invalid-span-discapacidad_info" class="invalid-span text-danger"></span>
-														
+													<div class="col-lg-10 col-12">
+														<div class="row">
+															<div class="col-lg-2 col-4">
+																<label for="discapacidad" class="d-block mb-3">Discapacidad</label>
+																<input type="checkbox" id="discapacidad" name="discapacidad" data-span="invalid-span-discapacidad" class="check-button">
+																<label for="discapacidad" class="check-button"></label>
+																<span id="invalid-span-discapacidad" class="invalid-span text-danger"></span>
+															</div>
+															<div class="col">
+																<label for="discapacidad_info">Discapacidad</label>
+																<input type="text" class="form-control" id="discapacidad_info" name="discapacidad_info" data-span="invalid-span-discapacidad_info" maxlength="50">
+																<span id="invalid-span-discapacidad_info" class="invalid-span text-danger"></span>
+															</div>
+														</div>
 													</div>
 													<div class="col-lg-6 col-12">
 														<label class="d-block" for="pass">Clave</label>

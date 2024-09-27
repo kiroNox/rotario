@@ -231,6 +231,85 @@ input[type='checkbox'].check-button:disabled + .check-button::before{
 	background-color: #eaecf4 !important;
 }
 
+/* calculadora */
+
+
+	.suggestions{
+		position: absolute;
+		width: 100%;
+		background-color:#fff;
+		padding: 0!important;
+		border: 1px solid #d1d3e2;
+		border-bottom-right-radius: 3px;
+		border-bottom-left-radius: 3px;
+		box-shadow: 0 3px 4px -2px #898989;
+		overflow: hidden;
+		z-index: 5;
+		display: none;
+	}
+	.suggestions.open{
+		display: block;
+		box-shadow: 0 0 0 black;
+		max-height: 200px;
+		overflow: auto;
+		padding: .3rem;
+	}
+	.suggestion-option{
+		width: 100%;
+		color: black;
+		background-color: white;
+		padding: .3rem;
+	}
+	.suggestion-option:hover,
+	.suggestion-option:focus{
+		background-color: #4e73df;
+		color: #fff;
+	}
+
+	#formulario_calc_lista_condicionales .lista-variables.open,
+	.lista-variables{
+		max-height: 0;
+		overflow: hidden;
+		transition: .6s max-height;
+	}
+	.lista-variables.open{
+		max-height: initial;
+		overflow:visible;
+	}
+
+
+	#container_condicionales div[id^="calc_lista-condicion"].infocus .lista-variables.open{
+		max-height: 500px;
+		overflow: auto;
+	}
+
+	div[id^=calc_lista-condicion-]{
+		border-bottom: 1px solid var(--gray);
+		padding-bottom: 1rem;
+		margin-bottom: 1rem;
+	}
+
+	.dialog-body{
+		overflow-y: auto;
+		overflow-x: hidden;
+	}
+	dialog[open]{
+		display: flex;
+		flex-direction: column;
+	}
+
+	.variables-label{
+		word-break: break-all;
+	}
+	.variables-label>label{
+		hyphens: auto;
+	}
+
+
+
+/* calculadora */
+
+
 
 
 
@@ -245,6 +324,11 @@ input[type='checkbox'].check-button:disabled + .check-button::before{
 			esto esta echo pa lante no es para producción
 		*/
 	}
+	/*.dark-mode .nav-item .nav-link+.collapse .bg-white,
+	.dark-mode .nav-item .nav-link+.collapse .collapse-item,*/
+	.dark-mode .swal2-popup,
+	.dark-mode .collapse-item,
+	.dark-mode .bg-white,
 	.dark-mode .card,
 	.dark-mode .card-header,
 	.dark-mode .modal-content,
@@ -253,7 +337,20 @@ input[type='checkbox'].check-button:disabled + .check-button::before{
 	.dark-mode #wrapper,
 	.dark-mode #content-wrapper{
 		background-color: var(--dark-back) !important;
-		color: #fff;
+		color: #fff !important;
+	}
+
+	.dark-mode ul.sidebar li.nav-item [id^=collapse-items].collapse.show .collapse-inner{
+		box-shadow: 0 0 5px -2px white;
+	}
+
+	.dark-mode label{
+		color: #bbbbbb !important;
+	}
+
+
+	.dark-mode .collapse-item:hover{
+		background-color: #3c3c3c !important;
 	}
 
 	.dark-mode .navbar{
@@ -303,6 +400,18 @@ input[type='checkbox'].check-button:disabled + .check-button::before{
 	}
 	.dark-mode .form-control:disabled{
 		background-color: #7a7a7a !important;
+	}
+	.dark-mode table.table th,
+	.dark-mode table.table td,
+	.dark-mode table.table-bordered,
+	.dark-mode .form-control,
+	.dark-mode .card
+	{
+		border-color: #646464 !important;
+	}
+
+	.dark-mode h1:not(.dark-h){
+		color: #c7c7c7 !important;
 	}
 /* dark-mode a eliminar*/
 

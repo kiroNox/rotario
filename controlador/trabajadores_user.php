@@ -24,7 +24,8 @@
 						$_POST["fecha_ingreso"],
 						$_POST["comision_servicios"],
 						(isset($_POST["discapacidad"])?true:false),
-						(isset($_POST["discapacidad_info"])?$_POST["discapacidad_info"]:"")
+						(isset($_POST["discapacidad_info"])?$_POST["discapacidad_info"]:""),
+						$_POST["genero_trabajador"]
 					);
 					echo json_encode($resp);
 				}
@@ -85,7 +86,8 @@
 						$_POST["fecha_ingreso"],
 						$_POST["comision_servicios"],
 						$_POST["discapacidad"],
-						$_POST["discapacidad_info"]
+						$_POST["discapacidad_info"],
+						$_POST["genero_trabajador"]
 					) );
 				}
 				else{

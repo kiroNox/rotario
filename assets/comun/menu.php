@@ -1,3 +1,5 @@
+<?php if(isset($permisos)){?>
+
 <div class="d-flex">
 <!-- Sidebar -->
 <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar" data-intro="Aqui podemos acceder a diferentes modulos del sistema" data-step="3">
@@ -24,31 +26,221 @@
 <hr class="sidebar-divider">
 
 <!-- Heading -->
+    
+    <?php 
+
+    // TODO agregar los permisos a los que tienen por permiso 'innecesario'
+
+        $obj = new stdClass();
+        $lista_separadores = [];
+
+        $obj->{"separator"} = "Recursos Humanos";
+        $obj->items = [];
+        $obj->items[] = [
+            "collapse"=>"Trabajadores",
+            "icono"=>"fas fa-fw fa-cog",
+            "lista" => [
+                ["permisos"=>"usuarios", "href"=>"trabajadores_user","descrip" => "Gestionar Trabajadores"],
+                ["permisos"=>"hijos", "href"=>"hijos","descrip" => "Gestionar Hijos"]
+            ]
+        ];
+
+        $obj->items[] = [
+            "collapse"=>"Administración",
+            "icono"=>"fas fa-fw fa-wrench",
+            "lista" => [
+                ["permisos"=>"asistencias", "href"=>"administrar_empleado","descrip" => "Administrar Ausencias"],
+                ["permisos"=>"educacion", "href"=>"nivel_educativo","descrip" => "Gestionar Nivel Educativo"]
+            ]
+        ];
+        $obj->items[] = [
+            "collapse"=>"Areas/Asistencias",
+            "icono"=>"fas fa-fw fa-folder",
+            "lista" => [
+                ["permisos"=>"areas", "href"=>"areasTrabajador","descrip" => "Áreas Trabajador"],
+                ["permisos"=>"areas", "href"=>"areas","descrip" => "Áreas"],
+                ["permisos"=>"asistencias", "href"=>"asistencia","descrip" => "Asistencias"]
+            ]
+        ];
+        $obj->items[] = [
+            "collapse"=>"Documentos",
+            "icono"=>"fas fa-fw fa-folder",
+            "lista" => [
+                ["permisos"=>"innecesario", "href"=>"generar","descrip" => "Generar Documentos"]
+            ]
+        ];
+
+        $lista_separadores[] = $obj;
+
+        $obj = new stdClass();
+        $obj->{"separator"} = "Nomina";
+        $obj->items=[];
+        $obj->items[] = [
+            "collapse"=>"Gestión de Nomina",
+            "icono"=>"fas fa-fw fa-folder",
+            "lista" => [
+                ["permisos"=>"sueldo", "href"=>"sueldo", "descrip" => "Gestionar Sueldos"],
+                ["permisos"=>"primas", "href"=>"primas", "descrip" => "Gestionar Primas"],
+                ["permisos"=>"deducciones", "href"=>"deducciones", "descrip" => "Gestionar Deducciones"],
+                ["permisos"=>"liquidacion", "href"=>"liquidacion", "descrip" => "Gestionar Liquidación"]
+            ]
+        ];
+        $obj->items[] = [
+            "collapse"=>"Pagos",
+            "icono"=>"fas fa-fw fa-folder",
+            "lista" => [
+                ["permisos"=>"facturas", "href"=>"facturar", "descrip" => "Gestionar Facturas de Pagos"]
+            ]
+        ];
+        $obj->items[] = [
+            "collapse"=>"Calendario",
+            "icono"=>"bi bi-calendar-day",
+            "href"=>"calendario",
+            "permisos" => "innecesario"
+        ];
+        $obj->items[] = [
+            "collapse"=>"Estadisticas",
+            "icono"=>"bi bi-bar-chart-line-fill",
+            "href"=>"estadisticas",
+            "permisos" => "innecesario"
+        ];
+
+        $lista_separadores[] = $obj;
+
+        $obj = new stdClass();
+
+        $obj->{"separator"} = "Administración De Usuarios";
+        $obj->items=[];
+        $obj->items[] = [
+            "collapse"=>"Seguridad",
+            "icono"=>"fas fa-fw fa-folder",
+            "lista" => [
+                ["permisos"=>"innecesario", "href"=>"notificaciones", "descrip" => "Notificaciones"],
+                ["permisos"=>"bitacora", "href"=>"bitacora", "descrip" => "Bitácora"],
+                ["permisos"=>"roles", "href"=>"roles", "descrip" => "Roles"],
+                ["permisos"=>"permisos", "href"=>"permisos_usuario", "descrip" => "Permisos"]
+            ]
+        ];
+        $obj->items[] = [
+            "collapse"=>"Mantenimiento",
+            "icono"=>"fas fa-fw fa-folder",
+            "lista" => [
+                ["permisos"=>"innecesario", "href"=>"restaurar_bd", "descrip" => "Restaurar/Exportar BD"]
+            ]
+        ];
+
+        $lista_separadores[] = $obj;
+
+
+        function print_items($items,$n){
+            global $permisos;
+            if(isset($items["lista"])){
+                $print='';
+                foreach ($items["lista"] as $link) {
+                    if($link["permisos"] == 'innecesario' or $permisos[$link["permisos"]]["consultar"] == "1"){
+                        $ref = $link["href"];
+                        $descrip = $link["descrip"];
+                        $print .= "<a class=\"collapse-item\" href=\"?p=$ref\">$descrip</a>"; 
+                    }
+                }
+                if($print!=''){
+                    if(isset($items["icono"])){
+                        $icono = $items["icono"];
+                    }
+                    else{
+                        $icono ="fa fa-fw fa-folder";
+                    }
+
+                    $print = '<div class="bg-white py-2 collapse-inner rounded">'.$print.'</div>';
+                    $print = "<div id=\"collapse-items-$n\" class=\"collapse \" aria-labelledby=\"head-items-$n\" data-parent=\"#accordionSidebar\">".$print."</div>";
+                    $print = "<a class=\"nav-link\" href=\"#\" data-toggle=\"collapse\" data-target=\"#collapse-items-$n\" aria-expanded=\"true\" aria-controls=\"collapse-items-$n\">".
+                    "<i class=\"$icono\"></i>".
+                    "<span>".$items["collapse"]."</span> </a>".$print;
+
+                    $print = '<li class="nav-item">'.$print.'</li>';
+
+                }
+                return $print;
+            }
+            else{
+if( $items["permisos"] == 'innecesario' or $permisos[$items["permisos"]]["consultar"] == "1"){
+    $print = <<<EOD
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="?p={$items['href']}">
+            <i class="{$items['icono']}"></i>
+            <span>{$items['collapse']}</span>
+        </a>
+        
+    </li>
+    EOD;
+}
+else{
+    $print = '';
+}
+
+return $print;
+
+
+
+            }
+        }
+
+
+        function print_menu($lista){
+            $i=1;
+            foreach ($lista as $separator) {
+                
+                $printing = '';
+                $found = false;
+                foreach ($separator->items as $items) {
+                    $printing .= print_items($items,$i++);
+                    if($printing!=''){
+                        $found = true;
+                    }
+                }
+
+                if($found){
+
+                    $printing = "<div class=\"sidebar-heading\"> ".$separator->{"separator"}." </div>".$printing;
+                    echo $printing;
+
+                }
+
+            }
+        }
+
+     ?>
+
+<?php 
+print_menu($lista_separadores);
+ ?>
+
+
+
+<!-- 
 <div class="sidebar-heading">
     Recursos humanos
-</div>
+</div> -->
+
+
 
 <!-- Nav Item - Pages Collapse Menu -->
-<li class="nav-item active">
-    <a class="nav-link" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true"
-        aria-controls="collapseTwo">
+
+<!-- <li class="nav-item active">
+    <a class="nav-link" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
         <i class="fas fa-fw fa-cog"></i>
         <span>Trabajadores</span>
     </a>
-    <div id="collapseTwo" class="collapse " aria-labelledby="headingTwo"
-        data-parent="#accordionSidebar">
+    <div id="collapseTwo" class="collapse " aria-labelledby="headingTwo" data-parent="#accordionSidebar">
         <div class="bg-white py-2 collapse-inner rounded">
-            <!-- <a class="collapse-item active" href="#">Personal</a> -->
             <a class="collapse-item" href="?p=trabajadores_user">Gestionar Trabajadores</a>
-            <!-- <a class="collapse-item" href="?p=administrar_empleado">Trabajadores</a> -->
             <a class="collapse-item" href="?p=hijos">Gestionar Hijos</a>
-
         </div>
     </div>
-</li>
+</li> -->
 
 <!-- Nav Item - Utilities Collapse Menu -->
-<li class="nav-item">
+<!-- <li class="nav-item">
     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
         aria-expanded="true" aria-controls="collapseUtilities">
         <i class="fas fa-fw fa-wrench"></i>
@@ -58,13 +250,11 @@
         data-parent="#accordionSidebar">
         <div class="bg-white py-2 collapse-inner rounded">
             <a class="collapse-item" href="?p=administrar_empleado">Administrar Ausencias</a>
-           <!--  <a class="collapse-item" href="#">Reposos</a>
-            <a class="collapse-item" href="#">Vacaciones</a> -->
             <a class="collapse-item" href="?p=nivel_educativo">Gestionar Nivel Educativo</a>
             
         </div>
     </div>
-</li>
+</li> -->
 
 
 
@@ -73,7 +263,7 @@
 
 <!-- Heading -->
 <!-- Nav Item - Pages Collapse Menu -->
-<li class="nav-item">
+<!-- <li class="nav-item">
     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages"
         aria-expanded="true" aria-controls="collapsePages">
         <i class="fas fa-fw fa-folder"></i>
@@ -87,9 +277,9 @@
            
         </div>
     </div>
-</li>
+</li> -->
 
-<li class="nav-item">
+<!-- <li class="nav-item">
     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities1"
         aria-expanded="true" aria-controls="collapseUtilities1">
         <i class="fas fa-fw fa-folder"></i>
@@ -103,10 +293,10 @@
         </div>
     </div>
 </li>
-<hr class="sidebar-divider">
+<hr class="sidebar-divider"> -->
 
 <!-- Heading -->
-<div class="sidebar-heading">
+<!-- <div class="sidebar-heading">
     Nomina
 </div>
 <li class="nav-item">
@@ -123,9 +313,9 @@
             <a class="collapse-item" href="?p=liquidacion">Gestionar Liquidación</a>
         </div>
     </div>
-</li>
+</li> -->
 
-
+<!-- 
 <li class="nav-item">
     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseFacturas"
         aria-expanded="true" aria-controls="collapseFacturas">
@@ -138,17 +328,16 @@
             
         </div>
     </div>
-</li>
+</li> -->
 
-<li class="nav-item">
-    <a class="nav-link collapsed" href="?p=calendario"  
-        aria-expanded="true" aria-controls="collapseFacturas">
+<!-- <li class="nav-item">
+    <a class="nav-link collapsed" href="?p=calendario" aria-expanded="true" aria-controls="collapseFacturas">
         <i class="bi bi-calendar-day"></i>
         <span>Calendario</span>
     </a>
     
-</li>
-
+</li> -->
+<!-- 
 <li class="nav-item">
     <a class="nav-link collapsed" href="?p=estadisticas"  
         aria-expanded="true" aria-controls="collapseFacturas">
@@ -156,8 +345,8 @@
         <span>Estadisticas</span>
     </a>
     
-</li>
-
+</li> -->
+<!-- 
 <div class="sidebar-heading">
     Administración de usuario
 </div>
@@ -173,11 +362,10 @@
             <a class="collapse-item" href="?p=bitacora">Bitácora</a>
             <a class="collapse-item" href="?p=roles">Roles</a>
             <a class="collapse-item" href="?p=permisos_usuario">Permisos</a>
-            <!-- <a class="collapse-item" href="#">Módulos</a> -->
         </div>
     </div>
-</li>
-<li class="nav-item">
+</li> -->
+<!-- <li class="nav-item">
     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseMantenimiento"
         aria-expanded="true" aria-controls="collapseMantenimiento">
         <i class="fas fa-fw fa-folder"></i>
@@ -189,7 +377,7 @@
             
         </div>
     </div>
-</li>
+</li> -->
 <!-- Divider -->
 <hr class="sidebar-divider d-none d-md-block">
 
@@ -201,4 +389,4 @@
 </ul>
 <!-- End of Sidebar -->
 </div>
-
+<?php } ?>

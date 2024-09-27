@@ -96,7 +96,7 @@
 
 	 							document.getElementById('id_trabajador').value = cell.parentNode.dataset.id
 	 							document.getElementById('sueldo').value = lee.mensaje.sueldo_base;
-	 							document.getElementById('sueldo').onkeyup();
+	 							document.getElementById('sueldo').onkeyup({key:''});
 	 							document.getElementById('sueldo').classList.remove("is-valid");
 	 							document.getElementById('cargo').value = lee.mensaje.cargo;
 	 							document.getElementById('medico_bool').checked = (lee.mensaje.sector_salud)?true:false;

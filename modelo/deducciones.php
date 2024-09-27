@@ -2,7 +2,10 @@
 
 class Deducciones extends Conexion
 {
+	use Calculadora;
 	PRIVATE $con, $id, $descripcion ,$monto ,$porcentaje ,$quincena ,$multi_dia ,$islr ,$sector_salud ,$dedicada ,$meses ,$semanas ,$trabajadores;
+	PRIVATE $id_trabajador;
+
 
 
 
@@ -62,19 +65,20 @@ class Deducciones extends Conexion
 
 	}
 
-	PUBLIC function registrar_deduccion_s($descripcion ,$monto ,$porcentaje ,$quincena ,$multi_dia ,$islr ,$sector_salud ,$dedicada ,$meses ,$semanas ,$trabajadores ){
+	PUBLIC function registrar_deduccion_s($descripcion ,$islr ,$dedicada ,$trabajadores, $formula ){
 
 		$this->set_descripcion($descripcion);
-		$this->set_monto($monto);
-		$this->set_porcentaje($porcentaje);
-		$this->set_quincena($quincena);
-		$this->set_multi_dia($multi_dia);
+		// $this->set_monto($monto);
+		// $this->set_porcentaje($porcentaje);
+		// $this->set_quincena($quincena);
+		// $this->set_multi_dia($multi_dia);
 		$this->set_islr($islr);
-		$this->set_sector_salud($sector_salud);
+		// $this->set_sector_salud($sector_salud);
 		$this->set_dedicada($dedicada);
-		$this->set_meses($meses);
-		$this->set_semanas($semanas);
+		// $this->set_meses($meses);
+		// $this->set_semanas($semanas);
 		$this->set_trabajadores($trabajadores);
+		$this->set_obj_formula($formula);
 
 		return $this->registrar_deduccion();
 	}
@@ -85,20 +89,14 @@ class Deducciones extends Conexion
 	}
 
 
-	PUBLIC function modificar_deduccion_s($id, $descripcion ,$monto ,$porcentaje ,$quincena ,$multi_dia ,$islr ,$sector_salud ,$dedicada ,$meses ,$semanas ,$trabajadores ){
+	PUBLIC function modificar_deduccion_s($id, $descripcion, $islr, $dedicada, $trabajadores, $formula ){
 
 		$this->set_id($id);
 		$this->set_descripcion($descripcion);
-		$this->set_monto($monto);
-		$this->set_porcentaje($porcentaje);
-		$this->set_quincena($quincena);
-		$this->set_multi_dia($multi_dia);
 		$this->set_islr($islr);
-		$this->set_sector_salud($sector_salud);
 		$this->set_dedicada($dedicada);
-		$this->set_meses($meses);
-		$this->set_semanas($semanas);
 		$this->set_trabajadores($trabajadores);
+		$this->set_obj_formula($formula);
 
 		return $this->modificar_deduccion();
 	}
@@ -139,24 +137,39 @@ class Deducciones extends Conexion
 
 			$consulta = null;
 
+			if($this->obj_formula["tipo"] == "lista"){
+				$id_formula = $this->calc_guardar_formula_lista($this->obj_formula["lista"], $this->obj_formula["nombre"], $this->obj_formula["descripcion"], false, true);
+			}
+			else{
+				$id_formula = $this->calc_guardar_formula($this->obj_formula["formula"], $this->obj_formula["nombre"], $this->obj_formula["descripcion"], $this->obj_formula["variables"], $this->obj_formula["condicional"], 0, false, true);
+			}
+
+
+			if($id_formula["resultado"] == 'error'){
+				throw new Exception($id_formula["mensaje"],$id_formula["code"]);
+			}
+
+			$id_formula = $id_formula["last"];
+
 
 
 			$consulta = $this->con->prepare("INSERT INTO `deducciones`
-				(`descripcion`, `monto`, `porcentaje`, `multi_meses`, `div_sem`, `quincena`, `multi_dia`, `sector_salud`, `islr`, `dedicada`) 
+				(`descripcion`, `islr`, `dedicada`, `id_formula`) 
 				VALUES 
-				(:descripcion,:monto,:porcentaje,:multi_meses,:div_sem,:quincena,:multi_dia,:sector_salud,:islr,:dedicada)");
+				(:descripcion, :islr, :dedicada, :id_formula)");
 
 
 			$consulta->bindValue(":descripcion",$this->descripcion);
-			$consulta->bindValue(":monto",$this->monto);
-			$consulta->bindValue(":porcentaje",$this->porcentaje);
-			$consulta->bindValue(":multi_meses",$this->meses);
-			$consulta->bindValue(":div_sem",$this->semanas);
-			$consulta->bindValue(":quincena",$this->quincena);
-			$consulta->bindValue(":multi_dia",$this->multi_dia);
-			$consulta->bindValue(":sector_salud",$this->sector_salud);
+			// $consulta->bindValue(":monto",$this->monto);
+			// $consulta->bindValue(":porcentaje",$this->porcentaje);
+			// $consulta->bindValue(":multi_meses",$this->meses);
+			// $consulta->bindValue(":div_sem",$this->semanas);
+			// $consulta->bindValue(":quincena",$this->quincena);
+			// $consulta->bindValue(":multi_dia",$this->multi_dia);
+			// $consulta->bindValue(":sector_salud",$this->sector_salud);
 			$consulta->bindValue(":islr",$this->islr);
 			$consulta->bindValue(":dedicada",$this->dedicada);
+			$consulta->bindValue(":id_formula",$id_formula);
 
 			$consulta->execute();
 
@@ -218,7 +231,7 @@ class Deducciones extends Conexion
 			$r['titulo'] = 'Éxito';
 			$r['mensaje'] = 'La deducción ha sido registrada exitosamente';
 			$r['lista'] =  $deducciones["mensaje"];
-			//$this->con->commit();
+			$this->con->commit();
 		
 		} catch (Validaciones $e){
 			if($this->con instanceof PDO){
@@ -262,13 +275,6 @@ class Deducciones extends Conexion
 
 			$consulta = $this->con->prepare("SELECT
 					    `descripcion`,
-					    `monto`,
-					    `porcentaje`,
-					    `multi_meses`,
-					    `div_sem`,
-					    `quincena`,
-					    `multi_dia`,
-					    `sector_salud`,
 					    `islr`,
 					    `dedicada`
 					FROM
@@ -316,6 +322,19 @@ class Deducciones extends Conexion
 
 
 
+			$consulta = $this->con->prepare("SELECT df.* ,f.nombre ,f.descripcion FROM detalles_formulas AS df LEFT JOIN deducciones AS pg ON pg.id_formula = df.id_formula LEFT JOIN formulas as f on f.id_formula = df.id_formula WHERE pg.id_deducciones = ?;");
+			$consulta->execute([$this->id]);
+
+			$resp["calc_formula"] = null;
+			if( $resp_formulas = $consulta->fetchall(PDO::FETCH_ASSOC) ){
+
+				$resp["calc_formula"] = $resp_formulas;
+
+			}
+			$consulta = null;
+
+
+
 			
 			$r['resultado'] = 'get_deduccion';
 			$r['mensaje'] =  $resp;
@@ -342,7 +361,7 @@ class Deducciones extends Conexion
 			$this->validar_conexion($this->con);
 			$this->con->beginTransaction();
 			
-			$consulta = $this->con->prepare("SELECT * FROM deducciones WHERE id_deducciones = ?;");
+			$consulta = $this->con->prepare("SELECT descripcion,id_formula FROM deducciones WHERE id_deducciones = ?;");
 
 			$consulta->execute([$this->id]);
 
@@ -352,29 +371,36 @@ class Deducciones extends Conexion
 
 			$consulta = null;
 
+			$id_formula = isset($resp["id_formula"]) ? $resp["id_formula"] : false;
+
+			if($this->obj_formula["tipo"] == "lista"){
+				$id_formula = $this->calc_guardar_formula_lista($this->obj_formula["lista"], $this->obj_formula["nombre"], $this->obj_formula["descripcion"], false, true, $id_formula);
+			}
+			else{
+				$id_formula = $this->calc_guardar_formula($this->obj_formula["formula"], $this->obj_formula["nombre"], $this->obj_formula["descripcion"], $this->obj_formula["variables"], $this->obj_formula["condicional"], 0, false, true, $id_formula);
+			}
+
+
+			if($id_formula["resultado"] == 'error'){
+				throw new Exception($id_formula["mensaje"],$id_formula["code"]);
+			}
+
+			$id_formula = $id_formula["last"];
+
+
+
 			$consulta = $this->con->prepare("UPDATE `deducciones` 
 				SET 
 				`descripcion`= :descripcion
-				,`monto`= :monto
-				,`porcentaje`= :porcentaje
-				,`multi_meses`= :multi_meses
-				,`div_sem`= :div_sem
-				,`quincena`= :quincena
-				,`multi_dia`= :multi_dia
-				,`sector_salud`= :sector_salud
 				,`islr`= :islr
-				,`dedicada`= :dedicada WHERE id_deducciones = :id");
+				,`dedicada`= :dedicada 
+				,`id_formula` = :id_formula
+				WHERE id_deducciones = :id");
 
 			$consulta->bindValue(":descripcion",$this->descripcion);
-			$consulta->bindValue(":monto",$this->monto);
-			$consulta->bindValue(":porcentaje",$this->porcentaje);
-			$consulta->bindValue(":multi_meses",$this->meses);
-			$consulta->bindValue(":div_sem",$this->semanas);
-			$consulta->bindValue(":quincena",$this->quincena);
-			$consulta->bindValue(":multi_dia",$this->multi_dia);
-			$consulta->bindValue(":sector_salud",$this->sector_salud);
 			$consulta->bindValue(":islr",$this->islr);
 			$consulta->bindValue(":dedicada",$this->dedicada);
+			$consulta->bindValue(":id_formula",$id_formula);
 			$consulta->bindValue(":id",$this->id);
 
 			$consulta->execute();
@@ -436,7 +462,7 @@ class Deducciones extends Conexion
 			$r['titulo'] = 'Éxito';
 			$r["mensaje"] = "La deducción fue modificada exitosamente";
 			$r['lista'] =  $deducciones["mensaje"];
-			//$this->con->commit();
+			$this->con->commit();
 		
 		} catch (Validaciones $e){
 			if($this->con instanceof PDO){
@@ -471,7 +497,7 @@ class Deducciones extends Conexion
 			$this->validar_conexion($this->con);
 			$this->con->beginTransaction();
 			
-			$consulta = $this->con->prepare("SELECT * FROM deducciones WHERE id_deducciones = ?;");
+			$consulta = $this->con->prepare("SELECT descripcion,id_formula FROM deducciones WHERE id_deducciones = ?;");
 
 			$consulta->execute([$this->id]);
 
@@ -479,9 +505,31 @@ class Deducciones extends Conexion
 				throw new Exception("La deducción no existe o fue eliminada", 1);
 			}
 
+			$consulta = null;
+
+			$consulta = $this->con->prepare("SELECT f.nombre FROM usando AS u LEFT JOIN formulas as f on f.id_formula = u.id_formula_uno WHERE u.id_formula_dos = ?");
+			$consulta->execute([$resp["id_formula"]]);
+
+			if($lista = $consulta->fetchall(PDO::FETCH_ASSOC)){
+				$msg = '';
+				foreach ($lista as $elem) {
+					$nombre = $elem["nombre"];
+					$msg .= "'$nombre'<ENDL>";
+				}
+
+				throw new Exception("La prima no puede ser eliminada ya que su formula esta siendo utilizada por las siguientes formulas.<ENDL>".$msg, 1);
+				
+			}
+
+
 			$consulta = $this->con->prepare("DELETE FROM deducciones WHERE id_deducciones = ?");
 
 			$consulta->execute([$this->id]);
+
+			$consulta = $this->con->prepare("DELETE FROM formulas WHERE id_formula = ?");
+			$consulta->execute([$resp["id_formula"]]);
+
+
 
 			$deducciones = $this->load_deducciones();
 
@@ -494,7 +542,7 @@ class Deducciones extends Conexion
 			$r['resultado'] = 'eliminar_deduccion';
 			$r['titulo'] = 'Éxito';
 			$r['mensaje'] =  $deducciones["mensaje"];
-			//$this->con->commit();
+			$this->con->commit();
 		
 		} catch (Validaciones $e){
 			if($this->con instanceof PDO){
@@ -608,5 +656,11 @@ class Deducciones extends Conexion
 	PUBLIC function set_trabajadores($value){
 		$value = json_decode($value);
 		$this->trabajadores = $value;
+	}
+	PUBLIC function get_id_trabajador(){
+		return $this->id_trabajador;
+	}
+	PUBLIC function set_id_trabajador($value){
+		$this->id_trabajador = $value;
 	}
 } 

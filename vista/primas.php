@@ -4,7 +4,7 @@
 <?php require_once 'assets/comun/head.php'; ?>
 	<title>Primas - Servicio Desconcentrado Hospital Rotario</title>
 </head>
-<body id="page-top">
+<body id="page-top" class="<?= $modo_oscuro ?>">
 	<div id="wrapper">
 		<?php   require_once("assets/comun/menu.php"); ?>
 		<div id="content-wrapper" class="d-flex flex-column">
@@ -23,9 +23,9 @@
 							<nav>
 								<div class="nav nav-tabs" id="nav-tab" role="tablist">
 									<a class="nav-item nav-link active" id="nav-primas_generales-tab" data-toggle="tab" href="#nav-primas_generales" role="tab" aria-controls="nav-primas_generales" aria-selected="true">Generales</a>
-									<a class="nav-item nav-link" id="nav-primas_hijo-tab" data-toggle="tab" href="#nav-primas_hijo" role="tab" aria-controls="nav-primas_hijo" aria-selected="false">Hijos</a>
-									<a class="nav-item nav-link" id="nav-primas_antiguedad-tab" data-toggle="tab" href="#nav-primas_antiguedad" role="tab" aria-controls="nav-primas_antiguedad" aria-selected="false">Antigüedad</a>
-									<a class="nav-item nav-link" id="nav-primas_escalafon-tab" data-toggle="tab" href="#nav-primas_escalafon" role="tab" aria-controls="nav-primas_escalafon" aria-selected="false">Escalafón</a>
+									<a class="nav-item nav-link d-none" id="nav-primas_hijo-tab" data-toggle="tab" href="#nav-primas_hijo" role="tab" aria-controls="nav-primas_hijo" aria-selected="false">Hijos</a>
+									<a class="nav-item nav-link d-none" id="nav-primas_antiguedad-tab" data-toggle="tab" href="#nav-primas_antiguedad" role="tab" aria-controls="nav-primas_antiguedad" aria-selected="false">Antigüedad</a>
+									<a class="nav-item nav-link d-none" id="nav-primas_escalafon-tab" data-toggle="tab" href="#nav-primas_escalafon" role="tab" aria-controls="nav-primas_escalafon" aria-selected="false">Escalafón</a>
 								</div>
 							</nav>
 							<div class="tab-content">
@@ -35,7 +35,7 @@
 											<h3 class="mx-md-3 text-capitalize">primas generales</h3>
 										</div>
 										<div class="col-12 col-md-6 d-flex align-items-center justify-content-center justify-content-md-end">
-											<button class="btn btn-primary mx-md-3" data-toggle="modal" data-target="#modal_registrar_prima_general">Registrar Primas</button>
+											<button class="btn btn-primary mx-md-3" data-open_modal_calc = "modal_registrar_prima_general">Registrar Primas</button>
 										</div>
 									</div>
 
@@ -43,8 +43,6 @@
 									<table class="table table-bordered table-hover table-responsive-xl scroll-bar-style" id="table_primas_generales">
 										<thead class="bg-primary text-light">
 											<th>descripción</th>
-											<th>Monto</th>
-											<th>Sector Salud</th>
 											<th>trabajadores</th>
 											<th>acción</th>
 										</thead>
@@ -165,7 +163,7 @@
 						<form action="" id="f1" method="POST" onsubmit="return false">
 							<input type="hidden" name="id" id="id_prima_hijo_hidden">
 							<div class="row">
-								<div class="col-12 col-md-6">
+								<div class="col-12">
 									<label for="hijo_descripcion">Descripción</label>
 									<input required type="text" class="form-control" id="hijo_descripcion" name="hijo_descripcion" data-span="invalid-span-hijo_descripcion" maxlength="100">
 									<span id="invalid-span-hijo_descripcion" class="invalid-span text-danger"></span>
@@ -328,7 +326,7 @@
 									<input required type="text" class="form-control" id="primas_generales_descripcion" name="descripcion" data-span="invalid-span-primas_generales_descripcion">
 									<span id="invalid-span-primas_generales_descripcion" class="invalid-span text-danger"></span>
 								</div>
-								<div class="col-8 col-md-4">
+								<!-- <div class="col-8 col-md-4">
 									<label for="primas_generales_monto">Monto</label>
 									<input required type="text" class="form-control" id="primas_generales_monto" name="monto" data-span="invalid-span-primas_generales_monto">
 									<span id="invalid-span-primas_generales_monto" class="invalid-span text-danger"></span>
@@ -340,10 +338,10 @@
 										<input type="checkbox" id="primas_generales_porcentaje" name="porcentaje" class="check-button">
 										<label for="primas_generales_porcentaje" class="check-button" tabindex="0"></label>
 									</div>
-								</div>
+								</div> -->
 								<div class="col-12 mt-2">
 									<div class="d-table table-middle">
-										<div class="d-table-row">
+										<!-- <div class="d-table-row">
 											<div class="d-table-cell">
 												<label for="primas_generales_salud" class="m-0 cursor-pointer no-select">Sector Salud</label>
 											</div>
@@ -353,7 +351,7 @@
 													<label for="primas_generales_salud" class="check-button" tabindex="0"></label>
 												</div>
 											</div>
-										</div>
+										</div> -->
 										<div class="d-table-row">
 											<div class="d-table-cell">
 												<label for="primas_generales_dedicada" class="m-0 cursor-pointer no-select">Dedicada</label>
@@ -400,8 +398,9 @@
 									</table>
 								</div>
 							</div>
-							<div class="row mt-3">
-								<div class="col-12 text-center"><button class="btn btn-primary" type="submit">Registrar</button></div>
+
+							<div class="form_calc_container">
+								
 							</div>
 						</form>
 					</div>
@@ -412,7 +411,7 @@
 			</div>
 		</div>
 
-
+	<script src="./assets/js/comun/calculadora.js"></script>
 	<script>
 
 		
@@ -426,6 +425,13 @@
 		
 
 		// inicializar *******************************************************
+			event_modal_calc();
+
+			//load_calc_functions()
+
+
+			
+
 
 			add_event_to_label_checkbox();
 
@@ -1027,7 +1033,7 @@
 
 			// inicializar primas generales
 
-				eventoMonto("primas_generales_monto");
+				//eventoMonto("primas_generales_monto");
 
 
 
@@ -1036,16 +1042,17 @@
 
 				document.getElementById('primas_generales_dedicada').onclick = function(){
 					if(this.checked){
+						muestraMensaje("Advertencia", "Se aconseja colocar en la(s) condicional(es) la variable: <ENDL> 'DEDICADA' <ENDL> si utiliza el nombre de esta formula, la lista dedicada sera ignorada y se ejecutará", "¡");
 						add_trabajador();
 						document.getElementById('primas_generales_container_trabajadores').classList.remove("d-none");
-						document.getElementById('primas_generales_salud').checked = false;
-						document.getElementById('primas_generales_salud').disabled = true;
+						// document.getElementById('primas_generales_salud').checked = false;
+						// document.getElementById('primas_generales_salud').disabled = true;
 						document.getElementById('primas_generales_mensual').disabled = false;
 
 
-						$("#primas_generales_salud, label[for='primas_generales_salud']").each((index,el)=>{
-							el.style="opacity:0.75";
-						});
+						// $("#primas_generales_salud, label[for='primas_generales_salud']").each((index,el)=>{
+						// 	el.style="opacity:0.75";
+						// });
 
 
 
@@ -1059,10 +1066,10 @@
 
 						document.getElementById('primas_generales_container_trabajadores').classList.add("d-none");
 						document.getElementById('tbody_trabajadores_dedicada').innerHTML='';
-						document.getElementById('primas_generales_salud').disabled = false;
-						$("#primas_generales_salud, label[for='primas_generales_salud']").each((index,el)=>{
-							el.style="";
-						});
+						// document.getElementById('primas_generales_salud').disabled = false;
+						// $("#primas_generales_salud, label[for='primas_generales_salud']").each((index,el)=>{
+						// 	el.style="";
+						// });
 
 						$("#primas_generales_mensual, label[for='primas_generales_mensual']").each((index,el)=>{
 							el.style="opacity:0.75";
@@ -1134,20 +1141,17 @@
 								
 									var lee = JSON.parse(respuesta);
 									if(lee.resultado == "get_prima_general"){
-
-										console.log(lee);
-
 										document.getElementById('primas_generales_id').value = lee.mensaje.id;
-										document.getElementById('primas_generales_monto').value = lee.mensaje.monto;
-										document.getElementById('primas_generales_monto').onchange();
-										document.getElementById('primas_generales_monto').classList.remove("is-valid");
+										//document.getElementById('primas_generales_monto').value = lee.mensaje.monto;
+										//document.getElementById('primas_generales_monto').onchange();
+										//document.getElementById('primas_generales_monto').classList.remove("is-valid");
 										document.getElementById('primas_generales_descripcion').value = lee.mensaje.descripcion;
-										document.getElementById('primas_generales_porcentaje').checked = (lee.mensaje.porcentaje=='1')?true:false;
-										document.getElementById('primas_generales_salud').checked = (lee.mensaje.sector_salud=='1')?true:false;
+										//document.getElementById('primas_generales_porcentaje').checked = (lee.mensaje.porcentaje=='1')?true:false;
+										// document.getElementById('primas_generales_salud').checked = (lee.mensaje.sector_salud=='1')?true:false;
 										document.getElementById('primas_generales_dedicada').checked = (lee.mensaje.dedicada=='1')?true:false;
 										document.getElementById('primas_generales_dedicada').onclick();
 
-										document.querySelector("#f4 button[type='submit']").innerHTML='Modificar';
+										//document.querySelector("#f4 button[type='submit']").innerHTML='Modificar'; // TODO cambiar esto
 
 										if(lee.mensaje.dedicada == '1'){
 											sub_trabajador();
@@ -1157,9 +1161,25 @@
 
 										}
 
+										var modal = document.getElementById('modal_registrar_prima_general');
+
+										modal.load_calc_formulario(false).then(()=>{
+
+											load_formulas_form(lee.mensaje.calc_formula);
+
+											document.getElementById('f4').tested_form=true;
+											$(modal).modal("show");
+										})
 
 
-										$("#modal_registrar_prima_general").modal("show");
+
+
+
+
+
+
+
+										//$("#modal_registrar_prima_general").modal("show");
 										
 									}
 									else if (lee.resultado == 'is-invalid'){
@@ -1187,7 +1207,7 @@
 
 				
 
-
+				document.getElementById('f4').action_form='testing_calc';
 				document.getElementById('f4').onsubmit=function(e){
 					e.preventDefault();
 					f4 = this;
@@ -1203,45 +1223,41 @@
 
 
 
-					for(var el of document.querySelectorAll("#f4 input")){
+					for(var el of document.querySelectorAll("#f4 input:not(:disabled)")){
 						if(el.classList.contains('is-invalid')){
 							el.focus();
+							this.action_form='testing_calc';
 							return false;
 						}
 					}
 
 
-					//TODO validaciones
+
 
 					var datos = new FormData(this);
-					if(document.getElementById('primas_generales_id').value!=''){
-						datos.append("accion","modificar_prima_general");
-					}
-					else{
-						datos.append("accion","registra_prima_general");
-					}
 
-					var temp_monto = parseFloat( sepMilesMonto(datos.get("monto"),true) );
-
-					if(datos.has("porcentaje")){
-
-						if(temp_monto > 100){
-							muestraMensaje("Error", "El monto no puede ser mayor a 100 si esta activo el porcentaje", "w");
-							return false;
-						}
-					}
-					if(temp_monto <= 0){
-						muestraMensaje("Error", "El monto no puede ser menor o igual 0", "w");
+					datos = calc_formData_maker(datos,this);
+					if(datos===false){
+						this.action_form='testing_calc';
 						return false;
 					}
 
 
+					if(this.action_form=='testing_calc'){
+						datos.set("accion","test_formula");
+					}
+					else if(this.action_form == 'save_calc'){
+						if(document.getElementById('primas_generales_id').value!=''){
+							datos.append("accion","modificar_prima_general");
+						}
+						else{
+							datos.append("accion","registra_prima_general");
+						}
+					}
 
 					datos.set("sector_salud",datos.has("sector_salud") ? "1":"0");
-					datos.set("porcentaje",datos.has("porcentaje") ? "1":"0");
 					datos.set("mensual",datos.has("mensual") ? "1":"0");
 					datos.set("dedicada",datos.has("dedicada") ? "1":"0");
-					datos.set("monto",temp_monto);
 
 					if(datos.get("dedicada") == '1' && !datos.has("trabajadores")){
 						muestraMensaje("Error", `Debe agregar al menos un trabajador si la prima esta seleccionada como "dedicada"`, "w");
@@ -1249,8 +1265,15 @@
 					}
 
 					datos.groupby("trabajadores");
+					//datos.groupby("trabajador_id_input");
 
 
+
+					if(datos.get("accion") == 'modificar_prima_general'){
+						//alert("esto aun no");;
+						//return false;
+					}
+					this.action_form = 'testing_calc'
 
 
 					enviaAjax(datos,function(respuesta, exito, fail){
@@ -1261,7 +1284,28 @@
 							muestraMensaje("Exito", lee.mensaje, 's');
 							cargar_prima_generales(lee.lista);
 							$("#modal_registrar_prima_general").modal("hide");
+						}
+						else if (lee.resultado == 'leer_formula'){
 
+							if(lee.total!==null){
+								muestraMensaje("Prueba Exitosa", `La formula fue evaluada exitosamente <ENDL> total <ENDL> ${lee.total}`, "s",);
+							}
+							else{
+								muestraMensaje("Prueba Exitosa <br> (Advertencia)", "La condicional no se ha cumplido por lo tanto el resultado es '0' <ENDL> se sugiere probar la formula con una condicional positiva para evitar errores", "¡",);
+							}
+							f4.tested_form = true;
+						}
+						else if (lee.resultado == 'leer_formula_condicional'){
+							if(lee.total!==null){
+								muestraMensaje("Prueba Exitosa", `La formula '${lee.n_formula}' fue evaluada exitosamente <ENDL> total <ENDL> ${lee.total}`, "s");
+							}
+							else{
+								muestraMensaje("Prueba Exitosa <br> (Advertencia)", "Ninguna condicional se ha cumplido por lo tanto el resultado es '0' <ENDL> se sugiere probar cada formula con una condicional positiva para evitar errores", "¡",);
+							}
+
+
+
+							f4.tested_form = true;
 						}
 						else if (lee.resultado == 'is-invalid'){
 							muestraMensaje(lee.titulo, lee.mensaje,"error");
@@ -1273,11 +1317,14 @@
 						else if(lee.resultado == "console"){
 							console.log(lee.mensaje);
 						}
+						else if(lee.resultado == "console-table" ){
+							console.table(JSON.parse(lee.mensaje));
+						}
 						else{
 							muestraMensaje(lee.titulo, lee.mensaje,"error");
 						}
 						f4.sending = false; 
-					},"loader_body").p.catch((a)=>{
+					},"loader_body").p.finally((a)=>{
 						f4.sending = false; 
 					});
 
@@ -1292,7 +1339,7 @@
 					document.getElementById('tbody_trabajadores_dedicada').innerHTML="";
 
 					$("#f4 input,#f4 span.invalid-span").each((index,el)=>{
-						console.log(el);
+
 						if(el.tagName=='INPUT'){
 							if(el.type == 'checkbox'){
 								el.checked=false;
@@ -1306,9 +1353,15 @@
 							el.innerHTML='';
 						}
 					});
+					document.getElementById('f4').tested_form=false;
+					document.getElementById('f4').action_form='testing_calc';
+					document.getElementById('f4').sending=undefined;
+					document.getElementById('primas_generales_dedicada').checked = false;
 					document.getElementById('primas_generales_dedicada').onclick();
 
-					document.querySelector("#f4 button[type='submit']").innerHTML='Registrar';
+					document.querySelector("#f4 button[type='submit']").innerHTML='Probar Formula';
+
+					document.querySelector("#modal_registrar_prima_general .form_calc_container").innerHTML='';
 
 				})
 
@@ -1490,8 +1543,6 @@
 					},
 					columns:[
 						{data:"descripcion"}
-						,{data:"monto"}
-						,{data:"sector_salud"}
 						,{data:"dedicada"}
 						,{data:"extra"}
 					],
@@ -1503,7 +1554,7 @@
 						row.querySelector("td:nth-child(1)").style="min-width:200px;";
 
 
-						var acciones = row.querySelector("td:nth-child(5)");
+						var acciones = row.querySelector("td:nth-child(3)");
 						acciones.innerHTML = '';
 						var btn = crearElem("button", "class,btn btn-warning,data-action,modificar", "<span class='bi bi-pencil-square' title='Modificar Prima'></span>")
 						acciones.appendChild(btn);
@@ -1739,7 +1790,7 @@
 
 			td.appendChild(crearElem("span",`id,invalid-span-primas_generalse_trabajador-${n},class,invalid-span text-danger`));
 
-			input = crearElem("input",`type,hidden,id,trabajador_hide-${n}`);
+			input = crearElem("input",`type,hidden,id,trabajador_hide-${n},name,trabajador_id_input`);
 			input.value = id;
 
 			td.appendChild(input);
@@ -1868,6 +1919,113 @@
 				document.getElementById(etiqueta.dataset.trabajador_id).value='';
 				document.getElementById(etiqueta.dataset.trabajador_info).innerHTML='';
 			}
+		}
+
+
+		function event_modal_calc(){
+			document.querySelectorAll("button[data-open_modal_calc]").forEach((button)=>{
+
+				var modal = document.getElementById(button.dataset.open_modal_calc);
+
+				if(modal){
+
+					modal.load_calc_formulario=function(show_modal=true){
+						
+
+						var newUrl = window.location.href+'&calc_form_1=1';
+
+						return new Promise((resolve,rejected)=>{
+
+							$.ajax({
+								async: true,
+								url: newUrl,
+								type: "GET",
+								contentType: false,
+								processData: false,
+								cache: true,
+								headers: {
+								     'Cache-Control': 'max-age=3600,public' 
+								},
+								beforeSend: function () {
+									ajaxCounterConsult++; 
+									loader_main(true,ajaxCounterConsult);
+									// ajaxCounterConsult_body++;
+									// loader_body(true,ajaxCounterConsult_body);
+								},
+								timeout: 30000,
+								success: function (respuesta) {
+									try {
+										if(respuesta==='close_sesion_user'){
+											location.reload();
+										}
+
+										modal.querySelector(".form_calc_container").innerHTML = respuesta;
+										load_calc_functions().then(()=>{
+											if(show_modal===true){
+												$(modal).modal("show");
+											}
+											resolve();
+										});
+										
+									} catch (e) {
+										alert("Error en " + e.name + " !!!");
+										console.error(e);
+										console.log(respuesta);
+									}
+								},
+								error: function (request, status, err) {
+									if (status == "timeout") {
+										muestraMensaje("Servidor Ocupado", "Intente de nuevo", "error");
+
+									} 
+									else if(request.readyState===0){
+										if(status != 'abort'){
+										muestraMensaje("No Hay Conexión Con El Servidor", "Intente de nuevo", "error");}
+									}
+									else {
+										muestraMensaje("Error", request + status + err, "error");
+									}
+
+									ajaxCounterConsult--;
+									loader_main(false,ajaxCounterConsult);
+									rejected();
+									
+								},
+								complete: function (xhr, status) { 
+									ajaxCounterConsult--;
+									loader_main(false,ajaxCounterConsult);
+								},
+							});
+						})
+
+					}
+
+
+					button.onclick=function (){
+
+						var modal = document.getElementById(this.dataset.open_modal_calc);
+
+						modal.load_calc_formulario();
+
+					}
+
+				}
+				else{
+					console.error(`EL modal no existe (#${button.dataset.open_modal_calc})`);
+				}
+
+
+
+
+
+				
+
+
+
+
+			})
+
+
 		}
 
 		

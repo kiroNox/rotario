@@ -23,7 +23,7 @@
 
 </head>
 
-<body id="page-top">
+<body id="page-top" class="<?= $modo_oscuro ?>">
 
     <!-- Page Wrapper -->
     <div id="wrapper">
@@ -45,7 +45,6 @@
                     <!-- Content Row -->
                     <div data-intro="Aca tenemos un resumen de varios aspectos importantes del sistema">
 
-                    
                     <div class="row" >
 
                         <!-- Earnings (Monthly) Card Example -->

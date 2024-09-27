@@ -162,7 +162,7 @@
 
 				var datos = new FormData($("#f1")[0]);
 				if(!datos.has("comision_servicios")){
-					muestraMensaje("Error", "Debe selecionar si es de comision de servicios o no", "e");
+					muestraMensaje("Error", "Debe seleccionar si es de comisión de servicios o no", "e");
 					return false;
 				}
 				datos.append("accion","registrar");
@@ -292,6 +292,7 @@
 							document.getElementById('pass_modificar').value = "";
 							document.getElementById('fecha_ingreso_modificar').value = lee.mensaje.creado;
 							document.getElementById('numero_cuenta_modificar').value = lee.mensaje.numero_cuenta;
+							document.getElementById('genero_trabajador_modificar').value = lee.mensaje.genero;
 
 							console.log("lee.mensaje.discapacitado", lee.mensaje.discapacitado);
 							if (lee.mensaje.discapacitado == "1") {

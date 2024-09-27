@@ -11,10 +11,10 @@ class Bitacora extends Conexion
 
 	public function load_bitacora(){
 		try {
-			$this->con = $this->conecta();
-			$this->validar_conexion($this->con);
+			$con = $this->conecta();
+			$this->validar_conexion($con);
 			
-				$consulta = $this->con->prepare("SELECT t.cedula, b.fecha, b.descripcion,t.nombre,t.apellido FROM bitacora AS b LEFT JOIN trabajadores AS t ON t.id_trabajador = b.id_trabajador WHERE 1 ORDER BY fecha DESC limit 200;");
+				$consulta = $con->prepare("SELECT t.cedula, b.fecha, b.descripcion,t.nombre,t.apellido FROM bitacora AS b LEFT JOIN trabajadores AS t ON t.id_trabajador = b.id_trabajador WHERE 1 ORDER BY fecha DESC limit 200;");
 				$consulta->execute();
 			
 			$r['resultado'] = 'load_bitacora';
@@ -29,7 +29,7 @@ class Bitacora extends Conexion
 			//$r['mensaje'] =  $e->getMessage().": LINE : ".$e->getLine();
 		}
 		finally{
-			$this->con = null;
+			$con = null;
 		}
 		
 		return $r;
@@ -107,6 +107,25 @@ class Bitacora extends Conexion
 			$con = null;
 		}
 	}
+
+	public static function get_diff(&$diff,$nombre , $dato_1, $dato_2, $BOOL = null){
+
+		if($dato_1 !== $dato_2){
+			if(is_array($BOOL)){
+
+				$dato_1 = (boolval($dato_1))?$BOOL[0] : $BOOL[1];
+				$dato_2 = (boolval($dato_2))?$BOOL[0] : $BOOL[1];
+
+			}
+
+
+			$diff .= "'$nombre' se modifico de '$dato_1' a '$dato_2'<br>";
+
+		}
+
+	}
+
+
 }
 
 

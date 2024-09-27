@@ -1,5 +1,14 @@
 <?php 
 
+(isset($_COOKIE["modo_oscuro"]))?$_COOKIE["modo_oscuro"]:'';
+
+if(isset($_COOKIE["modo_oscuro"])){
+	$modo_oscuro = 'dark-mode';
+}
+else{
+	$modo_oscuro = "";
+}
+
 // TODO si no esta la tabla permisos deja entrar
 if( !in_array($pagina, $excepciones_p) ){
 	if(isset($_SESSION["usuario_rotario"])){

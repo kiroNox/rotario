@@ -223,14 +223,17 @@
 			else if($accion == "registra_prima_general"){
 				if(isset($permisos["primas"]["crear"]) and $permisos["primas"]["crear"] == "1"){
 
+					//showvar($_POST,'table');
+
+					$cl->calc_init();
+
 					echo json_encode( $cl->registra_prima_general_s(
 						$_POST["descripcion"]
-						,$_POST["monto"]
-						,$_POST["porcentaje"]
 						,$_POST["mensual"]
 						,$_POST["dedicada"]
 						,$_POST["trabajadores"]
 						,$_POST["sector_salud"]
+						,$_POST["formula"]
 					) );
 				}
 				else{
@@ -240,15 +243,15 @@
 			else if($accion == "modificar_prima_general"){
 				if(isset($permisos["primas"]["modificar"]) and $permisos["primas"]["modificar"] == "1"){
 
+					$cl->calc_init();
 					echo json_encode( $cl->modificar_prima_general_s(
 						$_POST["id"]
 						,$_POST["descripcion"]
-						,$_POST["monto"]
-						,$_POST["porcentaje"]
 						,$_POST["mensual"]
 						,$_POST["dedicada"]
 						,$_POST["trabajadores"]
 						,$_POST["sector_salud"]
+						,$_POST["formula"]
 					) );
 				}
 				else{
@@ -281,11 +284,45 @@
 					$cl->no_permision_msg();
 				}
 			}
+			else if($accion == "get_calc_reserved_words"){
+				$cl->calc_init();
+				echo json_encode($cl->get_calc_reserved_words());
+			}
+			else if($accion == "get_lista_trabajadores"){
+				$cl->calc_init();
+				echo json_encode($cl->get_lista_trabajadores());
+			}
+			else if($accion == "test_formula"){// test formula
+				$cl->calc_init();
+				$cl->set_id_trabajador($_POST["trabajador_prueba"]);
 
 
-			
-			
+				$formula = json_decode($_POST["formula"],true);
 
+
+				if($formula["tipo"] === 'lista'){
+					$r = $cl->leer_formula_condicional($formula["lista"]);
+					echo json_encode($r);
+				}
+				else if(isset($_POST["calc_condicional_check"])){
+
+					$formula["variables"] = json_decode($formula["variables"],true);
+
+					$r = $cl->leer_formula_condicional($formula["condicional"],$formula["formula"],$formula["variables"]);
+
+					if($r["resultado"] == "leer_formula_condicional") $r["resultado"] = "leer_formula";
+
+					echo json_encode($r);
+				}
+				else{
+					$formula["variables"] = json_decode($formula["variables"],true);
+
+					$r = $cl->leer_formula($formula["formula"],$formula["variables"]);
+
+					echo json_encode($r);
+				} 
+
+			}
 			else{
 				$r['resultado'] = 'error';
 				$r['titulo'] = 'Error';
@@ -297,6 +334,11 @@
 			
 
 			$cl->set_con(null);
+			exit;
+		}
+
+		if(isset($_GET["calc_form_1"])){
+			require_once("vista/calculadora-form.php");
 			exit;
 		}
 
