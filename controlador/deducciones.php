@@ -103,6 +103,7 @@
 				echo json_encode($cl->get_lista_trabajadores());
 			}
 			else if($accion == "test_formula"){// test formula
+				$start_memory = memory_get_usage();
 				$cl->calc_init();
 				$cl->set_id_trabajador($_POST["trabajador_prueba"]);
 
@@ -131,6 +132,11 @@
 
 				} 
 					$r["iteraciones"] = $cl->get_counter_loop();
+					$r["memory_1_start"] = $start_memory;
+					$r["memory_2_end"] = memory_get_usage();
+					$r["memory_3_peak"] = memory_get_peak_usage();
+					$r["memory_4_limit"] = ini_get("memory_limit");
+
 					echo json_encode($r);
 
 			}

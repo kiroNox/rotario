@@ -67,6 +67,8 @@
 											<button class="btn btn-primary" id="btn_calcular_facturas">Calcular Facturas</button>
 											<button class="btn btn-primary" id="btn_txt">Descargar TXT</button>
 											<button class="btn btn-primary" id="btn_concluir_factura">Concluir Factura</button>
+
+											<button id="btn_prueba_bd_calc">probar formula desde la bd</button>
 										</div>
 									</div>
 									<div class="m-auto">
@@ -649,6 +651,36 @@
 			
 
 		}
+
+
+		document.getElementById('btn_prueba_bd_calc').onclick=function(){
+			var datos = new FormData();
+			datos.append("accion","probar_formula_bd");
+			enviaAjax(datos,function(respuesta, exito, fail){
+			
+				var lee = JSON.parse(respuesta);
+				if(lee.resultado == "probar_formula_bd"){
+
+					console.log(lee);
+					
+				}
+				else if (lee.resultado == 'is-invalid'){
+					muestraMensaje(lee.titulo, lee.mensaje,"error");
+				}
+				else if(lee.resultado == "error"){
+					muestraMensaje(lee.titulo, lee.mensaje,"error");
+					console.error(lee.mensaje);
+				}
+				else if(lee.resultado == "console"){
+					console.log(lee.mensaje);
+				}
+				else{
+					muestraMensaje(lee.titulo, lee.mensaje,"error");
+				}
+			});
+		};
+
+
 		
 	</script>
 

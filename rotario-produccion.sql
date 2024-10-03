@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 27-09-2024 a las 03:02:36
+-- Tiempo de generación: 03-10-2024 a las 00:55:28
 -- Versión del servidor: 10.1.38-MariaDB
 -- Versión de PHP: 7.3.2
 
@@ -3337,7 +3337,284 @@ INSERT INTO `bitacora` (`id_trabajador`, `fecha`, `descripcion`) VALUES
 (2, '2024-09-27 00:47:59', 'Ingreso en el modulo (Deducciones)'),
 (2, '2024-09-27 01:01:34', 'Modificó la deducción de  (probando para modificar) año(s)'),
 (2, '2024-09-27 01:01:44', 'Modificó la deducción de  (probando para modificar) año(s)'),
-(2, '2024-09-27 01:01:54', 'Modificó la deducción de  (probando para modificar) año(s)');
+(2, '2024-09-27 01:01:54', 'Modificó la deducción de  (probando para modificar) año(s)'),
+(2, '2024-09-27 22:06:31', 'Inicio de sesión'),
+(2, '2024-09-27 22:06:33', 'Ingreso en el modulo (Bitacora)'),
+(2, '2024-09-27 22:06:41', 'Ingreso en el modulo (Primas)'),
+(2, '2024-09-27 22:07:55', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-09-27 23:35:06', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-09-28 00:18:21', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-09-28 00:19:56', 'Ingreso en el modulo (Primas)'),
+(2, '2024-09-28 00:23:15', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-09-28 02:11:02', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-09-28 02:49:19', 'Ingreso en el modulo (Primas)'),
+(2, '2024-09-28 03:43:21', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-09-28 03:44:14', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-09-28 03:47:02', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-09-28 03:48:11', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-09-28 03:48:16', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-09-28 03:57:52', 'Registró la prima general (servicio completo)'),
+(2, '2024-09-28 04:38:21', 'Eliminó la prima general (servicio completo)'),
+(2, '2024-09-28 05:37:05', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-09-28 05:50:01', 'Eliminó la deducción de  (probando para modificar) año(s)'),
+(2, '2024-09-28 05:50:17', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-09-28 05:50:54', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-09-28 05:51:07', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-09-28 05:58:05', 'Ingreso en el modulo (Primas)'),
+(2, '2024-09-28 05:58:57', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-09-28 06:04:35', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-09-28 06:05:05', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-09-30 10:23:02', 'Inicio de sesión'),
+(2, '2024-09-30 10:23:04', 'Ingreso en el modulo (Bitacora)'),
+(2, '2024-09-30 10:23:11', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 10:23:42', 'Ingreso en el modulo (Roles)'),
+(2, '2024-09-30 10:23:51', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 10:24:21', 'Ingreso en el modulo (Roles)'),
+(2, '2024-09-30 10:24:53', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 10:27:59', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 10:28:23', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 10:29:13', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 10:29:16', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 10:29:35', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 10:30:02', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 10:30:42', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 10:32:37', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 10:33:00', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 10:35:11', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 11:13:56', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 11:15:26', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 11:15:53', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 11:25:14', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 11:27:50', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 11:28:17', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 11:37:54', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 11:47:56', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 11:49:01', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 11:49:49', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 11:50:24', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 11:51:16', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 11:52:36', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 11:53:29', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 11:54:07', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 11:54:52', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 11:55:41', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 11:56:10', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 12:05:42', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 12:27:39', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 12:28:55', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 12:31:14', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 12:33:10', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-09-30 12:33:45', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 12:35:28', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 12:36:43', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 12:48:05', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 12:55:49', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 12:57:36', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 12:59:53', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 13:02:23', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 13:02:56', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 13:05:34', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 13:06:38', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 13:08:46', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 13:09:07', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 14:18:10', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 14:19:40', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 14:20:06', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 14:20:18', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 14:20:37', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 14:21:21', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 14:21:33', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 14:22:26', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 14:23:29', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 14:25:08', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 14:25:24', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 14:25:42', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 14:34:54', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 14:35:15', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 14:54:05', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 15:02:59', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 15:05:46', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 15:06:46', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 15:07:08', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 15:07:41', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 15:08:17', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 15:10:38', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 15:32:41', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 15:38:40', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 15:40:20', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 15:41:14', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 15:54:28', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 16:15:00', 'Registro de nuevo rol (galletas) con los siguientes permisos<br><br>Modulo (usuarios) <br>Consultar: Permitido<br>Crear: Permitido<br>Modificar: Permitido<br>Eliminar: Permitido<br>Modulo (areas) <br>Consultar: Permitido<br>Crear: Permitido<br>Modificar: Permitido<br>Eliminar: Permitido<br>Modulo (permisos) <br>Consultar: Permitido<br>Crear: Permitido<br>Modificar: Permitido<br>Eliminar: Permitido<br>Modulo (asistencias) <br>Consultar: Permitido<br>Crear: Permitido<br>Modificar: Permitido<br>Eliminar: Permitido<br>Modulo (hijos) <br>Consultar: Permitido<br>Crear: Permitido<br>Modificar: Permitido<br>Eliminar: Permitido<br>Modulo (bitacora) <br>Consultar: Permitido<br>Crear: Permitido<br>Modificar: Permitido<br>Eliminar: Permitido<br>Modulo (roles) <br>Consultar: Permitido<br>Crear: Permitido<br>Modificar: Permitido<br>Eliminar: Permitido<br>Modulo (sueldo) <br>Consultar: Permitido<br>Crear: Permitido<br>Modificar: Permitido<br>Eliminar: Permitido<br>Modulo (deducciones) <br>Consultar: Permitido<br>Crear: Permitido<br>Modificar: Permitido<br>Eliminar: Permitido<br>Modulo (primas) <br>Consultar: Permitido<br>Crear: Permitido<br>Modificar: Permitido<br>Eliminar: Permitido<br>Modulo (educacion) <br>Consultar: Permitido<br>Crear: Permitido<br>Modificar: Permitido<br>Eliminar: Permitido<br>Modulo (liquidacion) <br>Consultar: Permitido<br>Crear: Permitido<br>Modificar: Permitido<br>Eliminar: Permitido<br>Modulo (facturas) <br>Consultar: Permitido<br>Crear: Permitido<br>Modificar: Permitido<br>Eliminar: Permitido<br>'),
+(2, '2024-09-30 16:21:25', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 16:25:15', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 16:27:31', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 16:28:07', 'Elimino el rol (galletas)'),
+(2, '2024-09-30 16:40:40', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 16:40:49', 'Registro de nuevo rol (galletas) con los siguientes permisos<br><br>Modulo (usuarios) <br>Consultar: Permitido<br>Crear: Permitido<br>Modificar: Permitido<br>Eliminar: Permitido<br>Modulo (areas) <br>Consultar: Permitido<br>Crear: Permitido<br>Modificar: Permitido<br>Eliminar: Permitido<br>Modulo (permisos) <br>Consultar: Permitido<br>Crear: Permitido<br>Modificar: Permitido<br>Eliminar: Permitido<br>Modulo (asistencias) <br>Consultar: Permitido<br>Crear: Permitido<br>Modificar: Permitido<br>Eliminar: Permitido<br>Modulo (hijos) <br>Consultar: Permitido<br>Crear: Permitido<br>Modificar: Permitido<br>Eliminar: Permitido<br>Modulo (bitacora) <br>Consultar: Permitido<br>Crear: Permitido<br>Modificar: Permitido<br>Eliminar: Permitido<br>Modulo (roles) <br>Consultar: Permitido<br>Crear: Permitido<br>Modificar: Permitido<br>Eliminar: Permitido<br>Modulo (sueldo) <br>Consultar: Permitido<br>Crear: Permitido<br>Modificar: Permitido<br>Eliminar: Permitido<br>Modulo (deducciones) <br>Consultar: Permitido<br>Crear: Permitido<br>Modificar: Permitido<br>Eliminar: Permitido<br>Modulo (primas) <br>Consultar: Permitido<br>Crear: Permitido<br>Modificar: Permitido<br>Eliminar: Permitido<br>Modulo (educacion) <br>Consultar: Permitido<br>Crear: Permitido<br>Modificar: Permitido<br>Eliminar: Permitido<br>Modulo (liquidacion) <br>Consultar: Permitido<br>Crear: Permitido<br>Modificar: Permitido<br>Eliminar: Permitido<br>Modulo (facturas) <br>Consultar: Permitido<br>Crear: Permitido<br>Modificar: Permitido<br>Eliminar: Permitido<br>'),
+(2, '2024-09-30 16:44:02', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 16:45:18', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 16:58:57', 'Modifico nombre del rol (galletas) a (galletas)Consultar: Permitido => Rechazado <br>Crear: Permitido => Rechazado <br>Modificar: Permitido => Rechazado <br>Eliminar: Permitido => Rechazado <br>Consultar: Permitido => Rechazado <br>Crear: Permitido => Rechazado <br>Modificar: Permitido => Rechazado <br>Eliminar: Permitido => Rechazado <br>'),
+(2, '2024-09-30 16:59:02', 'Modifico nombre del rol (galletas) a (galletas)'),
+(2, '2024-09-30 17:00:46', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 17:01:14', 'Modifico nombre del rol (galletas) a (null)Consultar: Permitido => Rechazado <br>Crear: Permitido => Rechazado <br>Modificar: Permitido => Rechazado <br>Eliminar: Permitido => Rechazado <br>'),
+(2, '2024-09-30 17:02:42', 'Modifico nombre del rol (null) a (galletas)'),
+(2, '2024-09-30 17:02:52', 'Modifico nombre del rol (galletas) a (null)Consultar: Permitido => Rechazado <br>Crear: Permitido => Rechazado <br>Modificar: Permitido => Rechazado <br>Eliminar: Permitido => Rechazado <br>'),
+(2, '2024-09-30 17:03:39', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 17:03:51', 'Modifico nombre del rol (null) a (galletas)'),
+(2, '2024-09-30 17:04:11', 'Modifico nombre del rol (galletas) a (galletasjjj)Consultar: Permitido => Rechazado <br>Crear: Permitido => Rechazado <br>Modificar: Permitido => Rechazado <br>Eliminar: Permitido => Rechazado <br>'),
+(2, '2024-09-30 17:06:24', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-09-30 17:07:17', 'Modifico nombre del rol (galletasjjj) a (galletas) <br><br>Consultar: Rechazado => Permitido<br>Crear: Rechazado => Permitido<br>Modificar: Rechazado => Permitido<br>Eliminar: Rechazado => Permitido<br>Consultar: Rechazado => Permitido<br>Crear: Rechazado => Permitido<br>Modificar: Rechazado => Permitido<br>Eliminar: Rechazado => Permitido<br>Consultar: Rechazado => Permitido<br>Crear: Rechazado => Permitido<br>Modificar: Rechazado => Permitido<br>Eliminar: Rechazado => Permitido<br>Crear: Rechazado => Permitido<br>Modificar: Rechazado => Permitido<br>Eliminar: Rechazado => Permitido<br>Consultar: Rechazado => Permitido<br>Crear: Rechazado => Permitido<br>Modificar: Rechazado => Permitido<br>Eliminar: Rechazado => Permitido<br>'),
+(2, '2024-09-30 17:07:22', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-09-30 17:11:21', 'Modifico los permisos del rol (galletas)<br><br>(Control de asistencias) <br>Consultar: Rechazado => Permitido<br>Crear: Permitido => Rechazado <br>Modificar: Permitido => Rechazado <br>Eliminar: Permitido => Rechazado <br>'),
+(2, '2024-09-30 17:11:26', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-09-30 17:14:45', 'Modifico los permisos del rol (galletas)<br><br>Modulo (Gestionar Hijos) <br>Consultar: Permitido => Rechazado <br>Crear: Permitido => Rechazado <br>Modificar: Permitido => Rechazado <br>Eliminar: Permitido => Rechazado <br>'),
+(2, '2024-09-30 17:14:50', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-09-30 17:16:25', 'Modifico los permisos del rol (galletas)<br><br>Modulo (no) <br>Consultar: Permitido => Rechazado <br>'),
+(2, '2024-09-30 17:22:04', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 17:23:37', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 17:24:12', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 17:25:33', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 17:26:05', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 17:26:43', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 17:28:02', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 17:29:30', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 17:32:39', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 17:33:24', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 17:35:03', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 17:36:12', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 17:45:47', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 17:45:56', 'Modifico nombre del rol (galletas) a (galletas)<br><br> Modifico los siguientes permisosModulo (Gestionar Roles) <br>Consultar: Permitido => Rechazado <br>Modulo (Gestionar Sueldo) <br>Crear: Permitido => Rechazado <br>Modulo (Gestionar Deducciones) <br>Modificar: Permitido => Rechazado <br>Modulo (Gestionar Primas) <br>Eliminar: Permitido => Rechazado <br>'),
+(2, '2024-09-30 17:46:16', 'Modifico los permisos del rol (galletas)<br><br>Modulo (Gestionar Sueldo) <br>Consultar: Permitido => Rechazado <br>Modulo (Gestionar Deducciones) <br>Crear: Permitido => Rechazado <br>Modulo (Gestionar Primas) <br>Consultar: Permitido => Rechazado <br>Modulo (Gestionar Nivel Educativo) <br>Consultar: Permitido => Rechazado <br>Crear: Permitido => Rechazado <br>Modulo (Gestionar Liquidaciones) <br>Consultar: Permitido => Rechazado <br>Modulo (Gestionar Facturas) <br>Consultar: Permitido => Rechazado <br>'),
+(2, '2024-09-30 17:46:30', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-09-30 17:47:04', 'Modifico los permisos del rol (galletas)<br><br>Modulo (Control de asistencias) <br>Crear: Rechazado => Permitido<br>Modificar: Rechazado => Permitido<br>Eliminar: Rechazado => Permitido<br>Modulo (Gestionar Hijos) <br>Consultar: Rechazado => Permitido<br>Crear: Rechazado => Permitido<br>Modificar: Rechazado => Permitido<br>Eliminar: Rechazado => Permitido<br>Modulo (no) <br>Consultar: Rechazado => Permitido<br>Modulo (Gestionar Roles) <br>Consultar: Rechazado => Permitido<br>Modulo (Gestionar Sueldo) <br>Consultar: Rechazado => Permitido<br>Crear: Rechazado => Permitido<br>Modulo (Gestionar Deducciones) <br>Crear: Rechazado => Permitido<br>Modificar: Rechazado => Permitido<br>Modulo (Gestionar Primas) <br>Consultar: Rechazado => Permitido<br>Eliminar: Rechazado => Permitido<br>Modulo (Gestionar Nivel Educativo) <br>Consultar: Rechazado => Permitido<br>Crear: Rechazado => Permitido<br>Modulo (Gestionar Liquidaciones) <br>Consultar: Rechazado => Permitido<br>Modulo (Gestionar Facturas) <br>Consultar: Rechazado => Permitido<br>'),
+(2, '2024-09-30 17:47:12', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-09-30 17:47:43', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-09-30 17:47:56', 'Modifico al usuario (V-27250544)'),
+(2, '2024-09-30 17:51:47', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-09-30 17:53:22', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-09-30 17:54:27', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-09-30 17:54:46', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-09-30 17:55:24', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 17:55:35', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-09-30 17:55:43', 'Modifico al usuario (V-12434091)'),
+(2, '2024-09-30 17:55:51', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 17:56:12', 'Modifico nombre del rol (galletas) a (galletas)<br><br> Modifico los siguientes permisosModulo (Gestionar Permisos) <br>Modificar: Permitido => Rechazado <br>Eliminar: Permitido => Rechazado <br>'),
+(2, '2024-09-30 17:56:20', 'Modifico los permisos del rol (galletas)<br><br>Modulo (Gestionar Permisos) <br>Modificar: Rechazado => Permitido<br>Eliminar: Rechazado => Permitido<br>'),
+(2, '2024-09-30 17:58:51', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-09-30 17:59:41', 'Modifico al usuario (V-12434091)'),
+(2, '2024-09-30 17:59:58', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-09-30 18:00:04', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 18:00:14', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-09-30 18:00:22', 'Modifico al usuario (V-27250544)'),
+(2, '2024-09-30 18:00:26', 'Ingreso en el modulo (Bitácora)');
+INSERT INTO `bitacora` (`id_trabajador`, `fecha`, `descripcion`) VALUES
+(2, '2024-09-30 18:00:29', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 18:00:45', 'Modifico nombre del rol (galletas) a (galletas)<br><br> Modifico los siguientes permisosModulo (Gestionar Permisos) <br>Eliminar: Permitido => Rechazado <br>'),
+(2, '2024-09-30 18:00:59', 'Modifico los permisos del rol (galletas)<br><br>Modulo (Gestionar Permisos) <br>Eliminar: Rechazado => Permitido<br>'),
+(2, '2024-09-30 18:05:17', 'Modifico los permisos del rol (galletas)<br><br>'),
+(2, '2024-09-30 18:05:31', 'Modifico los permisos del rol (galletas)<br><br>'),
+(2, '2024-09-30 18:07:01', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 18:07:08', 'Modifico nombre del rol (galletas) a (galletas)<br><br> Modifico los siguientes permisos'),
+(2, '2024-09-30 18:09:23', 'Registro de nuevo rol (presos) con los siguientes permisos<br><br>Modulo (usuarios) <br>Consultar: Permitido<br>Crear: Permitido<br>Modificar: Permitido<br>Eliminar: Permitido<br>Modulo (areas) <br>Consultar: Permitido<br>Crear: Permitido<br>Modificar: Permitido<br>Eliminar: Permitido<br>Modulo (permisos) <br>Consultar: Permitido<br>Crear: Permitido<br>Modificar: Permitido<br>Eliminar: Permitido<br>Modulo (asistencias) <br>Consultar: Permitido<br>Crear: Permitido<br>Modificar: Permitido<br>Eliminar: Permitido<br>Modulo (hijos) <br>Consultar: Permitido<br>Crear: Permitido<br>Modificar: Permitido<br>Eliminar: Permitido<br>Modulo (bitacora) <br>Consultar: Permitido<br>Crear: Permitido<br>Modificar: Permitido<br>Eliminar: Permitido<br>Modulo (roles) <br>Consultar: Permitido<br>Crear: Permitido<br>Modificar: Permitido<br>Eliminar: Permitido<br>Modulo (sueldo) <br>Consultar: Permitido<br>Crear: Permitido<br>Modificar: Permitido<br>Eliminar: Permitido<br>Modulo (deducciones) <br>Consultar: Permitido<br>Crear: Permitido<br>Modificar: Permitido<br>Eliminar: Permitido<br>Modulo (primas) <br>Consultar: Permitido<br>Crear: Permitido<br>Modificar: Permitido<br>Eliminar: Permitido<br>Modulo (educacion) <br>Consultar: Permitido<br>Crear: Permitido<br>Modificar: Permitido<br>Eliminar: Permitido<br>Modulo (liquidacion) <br>Consultar: Permitido<br>Crear: Permitido<br>Modificar: Permitido<br>Eliminar: Permitido<br>Modulo (facturas) <br>Consultar: Permitido<br>Crear: Permitido<br>Modificar: Permitido<br>Eliminar: Permitido<br>'),
+(2, '2024-09-30 18:09:27', 'Elimino el rol (presos)'),
+(2, '2024-09-30 18:10:53', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 18:11:05', 'Modifico los permisos del rol (galletas)<br><br>Modulo (Gestionar Trabajadores) <br>Consultar: Permitido => Rechazado <br>'),
+(2, '2024-09-30 18:14:52', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 18:16:14', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 18:16:50', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 18:17:34', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 18:17:51', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 18:18:22', 'Modifico los permisos del rol (galletas)<br><br>Modulo (Gestionar Areas) <br>Consultar: Permitido => Rechazado <br>Modulo (Control de asistencias) <br>Modificar: Permitido => Rechazado <br>Modulo (Gestionar Hijos) <br>Eliminar: Permitido => Rechazado <br>Modulo (no) <br>Eliminar: Permitido => Rechazado <br>Modulo (Gestionar Roles) <br>Modificar: Permitido => Rechazado <br>Modulo (Gestionar Sueldo) <br>Crear: Permitido => Rechazado <br>Modulo (Gestionar Deducciones) <br>Consultar: Permitido => Rechazado <br>Modulo (Gestionar Primas) <br>Crear: Permitido => Rechazado <br>Modulo (Gestionar Nivel Educativo) <br>Modificar: Permitido => Rechazado <br>Modulo (Gestionar Liquidaciones) <br>Eliminar: Permitido => Rechazado <br>Modulo (Gestionar Facturas) <br>Modificar: Permitido => Rechazado <br>'),
+(2, '2024-09-30 18:18:38', 'Modifico los permisos del rol (galletas)<br><br>Modulo (Gestionar Trabajadores) <br>Consultar: Rechazado => Permitido<br>Modulo (Gestionar Areas) <br>Consultar: Rechazado => Permitido<br>Modulo (Control de asistencias) <br>Modificar: Rechazado => Permitido<br>Modulo (Gestionar Hijos) <br>Eliminar: Rechazado => Permitido<br>Modulo (no) <br>Eliminar: Rechazado => Permitido<br>Modulo (Gestionar Roles) <br>Modificar: Rechazado => Permitido<br>Modulo (Gestionar Sueldo) <br>Crear: Rechazado => Permitido<br>Modulo (Gestionar Deducciones) <br>Consultar: Rechazado => Permitido<br>Modulo (Gestionar Primas) <br>Crear: Rechazado => Permitido<br>Modulo (Gestionar Nivel Educativo) <br>Modificar: Rechazado => Permitido<br>Modulo (Gestionar Liquidaciones) <br>Eliminar: Rechazado => Permitido<br>Modulo (Gestionar Facturas) <br>Modificar: Rechazado => Permitido<br>'),
+(2, '2024-09-30 18:18:51', 'Ingreso en el modulo (Bitacora)'),
+(2, '2024-09-30 18:18:58', 'Ingreso en el modulo (Bitacora)'),
+(2, '2024-09-30 18:19:06', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 18:19:20', 'Modifico los permisos del rol (galletas)<br><br>Modulo (Gestionar Trabajadores) <br>Consultar: Permitido => Rechazado <br>'),
+(2, '2024-09-30 18:19:24', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-09-30 18:19:37', 'Ingreso en el modulo (Hijos)'),
+(2, '2024-09-30 18:19:49', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 18:22:28', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 18:22:33', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 18:23:42', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-09-30 18:23:49', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 18:23:55', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 18:24:34', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 18:25:10', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 18:26:48', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 18:27:13', 'Modifico nombre del rol (galletas) a (galletas)<br><br> Modifico los siguientes permisosModulo (Gestionar Trabajadores) <br>Consultar: Rechazado => Permitido<br>'),
+(2, '2024-09-30 18:27:16', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 18:27:20', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-09-30 18:27:34', 'Modifico al usuario (V-27250544)'),
+(2, '2024-09-30 18:27:47', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-09-30 18:27:52', 'Elimino el rol (galletas)'),
+(2, '2024-10-01 15:06:22', 'Inicio de sesión'),
+(2, '2024-10-01 15:06:25', 'Ingreso en el modulo (Bitacora)'),
+(2, '2024-10-01 15:06:33', 'Ingreso en el modulo (Estadistica)'),
+(2, '2024-10-01 15:06:33', 'Ingreso en el modulo (Estadistica)'),
+(2, '2024-10-01 15:06:33', 'Ingreso en el modulo (Estadistica)'),
+(2, '2024-10-01 15:06:34', 'Ingreso en el modulo (Estadistica)'),
+(2, '2024-10-01 15:06:34', 'Ingreso en el modulo (Estadistica)'),
+(2, '2024-10-01 15:06:53', 'Ingreso en el modulo (Liquidación)'),
+(2, '2024-10-01 15:08:54', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-10-01 15:09:15', 'Modifico nombre del rol (Administrador) a (Administradorc)'),
+(2, '2024-10-01 15:09:25', 'Modifico nombre del rol (Administradorc) a (Administrador)'),
+(2, '2024-10-01 15:12:14', 'Modifico nombre del rol (Administrador) a (Administrador)<br><br> Modifico los siguientes permisosModulo (Gestionar Formulas) <br>Consultar: Rechazado => Permitido<br>Crear: Rechazado => Permitido<br>Modificar: Rechazado => Permitido<br>Eliminar: Rechazado => Permitido<br>'),
+(2, '2024-10-01 15:13:44', 'Modifico nombre del rol (Administrador) a (Administrador)<br><br> Modifico los siguientes permisosModulo (Gestionar Formulas) <br>'),
+(2, '2024-10-01 15:17:49', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-10-01 15:17:54', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-10-01 16:03:55', 'Modifico los permisos del rol (Administrador)<br><br>Se agregaron los permisos<br>Modulo (Gestionar Formulas)<br><br>Consultar: PermitidoCrear: PermitidoModificar: PermitidoEliminar: Permitido'),
+(2, '2024-10-01 16:08:04', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-10-01 16:08:34', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-10-01 16:10:17', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-10-01 16:11:08', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-10-01 16:11:40', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-10-01 16:13:35', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-10-01 16:15:03', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-10-01 16:16:17', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-10-01 16:17:01', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-10-01 16:17:55', 'Modifico los permisos del rol (trabajador)<br><br>Modulo (Gestionar Trabajadores) <br>Consultar: Rechazado => Permitido<br>Crear: Rechazado => Permitido<br>Modificar: Rechazado => Permitido<br>Eliminar: Rechazado => Permitido<br>Se agregaron los permisos<br>Modulo (Gestionar Areas)<br><br>Consultar: PermitidoCrear: PermitidoModificar: PermitidoEliminar: PermitidoSe agregaron los permisos<br>Modulo (Control de asistencias)<br><br>Consultar: PermitidoCrear: PermitidoModificar: PermitidoEliminar: PermitidoSe agregaron los permisos<br>Modulo (Gestionar Hijos)<br><br>Consultar: PermitidoCrear: PermitidoModificar: PermitidoEliminar: PermitidoSe agregaron los permisos<br>Modulo (no)<br><br>Consultar: PermitidoCrear: PermitidoModificar: PermitidoEliminar: PermitidoSe agregaron los permisos<br>Modulo (Gestionar Sueldo)<br><br>Consultar: PermitidoCrear: PermitidoModificar: PermitidoEliminar: PermitidoSe agregaron los permisos<br>Modulo (Gestionar Deducciones)<br><br>Consultar: PermitidoCrear: PermitidoModificar: PermitidoEliminar: PermitidoSe agregaron los permisos<br>Modulo (Gestionar Primas)<br><br>Consultar: PermitidoCrear: PermitidoModificar: PermitidoEliminar: PermitidoModulo (Gestionar Nivel Educativo) <br>Consultar: Rechazado => Permitido<br>Crear: Rechazado => Permitido<br>Modificar: Rechazado => Permitido<br>Eliminar: Rechazado => Permitido<br>Se agregaron los permisos<br>Modulo (Gestionar Liquidaciones)<br><br>Consultar: PermitidoCrear: PermitidoModificar: PermitidoEliminar: PermitidoSe agregaron los permisos<br>Modulo (Gestionar Facturas)<br><br>Consultar: PermitidoCrear: PermitidoModificar: PermitidoEliminar: PermitidoSe agregaron los permisos<br>Modulo (Gestionar Formulas)<br><br>Consultar: PermitidoCrear: PermitidoModificar: PermitidoEliminar: Permitido'),
+(2, '2024-10-01 16:18:04', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-10-01 16:18:04', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-10-01 16:18:04', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-10-01 16:18:12', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-10-01 16:18:24', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-10-01 16:22:42', 'Modifico los permisos del rol (trabajador)<br><br>Se agregaron los permisos<br>Modulo (Gestionar Permisos)<br><br>Consultar: PermitidoCrear: PermitidoModificar: PermitidoEliminar: Permitido'),
+(2, '2024-10-01 16:32:39', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-10-01 16:32:44', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-01 16:33:08', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-01 16:34:04', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-01 16:34:24', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-01 16:37:42', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-01 16:38:04', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-01 16:38:37', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-01 16:38:42', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-01 16:38:57', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-01 16:58:25', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-10-01 16:58:29', 'Ingreso en el modulo (Primas)'),
+(2, '2024-10-01 17:06:17', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-01 17:06:34', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-01 17:07:05', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-01 17:08:25', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-02 22:26:07', 'Inicio de sesión'),
+(2, '2024-10-02 22:26:08', 'Ingreso en el modulo (Bitacora)'),
+(2, '2024-10-02 22:26:16', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-02 22:26:37', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-02 22:28:08', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-02 22:28:29', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-02 22:43:04', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-02 22:43:27', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-02 22:43:30', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-02 22:43:47', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-02 22:44:21', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-02 22:45:14', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-02 22:46:25', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-02 22:48:58', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-02 22:49:17', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-02 22:49:38', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-02 22:49:50', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-02 22:49:54', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-02 22:53:08', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-02 22:54:06', 'Ingreso en el modulo (Gestionar formulas)');
 
 -- --------------------------------------------------------
 
@@ -3392,25 +3669,19 @@ CREATE TABLE `cargos` (
 CREATE TABLE `deducciones` (
   `id_deducciones` int(11) NOT NULL,
   `descripcion` varchar(45) NOT NULL,
-  `monto` decimal(12,2) DEFAULT NULL,
-  `porcentaje` tinyint(1) DEFAULT NULL,
-  `multi_meses` int(11) DEFAULT NULL,
-  `div_sem` int(11) DEFAULT NULL,
-  `quincena` tinyint(1) DEFAULT NULL,
-  `multi_dia` tinyint(1) DEFAULT NULL,
-  `sector_salud` tinyint(1) DEFAULT NULL,
   `islr` tinyint(1) NOT NULL,
   `dedicada` tinyint(1) NOT NULL,
-  `id_formula` int(11) DEFAULT NULL
+  `id_formula` int(11) DEFAULT NULL,
+  `status` tinyint(1) DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Volcado de datos para la tabla `deducciones`
 --
 
-INSERT INTO `deducciones` (`id_deducciones`, `descripcion`, `monto`, `porcentaje`, `multi_meses`, `div_sem`, `quincena`, `multi_dia`, `sector_salud`, `islr`, `dedicada`, `id_formula`) VALUES
-(3, 'Retención del seguro social', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 71),
-(4, 'probando para modificar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 72);
+INSERT INTO `deducciones` (`id_deducciones`, `descripcion`, `islr`, `dedicada`, `id_formula`, `status`) VALUES
+(3, 'Retención del seguro social', 0, 0, 71, 1),
+(4, 'probando para modificar', 0, 0, NULL, 0);
 
 -- --------------------------------------------------------
 
@@ -3426,132 +3697,6 @@ CREATE TABLE `detalles_factura` (
   `prima` tinyint(1) NOT NULL,
   `islr` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Volcado de datos para la tabla `detalles_factura`
---
-
-INSERT INTO `detalles_factura` (`id_detalles`, `id_factura`, `descripcion`, `monto`, `prima`, `islr`) VALUES
-(1, 30, 'prima hijos 2', '21.00', 1, 0),
-(2, 30, 'prima hijos 4', '23.00', 1, 0),
-(3, 30, 'prima hijos 1', '20.00', 1, 0),
-(4, 30, 'prima hijos 2', '21.00', 1, 0),
-(5, 30, 'prima hijos 3', '22.00', 1, 0),
-(6, 30, 'prima hijos 4', '23.00', 1, 0),
-(7, 30, 'Escalafon - escala I', '7.01', 1, 0),
-(8, 30, 'Dedicacion A La Actividad Del Sistema Publico Unico Nacional de salud', '15.00', 1, 0),
-(9, 30, 'Compensación Por Evaluación', '37.50', 1, 0),
-(10, 30, 'prueba dedicada', '22.50', 1, 0),
-(11, 30, 'dia del padre', '12.50', 1, 0),
-(12, 30, 'Profesionalización - Técnico Superior Universitario', '43.58', 1, 0),
-(13, 30, 'Antiguedad', '8.38', 1, 0),
-(14, 30, 'Perdida involuntaria de empleo', '1.96', 0, 0),
-(15, 30, 'prueva dedicadas', '125.00', 0, 0),
-(16, 31, 'Escalafon - escala VI', '70.00', 1, 0),
-(17, 31, 'Dedicacion A La Actividad Del Sistema Publico Unico Nacional de salud', '25.00', 1, 0),
-(18, 31, 'Compensación Por Evaluación', '62.50', 1, 0),
-(19, 31, 'Profesionalización - Doctorado', '163.00', 1, 0),
-(20, 31, 'Perdida involuntaria de empleo', '2.64', 0, 0),
-(21, 32, 'prima hijos 2', '21.00', 1, 0),
-(22, 32, 'prima hijos 4', '23.00', 1, 0),
-(23, 32, 'prima hijos 1', '20.00', 1, 0),
-(24, 32, 'prima hijos 2', '21.00', 1, 0),
-(25, 32, 'prima hijos 3', '22.00', 1, 0),
-(26, 32, 'prima hijos 4', '23.00', 1, 0),
-(27, 32, 'Escalafon - escala I', '7.01', 1, 0),
-(28, 32, 'Dedicacion A La Actividad Del Sistema Publico Unico Nacional de salud', '15.00', 1, 0),
-(29, 32, 'Compensación Por Evaluación', '37.50', 1, 0),
-(30, 32, 'prueba dedicada', '22.50', 1, 0),
-(31, 32, 'dia del padre', '12.50', 1, 0),
-(32, 32, 'Profesionalización - Técnico Superior Universitario', '43.58', 1, 0),
-(33, 32, 'Antiguedad', '8.38', 1, 0),
-(34, 32, 'Perdida involuntaria de empleo', '1.96', 0, 0),
-(35, 32, 'prueva dedicadas', '125.00', 0, 0),
-(36, 33, 'Escalafon - escala VI', '70.00', 1, 0),
-(37, 33, 'Dedicacion A La Actividad Del Sistema Publico Unico Nacional de salud', '25.00', 1, 0),
-(38, 33, 'Compensación Por Evaluación', '62.50', 1, 0),
-(39, 33, 'Profesionalización - Doctorado', '163.00', 1, 0),
-(40, 33, 'Perdida involuntaria de empleo', '2.64', 0, 0),
-(41, 34, 'prima hijos 2', '21.00', 1, 0),
-(42, 34, 'prima hijos 4', '23.00', 1, 0),
-(43, 34, 'prima hijos 1', '20.00', 1, 0),
-(44, 34, 'prima hijos 2', '21.00', 1, 0),
-(45, 34, 'prima hijos 3', '22.00', 1, 0),
-(46, 34, 'prima hijos 4', '23.00', 1, 0),
-(47, 34, 'Escalafon - escala I', '7.01', 1, 0),
-(48, 34, 'Dedicacion A La Actividad Del Sistema Publico Unico Nacional de salud', '15.00', 1, 0),
-(49, 34, 'Compensación Por Evaluación', '37.50', 1, 0),
-(50, 34, 'prueba dedicada', '22.50', 1, 0),
-(51, 34, 'dia del padre', '12.50', 1, 0),
-(52, 34, 'Profesionalización - Técnico Superior Universitario', '43.58', 1, 0),
-(53, 34, 'Antiguedad', '8.38', 1, 0),
-(54, 34, 'Perdida involuntaria de empleo', '2.45', 0, 0),
-(55, 34, 'prueva dedicadas', '125.00', 0, 0),
-(56, 35, 'Escalafon - escala VI', '70.00', 1, 0),
-(57, 35, 'Dedicacion A La Actividad Del Sistema Publico Unico Nacional de salud', '25.00', 1, 0),
-(58, 35, 'Compensación Por Evaluación', '62.50', 1, 0),
-(59, 35, 'Profesionalización - Doctorado', '163.00', 1, 0),
-(60, 35, 'Perdida involuntaria de empleo', '3.30', 0, 0),
-(61, 36, 'prima hijos 2', '21.00', 1, 0),
-(62, 36, 'prima hijos 4', '23.00', 1, 0),
-(63, 36, 'prima hijos 1', '20.00', 1, 0),
-(64, 36, 'prima hijos 2', '21.00', 1, 0),
-(65, 36, 'prima hijos 3', '22.00', 1, 0),
-(66, 36, 'prima hijos 4', '23.00', 1, 0),
-(67, 36, 'Escalafon - escala I', '7.01', 1, 0),
-(68, 36, 'Dedicacion A La Actividad Del Sistema Publico Unico Nacional de salud', '15.00', 1, 0),
-(69, 36, 'Compensación Por Evaluación', '37.50', 1, 0),
-(70, 36, 'prueba dedicada', '22.50', 1, 0),
-(71, 36, 'dia del padre', '12.50', 1, 0),
-(72, 36, 'Profesionalización - Técnico Superior Universitario', '43.58', 1, 0),
-(73, 36, 'Antiguedad', '8.38', 1, 0),
-(74, 36, 'Perdida involuntaria de empleo', '1.96', 0, 0),
-(75, 36, 'prueva dedicadas', '125.00', 0, 0),
-(76, 37, 'Escalafon - escala VI', '70.00', 1, 0),
-(77, 37, 'Dedicacion A La Actividad Del Sistema Publico Unico Nacional de salud', '25.00', 1, 0),
-(78, 37, 'Compensación Por Evaluación', '62.50', 1, 0),
-(79, 37, 'Profesionalización - Doctorado', '163.00', 1, 0),
-(80, 37, 'Perdida involuntaria de empleo', '2.64', 0, 0),
-(81, 38, 'prima hijos 2', '21.00', 1, 0),
-(82, 38, 'prima hijos 4', '23.00', 1, 0),
-(83, 38, 'prima hijos 1', '20.00', 1, 0),
-(84, 38, 'prima hijos 2', '21.00', 1, 0),
-(85, 38, 'prima hijos 3', '22.00', 1, 0),
-(86, 38, 'prima hijos 4', '23.00', 1, 0),
-(87, 38, 'Escalafon - escala I', '7.01', 1, 0),
-(88, 38, 'Dedicacion A La Actividad Del Sistema Publico Unico Nacional de salud', '15.00', 1, 0),
-(89, 38, 'Compensación Por Evaluación', '37.50', 1, 0),
-(90, 38, 'prueba dedicada', '22.50', 1, 0),
-(91, 38, 'dia del padre', '12.50', 1, 0),
-(92, 38, 'Profesionalización - Técnico Superior Universitario', '43.58', 1, 0),
-(93, 38, 'Antiguedad', '8.38', 1, 0),
-(94, 38, 'Perdida involuntaria de empleo', '1.96', 0, 0),
-(95, 38, 'prueva dedicadas', '125.00', 0, 0),
-(96, 39, 'Escalafon - escala VI', '70.00', 1, 0),
-(97, 39, 'Dedicacion A La Actividad Del Sistema Publico Unico Nacional de salud', '25.00', 1, 0),
-(98, 39, 'Compensación Por Evaluación', '62.50', 1, 0),
-(99, 39, 'Profesionalización - Doctorado', '163.00', 1, 0),
-(100, 39, 'Perdida involuntaria de empleo', '2.64', 0, 0),
-(101, 40, 'prima hijos 2', '21.00', 1, 0),
-(102, 40, 'prima hijos 4', '23.00', 1, 0),
-(103, 40, 'prima hijos 1', '20.00', 1, 0),
-(104, 40, 'prima hijos 2', '21.00', 1, 0),
-(105, 40, 'prima hijos 3', '22.00', 1, 0),
-(106, 40, 'prima hijos 4', '23.00', 1, 0),
-(107, 40, 'Escalafon - escala I', '7.01', 1, 0),
-(108, 40, 'Dedicacion A La Actividad Del Sistema Publico Unico Nacional de salud', '15.00', 1, 0),
-(109, 40, 'Compensación Por Evaluación', '37.50', 1, 0),
-(110, 40, 'prueba dedicada', '22.50', 1, 0),
-(111, 40, 'dia del padre', '12.50', 1, 0),
-(112, 40, 'Profesionalización - Técnico Superior Universitario', '43.58', 1, 0),
-(113, 40, 'Antiguedad', '8.38', 1, 0),
-(114, 40, 'Perdida involuntaria de empleo', '2.45', 0, 0),
-(115, 40, 'prueva dedicadas', '125.00', 0, 0),
-(116, 41, 'Escalafon - escala VI', '70.00', 1, 0),
-(117, 41, 'Dedicacion A La Actividad Del Sistema Publico Unico Nacional de salud', '25.00', 1, 0),
-(118, 41, 'Compensación Por Evaluación', '62.50', 1, 0),
-(119, 41, 'Profesionalización - Doctorado', '163.00', 1, 0),
-(120, 41, 'Perdida involuntaria de empleo', '3.30', 0, 0);
 
 --
 -- Disparadores `detalles_factura`
@@ -3667,7 +3812,6 @@ INSERT INTO `detalles_formulas` (`id_formula`, `formula`, `variables`, `condicio
 (52, 'SUELDO_BASE*0.14', NULL, 'ESCALA_ESCALAFON = 3', 10),
 (52, 'SUELDO_BASE*0.0933', NULL, 'ESCALA_ESCALAFON = 2', 11),
 (52, 'SUELDO_BASE*0.0467', NULL, 'ESCALA_ESCALAFON = 1', 12),
-(54, 'SUELDO_BASE*0.10', NULL, NULL, 0),
 (65, '12.50', NULL, 'DISCAPACIDAD_TRABAJADOR', 0),
 (66, '12.50', NULL, 'HIJOS_DISCAPACIDAD', 0),
 (67, 'SUELDO_BASE*0.10', NULL, NULL, 0),
@@ -3695,8 +3839,7 @@ INSERT INTO `detalles_formulas` (`id_formula`, `formula`, `variables`, `condicio
 (68, '(SUELDO_BASE +PRIMA_ESCALAFON+ PRIMA_DEDICACION_SALUD) * 0.03', NULL, 'TIEMPO_TRABAJADOR=3', 21),
 (68, '(SUELDO_BASE + PRIMA_ESCALAFON + PRIMA_DEDICACION_SALUD) * 0.02', NULL, 'TIEMPO_TRABAJADOR=2', 22),
 (68, '(SUELDO_BASE + PRIMA_ESCALAFON + PRIMA_DEDICACION_SALUD) * 0.01', NULL, 'TIEMPO_TRABAJADOR=1', 23),
-(71, 'total_primas * 0 + quincena_uno + quincena_dos', '{\"total_primas\":\"PRIMA_DISCAPACIDAD_TRABAJADOR + PRIMA_HIJOS_DISCAPACITADO + PRIMA_ESCALAFON +PRIMA_DEDICACION_SALUD + PRIMA_ANTIGUEDAD\",\"quincena_uno\":\"( { [ ( SUELDO_BASE + total_primas)  * 12 ] \\/52 } *0.04 ) * LUNES_QUINCENA_UNO\",\"quincena_dos\":\"( { [ ( SUELDO_BASE + total_primas)  * 12 ] \\/52 } *0.04 ) * LUNES_QUINCENA_DOS\"}', NULL, 0),
-(72, '(1+1+1+1) * cambio', '{\"cambio\":\"2\"}', NULL, 0);
+(71, 'total_primas * 0 + quincena_uno + quincena_dos', '{\"total_primas\":\"PRIMA_DISCAPACIDAD_TRABAJADOR + PRIMA_HIJOS_DISCAPACITADO + PRIMA_ESCALAFON +PRIMA_DEDICACION_SALUD + PRIMA_ANTIGUEDAD\",\"quincena_uno\":\"( { [ ( SUELDO_BASE + total_primas)  * 12 ] \\/52 } *0.04 ) * LUNES_QUINCENA_UNO\",\"quincena_dos\":\"( { [ ( SUELDO_BASE + total_primas)  * 12 ] \\/52 } *0.04 ) * LUNES_QUINCENA_DOS\"}', NULL, 0);
 
 -- --------------------------------------------------------
 
@@ -3751,20 +3894,9 @@ CREATE TABLE `factura` (
 --
 
 INSERT INTO `factura` (`id_factura`, `id_trabajador`, `fecha`, `sueldo_base`, `sueldo_integral`, `sueldo_deducido`, `status`) VALUES
-(30, 2, '2024-02-29', '150.00', '276.47', '126.96', 1),
-(31, 4, '2024-02-29', '250.00', '320.50', '2.64', 1),
-(32, 2, '2024-03-31', '150.00', '276.47', '126.96', 1),
-(33, 4, '2024-03-31', '250.00', '320.50', '2.64', 1),
-(34, 2, '2024-04-30', '150.00', '276.47', '127.45', 1),
-(35, 4, '2024-04-30', '250.00', '320.50', '3.30', 1),
-(36, 2, '2024-05-31', '150.00', '276.47', '126.96', 1),
-(37, 4, '2024-05-31', '250.00', '320.50', '2.64', 1),
-(38, 2, '2024-06-30', '150.00', '276.47', '126.96', 1),
-(39, 4, '2024-06-30', '250.00', '320.50', '2.64', 1),
-(40, 2, '2024-07-31', '150.00', '276.47', '127.45', 1),
-(41, 4, '2024-07-31', '250.00', '320.50', '3.30', 1),
-(75, 2, '2024-07-31', '150.00', '276.47', '127.45', 0),
-(76, 4, '2024-07-31', '250.00', '257.51', '2.95', 0);
+(98, 2, '2020-09-30', '150.00', '53.89', '17.41', 0),
+(99, 4, '2020-09-30', '250.00', '120.00', '23.92', 0),
+(100, 5, '2020-09-30', '150.00', '40.00', '15.62', 0);
 
 --
 -- Disparadores `factura`
@@ -3788,13 +3920,6 @@ CREATE TABLE `factura_antiguedad` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Volcado de datos para la tabla `factura_antiguedad`
---
-
-INSERT INTO `factura_antiguedad` (`id_prima_antiguedad`, `id_factura`, `monto`) VALUES
-(4, 75, '8.38');
-
---
 -- Disparadores `factura_antiguedad`
 --
 DELIMITER $$
@@ -3815,17 +3940,21 @@ DELIMITER ;
 CREATE TABLE `factura_deducciones` (
   `id_deduccion` int(11) NOT NULL,
   `id_factura` int(11) NOT NULL,
-  `monto` decimal(12,2) NOT NULL
+  `monto` decimal(12,2) NOT NULL,
+  `islr` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Volcado de datos para la tabla `factura_deducciones`
 --
 
-INSERT INTO `factura_deducciones` (`id_deduccion`, `id_factura`, `monto`) VALUES
-(1, 75, '2.45'),
-(1, 76, '2.95'),
-(2, 75, '125.00');
+INSERT INTO `factura_deducciones` (`id_deduccion`, `id_factura`, `monto`, `islr`) VALUES
+(3, 98, '9.41', 0),
+(3, 99, '15.92', 0),
+(3, 100, '7.62', 0),
+(4, 98, '8.00', 0),
+(4, 99, '8.00', 0),
+(4, 100, '8.00', 0);
 
 --
 -- Disparadores `factura_deducciones`
@@ -3852,14 +3981,6 @@ CREATE TABLE `factura_escalafon` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Volcado de datos para la tabla `factura_escalafon`
---
-
-INSERT INTO `factura_escalafon` (`id_escalafon`, `id_factura`, `monto`) VALUES
-(1, 75, '7.01'),
-(1, 76, '7.01');
-
---
 -- Disparadores `factura_escalafon`
 --
 DELIMITER $$
@@ -3883,18 +4004,6 @@ CREATE TABLE `factura_hijos` (
   `id_factura` int(11) NOT NULL,
   `monto` decimal(12,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Volcado de datos para la tabla `factura_hijos`
---
-
-INSERT INTO `factura_hijos` (`id_factura_hijos`, `id_prima_hijos`, `id_factura`, `monto`) VALUES
-(55, 2, 75, '21.00'),
-(56, 4, 75, '23.00'),
-(57, 1, 75, '20.00'),
-(58, 2, 75, '21.00'),
-(59, 3, 75, '22.00'),
-(60, 4, 75, '23.00');
 
 --
 -- Disparadores `factura_hijos`
@@ -3925,12 +4034,19 @@ CREATE TABLE `factura_primas_generales` (
 --
 
 INSERT INTO `factura_primas_generales` (`id_primas_generales`, `id_factura`, `monto`) VALUES
-(1, 75, '15.00'),
-(1, 76, '25.00'),
-(2, 75, '37.50'),
-(2, 76, '62.50'),
-(3, 75, '22.50'),
-(4, 75, '12.50');
+(6, 98, '7.01'),
+(6, 99, '70.00'),
+(6, 100, '0.00'),
+(10, 98, '12.50'),
+(10, 99, '12.50'),
+(10, 100, '12.50'),
+(11, 98, '12.50'),
+(11, 99, '12.50'),
+(11, 100, '12.50'),
+(12, 98, '15.00'),
+(12, 99, '25.00'),
+(12, 100, '15.00'),
+(13, 98, '6.88');
 
 --
 -- Disparadores `factura_primas_generales`
@@ -3955,14 +4071,6 @@ CREATE TABLE `factura_profesionalismo` (
   `id_factura` int(11) NOT NULL,
   `monto` decimal(12,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Volcado de datos para la tabla `factura_profesionalismo`
---
-
-INSERT INTO `factura_profesionalismo` (`id_profesionalismo`, `id_factura`, `monto`) VALUES
-(2, 75, '43.58'),
-(6, 76, '163.00');
 
 --
 -- Disparadores `factura_profesionalismo`
@@ -3994,14 +4102,12 @@ CREATE TABLE `formulas` (
 
 INSERT INTO `formulas` (`id_formula`, `nombre`, `descripcion`) VALUES
 (52, 'TABLA_ESCALAFON', 'calcula el escalafón de un trabajador sin importar su cargo'),
-(54, 'SALUD_DEDICACION', 'Prima por dedicación a la actividad del sistema publico único nacional de salud'),
 (61, 'PRIMA_ESCALAFON', 'calcula el escalafón de un trabajador solo si es un medico '),
 (65, 'PRIMA_DISCAPACIDAD_TRABAJADOR', 'devuelve el monto de la prima por discapacidad del trabajador si el trabajador es discapacitado.'),
 (66, 'PRIMA_HIJOS_DISCAPACITADO', 'Devuelve el monto a pagar por el concepto de hijos o hijas discapacitados'),
 (67, 'PRIMA_DEDICACION_SALUD', 'devuelve el monto por el concepto de prima por dedicación a la actividad del sistema público único nacional de salud'),
 (68, 'PRIMA_ANTIGUEDAD', 'calcula el monto por concepto de antiguedad'),
-(71, 'DEDUC_RETENCION_SEGURO', 'calcula el total de la retención del seguro social'),
-(72, 'Prueba', 'devuelve 20');
+(71, 'DEDUC_RETENCION_SEGURO', 'calcula el total de la retención del seguro social');
 
 -- --------------------------------------------------------
 
@@ -4065,13 +4171,13 @@ INSERT INTO `modulos` (`id_modulos`, `nombre`, `descripcion`) VALUES
 (4, 'asistencias', 'Control de asistencias'),
 (5, 'hijos', 'Gestionar Hijos'),
 (6, 'bitacora', 'no'),
-(7, 'roles', 'Gestionar Roles'),
 (8, 'sueldo', 'Gestionar Sueldo'),
 (9, 'deducciones', 'Gestionar Deducciones'),
 (10, 'primas', 'Gestionar Primas'),
 (11, 'educacion', 'Gestionar Nivel Educativo'),
 (12, 'liquidacion', 'Gestionar Liquidaciones'),
-(13, 'facturas', 'Gestionar Facturas');
+(13, 'facturas', 'Gestionar Facturas'),
+(15, 'formulas', 'Gestionar Formulas');
 
 -- --------------------------------------------------------
 
@@ -4126,15 +4232,26 @@ INSERT INTO `permisos` (`id_rol`, `id_modulos`, `crear`, `modificar`, `eliminar`
 (1, 4, 1, 1, 1, 1),
 (1, 5, 1, 1, 1, 1),
 (1, 6, 1, 1, 1, 1),
-(1, 7, 1, 1, 1, 1),
 (1, 8, 1, 1, 1, 1),
 (1, 9, 1, 1, 1, 1),
 (1, 10, 1, 1, 1, 1),
 (1, 11, 1, 1, 1, 1),
 (1, 12, 1, 1, 1, 1),
 (1, 13, 1, 1, 1, 1),
-(2, 1, 0, 0, 0, 0),
-(2, 11, 0, 0, 0, 0);
+(1, 15, 1, 1, 1, 1),
+(2, 1, 1, 1, 1, 1),
+(2, 2, 1, 1, 1, 1),
+(2, 3, 1, 1, 1, 1),
+(2, 4, 1, 1, 1, 1),
+(2, 5, 1, 1, 1, 1),
+(2, 6, 1, 1, 1, 1),
+(2, 8, 1, 1, 1, 1),
+(2, 9, 1, 1, 1, 1),
+(2, 10, 1, 1, 1, 1),
+(2, 11, 1, 1, 1, 1),
+(2, 12, 1, 1, 1, 1),
+(2, 13, 1, 1, 1, 1),
+(2, 15, 1, 1, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -4170,19 +4287,20 @@ CREATE TABLE `primas_generales` (
   `porcentaje` tinyint(1) DEFAULT '0',
   `sector_salud` tinyint(1) DEFAULT NULL,
   `dedicada` tinyint(1) NOT NULL,
-  `id_formula` int(11) DEFAULT NULL
+  `id_formula` int(11) DEFAULT NULL,
+  `status` tinyint(1) DEFAULT '1' COMMENT 'prima activa o no'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Volcado de datos para la tabla `primas_generales`
 --
 
-INSERT INTO `primas_generales` (`id_primas_generales`, `descripcion`, `monto`, `porcentaje`, `sector_salud`, `dedicada`, `id_formula`) VALUES
-(6, 'Escalafón', NULL, NULL, 0, 0, 61),
-(10, 'prima por discapacidad', NULL, NULL, 0, 0, 65),
-(11, 'Ayuda por hijos o hijas con discapacidad', NULL, NULL, 0, 0, 66),
-(12, 'Dedicación A La Actividad Del Sistema Publico Unico Nacional de Salud', NULL, NULL, 0, 0, 67),
-(13, 'Antiguedad', NULL, NULL, 0, 0, 68);
+INSERT INTO `primas_generales` (`id_primas_generales`, `descripcion`, `monto`, `porcentaje`, `sector_salud`, `dedicada`, `id_formula`, `status`) VALUES
+(6, 'Escalafón', NULL, NULL, 0, 0, 61, 1),
+(10, 'prima por discapacidad', NULL, NULL, 0, 0, 65, 1),
+(11, 'Ayuda por hijos o hijas con discapacidad', NULL, NULL, 0, 0, 66, 1),
+(12, 'Dedicación A La Actividad Del Sistema Publico Unico Nacional de Salud', NULL, NULL, 0, 0, 67, 1),
+(13, 'Antiguedad', NULL, NULL, 0, 0, 68, 1);
 
 -- --------------------------------------------------------
 
@@ -4427,7 +4545,7 @@ CREATE TABLE `trabajadores` (
 --
 
 INSERT INTO `trabajadores` (`id_trabajador`, `id_prima_profesionalismo`, `id_rol`, `cedula`, `numero_cuenta`, `creado`, `nombre`, `apellido`, `genero`, `telefono`, `correo`, `clave`, `token`, `estado_actividad`, `comision_servicios`, `discapacitado`, `discapacidad`) VALUES
-(2, 2, 1, 'V-27250544', '00000000000000000000', '2020-06-19', 'Xavier David', 'Suarez Sanchez', 'M', '0414-5555555', 'uptaebxavier@gmail.com', '$2y$10$RMrtnT5gpHIhIKQDfAThFerj/4yU.S3PABZj.AxnALU2yFAsyrbjC', '$2y$10$WlesQMS5sFv1mRfZ2P0jMOLg3DtW2NR1e0iMyLLtpnjUbVkRz64nC', 1, 0, 1, ''),
+(2, 2, 1, 'V-27250544', '00000000000000000000', '2020-06-19', 'Xavier David', 'Suarez Sanchez', 'M', '0414-5555555', 'uptaebxavier@gmail.com', '$2y$10$RMrtnT5gpHIhIKQDfAThFerj/4yU.S3PABZj.AxnALU2yFAsyrbjC', '$2y$10$7DkRHkETp7iUDzoZyh4ywOx.vYAUWxLSc9QFxCJisMKm1hpclW5gy', 1, 0, 1, ''),
 (3, 5, 1, 'V-2725054', '00000000000000000000', '2024-06-27', 'Anabel Teresa', 'Alberto Nuñes', 'F', '0414-5555555', 'david40ene@hotmail.com', '$2y$10$Mh5AEfPtMwS4x7cQq7mGX.nEWmSEJyVIFPMgXIWycKpZHGh/Cw1MO', '1', 1, 0, 0, ''),
 (4, 6, 1, 'V-12434091', '00000000000000000000', '2024-06-26', 'Valeria Valentina', 'Camacaro Sanchez', 'F', '0414-5555555', 'aguilarvzla2@gmail.com', '$2y$10$TSJZitcQrUt2BiYRNw1Cmu9O4I2zFYIsQINVQweInmJzH1POHZx8K', '1', 1, 0, 0, ''),
 (5, 3, 2, 'V-15447800', '00000000000000000000', '2024-07-13', 'José Luis', 'Camacaro Sanchez', 'M', '0414-5555555', 'algo@algo.com', '$2y$10$PYypHr88RRrVMT6IE9G8a.gtGc91sXOpiNNubO1CZXrnp0yZwCoIm', '1', 1, 0, 0, '');
@@ -4792,31 +4910,31 @@ ALTER TABLE `deducciones`
 -- AUTO_INCREMENT de la tabla `detalles_factura`
 --
 ALTER TABLE `detalles_factura`
-  MODIFY `id_detalles` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=121;
+  MODIFY `id_detalles` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `escalafon`
 --
 ALTER TABLE `escalafon`
-  MODIFY `id_escalafon` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id_escalafon` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT de la tabla `factura`
 --
 ALTER TABLE `factura`
-  MODIFY `id_factura` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=77;
+  MODIFY `id_factura` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=101;
 
 --
 -- AUTO_INCREMENT de la tabla `factura_hijos`
 --
 ALTER TABLE `factura_hijos`
-  MODIFY `id_factura_hijos` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=61;
+  MODIFY `id_factura_hijos` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `formulas`
 --
 ALTER TABLE `formulas`
-  MODIFY `id_formula` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=73;
+  MODIFY `id_formula` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=72;
 
 --
 -- AUTO_INCREMENT de la tabla `hijos`
@@ -4834,7 +4952,7 @@ ALTER TABLE `liquidacion`
 -- AUTO_INCREMENT de la tabla `modulos`
 --
 ALTER TABLE `modulos`
-  MODIFY `id_modulos` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id_modulos` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT de la tabla `notificaciones`
@@ -4964,39 +5082,41 @@ ALTER TABLE `factura`
 -- Filtros para la tabla `factura_antiguedad`
 --
 ALTER TABLE `factura_antiguedad`
-  ADD CONSTRAINT `factura_antiguedad_ibfk_1` FOREIGN KEY (`id_factura`) REFERENCES `factura` (`id_factura`),
-  ADD CONSTRAINT `factura_antiguedad_ibfk_2` FOREIGN KEY (`id_prima_antiguedad`) REFERENCES `prima_antiguedad` (`id_prima_antiguedad`);
+  ADD CONSTRAINT `factura_antiguedad_ibfk_1` FOREIGN KEY (`id_factura`) REFERENCES `factura` (`id_factura`) ON DELETE CASCADE,
+  ADD CONSTRAINT `factura_antiguedad_ibfk_2` FOREIGN KEY (`id_prima_antiguedad`) REFERENCES `prima_antiguedad` (`id_prima_antiguedad`) ON DELETE CASCADE;
 
 --
 -- Filtros para la tabla `factura_deducciones`
 --
 ALTER TABLE `factura_deducciones`
-  ADD CONSTRAINT `factura_deducciones_ibfk_1` FOREIGN KEY (`id_factura`) REFERENCES `factura` (`id_factura`);
+  ADD CONSTRAINT `factura_deducciones_ibfk_1` FOREIGN KEY (`id_factura`) REFERENCES `factura` (`id_factura`) ON DELETE CASCADE,
+  ADD CONSTRAINT `factura_deducciones_ibfk_2` FOREIGN KEY (`id_deduccion`) REFERENCES `deducciones` (`id_deducciones`);
 
 --
 -- Filtros para la tabla `factura_escalafon`
 --
 ALTER TABLE `factura_escalafon`
-  ADD CONSTRAINT `factura_escalafon_ibfk_1` FOREIGN KEY (`id_factura`) REFERENCES `factura` (`id_factura`);
+  ADD CONSTRAINT `factura_escalafon_ibfk_1` FOREIGN KEY (`id_factura`) REFERENCES `factura` (`id_factura`) ON DELETE CASCADE;
 
 --
 -- Filtros para la tabla `factura_hijos`
 --
 ALTER TABLE `factura_hijos`
-  ADD CONSTRAINT `factura_hijos_ibfk_1` FOREIGN KEY (`id_factura`) REFERENCES `factura` (`id_factura`),
-  ADD CONSTRAINT `factura_hijos_ibfk_2` FOREIGN KEY (`id_prima_hijos`) REFERENCES `primas_hijos` (`id_prima_hijos`);
+  ADD CONSTRAINT `factura_hijos_ibfk_1` FOREIGN KEY (`id_factura`) REFERENCES `factura` (`id_factura`) ON DELETE CASCADE,
+  ADD CONSTRAINT `factura_hijos_ibfk_2` FOREIGN KEY (`id_prima_hijos`) REFERENCES `primas_hijos` (`id_prima_hijos`) ON DELETE CASCADE;
 
 --
 -- Filtros para la tabla `factura_primas_generales`
 --
 ALTER TABLE `factura_primas_generales`
-  ADD CONSTRAINT `factura_primas_generales_ibfk_1` FOREIGN KEY (`id_factura`) REFERENCES `factura` (`id_factura`);
+  ADD CONSTRAINT `factura_primas_generales_ibfk_1` FOREIGN KEY (`id_factura`) REFERENCES `factura` (`id_factura`) ON DELETE CASCADE,
+  ADD CONSTRAINT `factura_primas_generales_ibfk_2` FOREIGN KEY (`id_primas_generales`) REFERENCES `primas_generales` (`id_primas_generales`);
 
 --
 -- Filtros para la tabla `factura_profesionalismo`
 --
 ALTER TABLE `factura_profesionalismo`
-  ADD CONSTRAINT `factura_profesionalismo_ibfk_1` FOREIGN KEY (`id_factura`) REFERENCES `factura` (`id_factura`);
+  ADD CONSTRAINT `factura_profesionalismo_ibfk_1` FOREIGN KEY (`id_factura`) REFERENCES `factura` (`id_factura`) ON DELETE CASCADE;
 
 --
 -- Filtros para la tabla `hijos`
@@ -5015,8 +5135,8 @@ ALTER TABLE `liquidacion`
 -- Filtros para la tabla `permisos`
 --
 ALTER TABLE `permisos`
-  ADD CONSTRAINT `fk_Permisos_Rol1` FOREIGN KEY (`id_rol`) REFERENCES `rol` (`id_rol`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `fk_Permisos_modulos1` FOREIGN KEY (`id_modulos`) REFERENCES `modulos` (`id_modulos`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+  ADD CONSTRAINT `fk_Permisos_Rol1` FOREIGN KEY (`id_rol`) REFERENCES `rol` (`id_rol`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_Permisos_modulos1` FOREIGN KEY (`id_modulos`) REFERENCES `modulos` (`id_modulos`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `permisos_trabajador`

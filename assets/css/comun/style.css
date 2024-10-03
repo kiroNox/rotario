@@ -413,6 +413,18 @@ input[type='checkbox'].check-button:disabled + .check-button::before{
 	.dark-mode h1:not(.dark-h){
 		color: #c7c7c7 !important;
 	}
+
+	.bi.dark-mode-btn-dropdown-icon::before{
+		content: "\f33e";
+	}
+
+	.dark-mode .bi.dark-mode-btn-dropdown-icon::before{
+		
+		content: "\f33f";
+	}
+
+
+
 /* dark-mode a eliminar*/
 
 

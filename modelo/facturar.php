@@ -6,7 +6,8 @@ class Facturar extends Conexion
 {
 
 	PRIVATE $con, $id, $anio, $mes;
-	use Correos;
+	PRIVATE $id_trabajador;
+	use Correos,Calculadora;
 	
 	
 	function __construct($con = '')
@@ -58,7 +59,7 @@ class Facturar extends Conexion
 			//$r['mensaje'] =  $e->getMessage().": LINE : ".$e->getLine();
 		}
 		finally{
-			//$this->con = null;
+			$consulta = null;
 		}
 		return $r;
 	}
@@ -129,8 +130,239 @@ class Facturar extends Conexion
 		return $this->calcular_facturas();
 	}
 
-
 	PRIVATE function calcular_facturas(){
+		try {
+			$this->validar_conexion($this->con);
+			$this->con->beginTransaction();
+
+			$fecha = $this->anio.'-'.$this->mes.'-01';
+
+			$consulta = $this->con->prepare("SELECT 1 from factura WHERE status is true and fecha = LAST_DAY(?)");
+			$consulta->execute([$fecha]);
+			if($consulta->fetch()){
+				throw new Exception("Ya se han calculado los pagos del mes $this->anio-$this->mes", 1);
+			}
+
+			$consulta = null;
+
+
+
+			// elimino facturas que no fueron concluidas
+
+			$consulta = $this->con->query("DELETE FROM factura WHERE status is false;");
+			$consulta = null;
+
+			// obtengo la lista de primas
+
+			$consulta = $this->con->prepare("SELECT
+				    p.id_primas_generales,
+				    p.id_formula,
+				    p.dedicada,
+				    '[]' AS trabajadores
+				FROM
+				    primas_generales AS p
+				WHERE
+				    p.status IS TRUE AND id_formula IS NOT NULL
+				UNION
+				SELECT
+				    p2.id_primas_generales,
+				    p2.id_formula,
+				    p2.dedicada,
+				    CONCAT(\"[\", GROUP_CONCAT(tp.id_trabajador SEPARATOR ','), \"]\")
+				FROM
+				    trabajador_prima_general AS tp
+				LEFT JOIN primas_generales AS p2
+				ON
+				    p2.id_primas_generales = tp.id_primas_generales
+				WHERE
+				    p2.status IS TRUE AND p2.id_formula IS NOT NULL AND tp.status IS TRUE GROUP BY tp.id_primas_generales;");
+
+			$consulta->execute();
+			$primas = $consulta->fetchall(PDO::FETCH_ASSOC);
+			$consulta = null;
+
+			// obtengo la lista de deducciones
+
+			$consulta = $this->con->prepare("SELECT
+				    d.id_deducciones,
+				    d.id_formula,
+				    d.dedicada,
+				    d.islr,
+				    '[]' AS trabajadores
+				FROM
+				    deducciones AS d
+				WHERE
+				    d.status IS TRUE AND d.id_formula IS NOT NULL
+				UNION
+				SELECT
+				    dd.id_deducciones,
+				    d.id_formula,
+				    d.dedicada,
+				    d.islr,
+				    CONCAT(\"[\",GROUP_CONCAT(dd.id_trabajador SEPARATOR ','),\"]\")
+				FROM
+				    trabajador_deducciones AS dd
+				JOIN deducciones AS d
+				ON
+				    d.id_deducciones = dd.id_deducciones
+				WHERE
+				    d.status IS TRUE AND d.id_formula IS NOT NULL GROUP BY dd.id_deducciones");
+
+			$consulta->execute();
+			$deducciones = $consulta->fetchall(PDO::FETCH_ASSOC);
+			$consulta = null;
+
+			// obtengo la lista de trabajadores
+			
+			$consulta_trabajadores = $this->con->prepare("SELECT
+					t.id_trabajador,
+					sb.sueldo_base
+				FROM
+					trabajadores AS t
+				JOIN sueldo_base AS sb
+				ON
+					sb.id_trabajador = t.id_trabajador
+				WHERE
+					t.estado_actividad = TRUE
+				GROUP BY
+					t.id_trabajador;");
+
+			$consulta_trabajadores->execute();
+
+
+			// itero sobre la lista de trabajadores
+			while ($trabajador = $consulta_trabajadores->fetch(PDO::FETCH_ASSOC)) {
+
+				$this->set_id_trabajador($trabajador["id_trabajador"]);
+
+				$consulta = $this->con->prepare("INSERT INTO factura 
+					(id_trabajador,fecha , sueldo_base, sueldo_integral, sueldo_deducido, status)
+					VALUES
+					(
+						:id_trabajador,
+						LAST_DAY(:fecha),
+						:sueldo,
+						DEFAULT,
+						DEFAULT,
+						0
+					);");
+
+				$consulta->bindValue(":id_trabajador", $trabajador["id_trabajador"]);
+				$consulta->bindValue(":fecha", $fecha);
+				$consulta->bindValue(":sueldo", $trabajador["sueldo_base"]);
+
+				$consulta->execute();
+				$consulta=null;
+
+
+				$id_factura_last = $this->con->lastInsertId();
+
+				$this->calc_init();
+
+
+				foreach ($primas as $prima_elem) {
+					$prima_elem["trabajadores"] = json_decode($prima_elem["trabajadores"]);
+					if($prima_elem["dedicada"] == "1" and !in_array($trabajador["id_trabajador"], $prima_elem["trabajadores"]))
+					{
+						continue;
+					}
+
+					$valor_prima = $this->bd_leer_formula($prima_elem["id_formula"]);
+					if($valor_prima!==NULL){
+						$consulta = $this->con->prepare("INSERT INTO `factura_primas_generales`(
+							    `id_primas_generales`,
+							    `id_factura`,
+							    `monto`
+							)
+							VALUES( 
+								:id_primas_generales,
+								:id_factura,
+								:monto)");
+						$consulta->bindValue(":id_primas_generales",$prima_elem["id_primas_generales"]);
+						$consulta->bindValue(":id_factura",$id_factura_last);
+						$consulta->bindValue(":monto",$valor_prima);
+						$consulta->execute();
+					}
+				}
+
+				foreach ($deducciones as $deduc_elem) {
+					$deduc_elem["trabajadores"] = json_decode($deduc_elem["trabajadores"]);
+
+					if($deduc_elem["dedicada"] == "1" and !in_array($trabajador["id_trabajador"], $deduc_elem["trabajadores"])){
+						continue;
+					}
+
+					$valor_deduccion = $this->bd_leer_formula($deduc_elem["id_formula"],"777");
+					if($valor_deduccion!== NULL){
+						$consulta = $this->con->prepare("INSERT INTO `factura_deducciones`(
+								`id_deduccion`,
+								`id_factura`,
+								`monto`,
+								`islr`
+							)
+							VALUES(
+								:id_deduccion
+								,:id_factura
+								,:monto
+								,:islr
+							)");
+
+						$consulta->bindValue(":id_deduccion",$deduc_elem["id_deducciones"]);
+						$consulta->bindValue(":id_factura",$id_factura_last);
+						$consulta->bindValue(":monto",$valor_deduccion);
+						$consulta->bindValue(":islr",$deduc_elem["islr"]);
+
+						$consulta->execute();
+					}
+
+
+				}
+
+
+
+
+				////******************************************
+				////******************************************
+				////******************************************
+				////******************************************
+				////******************************************
+				////******************************************
+				////******************************************
+				////******************************************
+				////******************************************
+
+
+
+			}
+
+			$consulta_trabajadores = null;
+
+			
+			$r['resultado'] = 'calcular_facturas';
+			$this->con->commit();
+		
+		} catch (Exception $e) {
+			if($this->con instanceof PDO){
+				if($this->con->inTransaction()){
+					$this->con->rollBack();
+				}
+			}
+		
+			$r['resultado'] = 'error';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+			$r["line"] = $e->getLine();
+			//$r['mensaje'] =  $e->getMessage().": LINE : ".$e->getLine();
+		}
+		finally{
+			//$this->con = null;
+			$consulta = null;
+		}
+		return $r;
+	}
+
+
+	PRIVATE function calcular_facturas_new(){
 		try {
 			$this->validar_conexion($this->con);
 			$this->con->beginTransaction();
@@ -182,24 +414,24 @@ class Facturar extends Conexion
 
 				$consulta = $this->con->prepare("SELECT
 				t.numero_cuenta
-			    ,t.cedula,
-			    CONCAT(t.nombre, ' ', t.apellido) AS nombre,
-			    DATE_FORMAT(f.fecha,'%d/%m/%y') as fecha,
-			    ROUND(
-			        (
-			            f.sueldo_base + f.sueldo_integral
-			        ) - f.sueldo_deducido,
-			        2
-			    ) AS sueldo_total,
-			    NULL AS extra,
-			    f.id_factura
+				,t.cedula,
+				CONCAT(t.nombre, ' ', t.apellido) AS nombre,
+				DATE_FORMAT(f.fecha,'%d/%m/%y') as fecha,
+				ROUND(
+					(
+						f.sueldo_base + f.sueldo_integral
+					) - f.sueldo_deducido,
+					2
+				) AS sueldo_total,
+				NULL AS extra,
+				f.id_factura
 			FROM
-			    factura AS f
+				factura AS f
 			JOIN trabajadores AS t
 			ON
-			    t.id_trabajador = f.id_trabajador
+				t.id_trabajador = f.id_trabajador
 			WHERE
-			    f.status is false;");
+				f.status is false;");
 
 						$consulta->execute();
 
@@ -224,13 +456,13 @@ class Facturar extends Conexion
 						$file = fopen($filetemp, "a");
 
 						if ($file) {
-						    fwrite($file,"HSERVICIO DESCONCENTRADO HOSPITAL ROTARIO0102042245000060139902".date("d/m/y")."000000022111303291 \r\n");
-						    
-						    foreach ($rows as $li) {
-						        fwrite($file, $li."\r\n");
-						    }
-						    
-						    fclose($file);
+							fwrite($file,"HSERVICIO DESCONCENTRADO HOSPITAL ROTARIO0102042245000060139902".date("d/m/y")."000000022111303291 \r\n");
+							
+							foreach ($rows as $li) {
+								fwrite($file, $li."\r\n");
+							}
+							
+							fclose($file);
 						}
 
 
@@ -405,6 +637,13 @@ class Facturar extends Conexion
 	}
 	PUBLIC function set_mes($value){
 		$this->mes = $value;
+	}
+
+	PUBLIC function get_id_trabajador(){
+		return $this->id_trabajador;
+	}
+	PUBLIC function set_id_trabajador($value){
+		$this->id_trabajador = $value;
 	}
 
 	

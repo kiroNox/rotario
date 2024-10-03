@@ -56,7 +56,7 @@
 				}
 			}
 			else if($accion == "listar_usuarios"){
-				if($permisos["usuarios"]["consultar"]){
+				if(isset($permisos["usuarios"]["consultar"]) and $permisos["usuarios"]["consultar"] == '1'){
 					echo json_encode( $cl->listar_usuarios() );
 				}
 				else{
@@ -64,7 +64,7 @@
 				}
 			}
 			else if($accion == "modificar_usuario"){
-				if($permisos["usuarios"]["modificar"]){
+				if(isset($permisos["usuarios"]["modificar"]) and $permisos["usuarios"]["modificar"] == '1'){
 					if (isset($_POST["discapacidad"])) {
 						$_POST["discapacidad"] = true;
 					}

@@ -12,9 +12,9 @@ trait Calculadora{
 	PRIVATE $calc_error;
 	PRIVATE $calc_evaluando;
 	PRIVATE $calc_diff_var_formula;
-	private $obj_formula;
 	private $calc_decimales_recibidos;
 	private $calc_decimales_respuesta;
+	private $obj_formula;
 
 
 
@@ -426,7 +426,7 @@ trait Calculadora{
 
 				$this->set_calc_function($campo,"Devuelve 1 la Profesionalización del trabajador coincide con la solicitada",function() use ($fn_general,$id_campo){
 
-					return $fn_general(function(){
+					return $fn_general(function() use ($id_campo){
 
 						$consulta = $this->con->prepare("SELECT 1 FROM trabajadores WHERE id_trabajador = ? and id_prima_profesionalismo = ?");
 						$consulta->execute([$this->id_trabajador,$id_campo]);
@@ -542,6 +542,10 @@ trait Calculadora{
 				$n_lista_control = 1;
 				foreach ($condiciones as $lista) {
 					if(!isset($lista["variables"])) $lista["variables"] = null;
+
+					if(is_string($lista["variables"]) and preg_match("/^\[.*\]$/", $lista["variables"])){
+						$lista["variables"] = json_decode($lista["variables"],true);
+					}
 
 
 					$leer_formula_condicional = $this->leer_formula_condicional($lista["condiciones"],$lista["formula"],$lista["variables"],$n_lista_control++);
@@ -1316,13 +1320,7 @@ trait Calculadora{
 
 
 
-		if($this->counter_loop>500){
-
-			throw new Exception("Error loop process", 1);
-		}
-		else{
-			$this->counter_loop++;
-		}
+		$this->counter_loop++;
 
 		$new_formula_array = [];
 
@@ -1980,6 +1978,113 @@ trait Calculadora{
 		}
 		return $r; 
 	}
+
+	PUBLIC function bd_leer_formula_s($id_formula){// probar formulas por id
+		try {
+			$this->validar_conexion($this->con);
+			//$this->con->beginTransaction();
+			
+			$this->bd_leer_formula($id_formula);
+			
+			$r['resultado'] = 'console';
+			$r['titulo'] = 'Éxito';
+			$r['mensaje'] =  "";
+			//$this->con->commit();
+		
+		} catch (Exception $e) {
+			if($this->con instanceof PDO){
+				if($this->con->inTransaction()){
+					$this->con->rollBack();
+				}
+			}
+		
+			$r['resultado'] = 'error';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+			$r["line"] = $e->getLine();
+			//$r['mensaje'] =  $e->getMessage().": LINE : ".$e->getLine();
+		}
+		finally{
+			//$this->con = null;
+			$consulta = null;
+		}
+		return $r;
+	}
+
+
+
+	PRIVATE function bd_leer_formula($id_formula,$testing = '',$get_all_response=false){// lee la formula desde la bd por su id
+		// devuelve nulo cuando es una formula con condicionales  y no se cumplió ninguna
+		$this->calc_check_status();
+
+		if(!isset($this->id_trabajador)){
+			throw new Exception("ERROR de programación trabajador no seleccionado ", 1);
+		}
+
+
+		$consulta = $this->con->prepare("SELECT
+			    f.nombre,
+			    f.nombre,
+			    df.id_formula,
+			    df.formula,
+			    df.variables,
+			    df.condicional as condiciones,
+			    df.orden
+			    
+			FROM
+			    detalles_formulas AS df
+			LEFT JOIN formulas AS f
+			ON
+			    f.id_formula = df.id_formula
+			WHERE
+			    df.id_formula = ?
+			ORDER BY
+			    df.orden ASC");
+		$consulta->execute([$id_formula]);
+
+		if($lista = $consulta->fetchall(PDO::FETCH_GROUP)){
+			foreach ($lista as $elem) {
+				if(count($elem)>1){
+
+					$respuesta = $this->leer_formula_condicional($elem);
+					
+				}
+				else{
+					$formula = $elem[0];
+					$formula["variables"] = json_decode($formula["variables"],true);
+					if(isset($formula["condicional"])){
+						$respuesta = $this->leer_formula_condicional($formula["condicional"],$formula["formula"],$formula["variables"]);
+					}
+					else{
+						$respuesta = $this->leer_formula($formula["formula"],$formula["variables"]);
+						
+					}
+				}
+
+				break;
+			}
+
+			if($respuesta["resultado"] != 'leer_formula'  and $respuesta["resultado"] != "leer_formula_condicional"){
+				showvar($respuesta);
+				throw new Exception("CALC_ERROR", 1);
+			}
+
+
+			if($get_all_response){
+				return $respuesta;
+			}
+			else{
+				return $respuesta["total"];
+			}
+
+
+		}
+		else{
+			throw new Exception("Formula inexistente", 1);
+		}
+	}
+
+
 
 	PUBLIC function get_named_form_used($formula,$control_anterior=null,$arreglo_anterior=null){// obtiene las formulas nombradas por el usuario
 

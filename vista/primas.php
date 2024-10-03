@@ -1042,7 +1042,7 @@
 
 				document.getElementById('primas_generales_dedicada').onclick = function(){
 					if(this.checked){
-						muestraMensaje("Advertencia", "Se aconseja colocar en la(s) condicional(es) la variable: <ENDL> 'DEDICADA' <ENDL> si utiliza el nombre de esta formula, la lista dedicada sera ignorada y se ejecutará", "¡");
+						muestraMensaje("Advertencia", "Se aconseja colocar en la(s) condicional(es) la variable: <ENDL> 'DEDICADA' <ENDL> de no hacerlo, si utiliza el nombre de esta formula en otra, la lista dedicada sera ignorada y se ejecutará para otros trabajadores", "¡");
 						add_trabajador();
 						document.getElementById('primas_generales_container_trabajadores').classList.remove("d-none");
 						// document.getElementById('primas_generales_salud').checked = false;
@@ -1273,7 +1273,7 @@
 						//alert("esto aun no");;
 						//return false;
 					}
-					this.action_form = 'testing_calc'
+					this.action_form = 'testing_calc';
 
 
 					enviaAjax(datos,function(respuesta, exito, fail){

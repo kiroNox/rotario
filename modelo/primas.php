@@ -69,7 +69,7 @@ class Primas extends Conexion
 				    tp.status IS TRUE GROUP BY tp.id_primas_generales
 				) as temp ON temp.id_primas_generales = pg.id_primas_generales
 				WHERE
-				    1;");
+				    pg.status is true;");
 
 
 			$consulta->execute();
@@ -1406,7 +1406,7 @@ class Primas extends Conexion
 			}
 
 
-			$consulta = $this->con->prepare("SELECT df.* ,f.nombre ,f.descripcion FROM detalles_formulas AS df LEFT JOIN primas_generales AS pg ON pg.id_formula = df.id_formula LEFT JOIN formulas as f on f.id_formula = df.id_formula WHERE pg.id_primas_generales = ?;");
+			$consulta = $this->con->prepare("SELECT df.* ,f.nombre ,f.descripcion FROM detalles_formulas AS df LEFT JOIN primas_generales AS pg ON pg.id_formula = df.id_formula LEFT JOIN formulas as f on f.id_formula = df.id_formula WHERE pg.id_primas_generales = ? ORDER BY df.orden;");
 			$consulta->execute([$this->id]);
 
 			$resp["calc_formula"] = null;
@@ -1467,18 +1467,30 @@ class Primas extends Conexion
 					$msg .= "'$nombre'<ENDL>";
 				}
 
-				throw new Exception("La prima no puede ser eliminada ya que su formula esta siendo utilizada por las siguientes formulas.<ENDL>".$msg, 1);
+				throw new Exception("La prima no puede ser eliminada ya que su formula esta siendo utilizada por las siguientes formulas.<ENDL>".$msg."<ENDL>", 1);
 				
 			}
 
 
-
-			$consulta = $this->con->prepare("DELETE FROM primas_generales WHERE id_primas_generales = ?");
+			$consulta = $this->con->prepare("SELECT 1 from factura_primas_generales WHERE id_primas_generales = ?");
 			$consulta->execute([$this->id]);
 
+			if(!$consulta->fetch()){
 
-			$consulta = $this->con->prepare("DELETE FROM formulas WHERE id_formula = ?");
-			$consulta->execute([$resp["id_formula"]]);
+				$consulta = $this->con->prepare("DELETE FROM primas_generales WHERE id_primas_generales = ?");
+				$consulta->execute([$this->id]);
+
+
+				$consulta = $this->con->prepare("DELETE FROM formulas WHERE id_formula = ?");
+				$consulta->execute([$resp["id_formula"]]);
+			}
+			else{
+				$consulta = $this->con->prepare("UPDATE primas_generales set status = 0, id_formula = NULL WHERE id_primas_generales = ?");
+				$consulta->execute([$this->id]);
+				$consulta = $this->con->prepare("DELETE FROM formulas WHERE id_formula = ?");
+				$consulta->execute([$resp["id_formula"]]);
+
+			}
 
 
 

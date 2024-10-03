@@ -82,7 +82,8 @@
                 ["permisos"=>"sueldo", "href"=>"sueldo", "descrip" => "Gestionar Sueldos"],
                 ["permisos"=>"primas", "href"=>"primas", "descrip" => "Gestionar Primas"],
                 ["permisos"=>"deducciones", "href"=>"deducciones", "descrip" => "Gestionar Deducciones"],
-                ["permisos"=>"liquidacion", "href"=>"liquidacion", "descrip" => "Gestionar Liquidación"]
+                ["permisos"=>"liquidacion", "href"=>"liquidacion", "descrip" => "Gestionar Liquidación"],
+                ["permisos"=>"formulas", "href"=>"formulas", "descrip" => "Gestionar Formulas"]
             ]
         ];
         $obj->items[] = [
@@ -118,7 +119,7 @@
                 ["permisos"=>"innecesario", "href"=>"notificaciones", "descrip" => "Notificaciones"],
                 ["permisos"=>"bitacora", "href"=>"bitacora", "descrip" => "Bitácora"],
                 ["permisos"=>"roles", "href"=>"roles", "descrip" => "Roles"],
-                ["permisos"=>"permisos", "href"=>"permisos_usuario", "descrip" => "Permisos"]
+                ["permisos"=>"permisos", "href"=>"permisos_usuario", "descrip" => "Roles y Permisos"]
             ]
         ];
         $obj->items[] = [
@@ -137,7 +138,7 @@
             if(isset($items["lista"])){
                 $print='';
                 foreach ($items["lista"] as $link) {
-                    if($link["permisos"] == 'innecesario' or $permisos[$link["permisos"]]["consultar"] == "1"){
+                    if($link["permisos"] == 'innecesario' or (isset($permisos[$link["permisos"]]["consultar"]) and $permisos[$link["permisos"]]["consultar"] == "1")){
                         $ref = $link["href"];
                         $descrip = $link["descrip"];
                         $print .= "<a class=\"collapse-item\" href=\"?p=$ref\">$descrip</a>"; 

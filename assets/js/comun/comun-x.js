@@ -121,8 +121,16 @@ function enviaAjax(datos, func_success,func_beforesend="loader_main") {
 					else throw "No hay una función definida";
 
 				} catch (e) {
-					fail(e.message);
-					alert("Error en " + e.name + " !!!");
+
+					var temp = respuesta.replace(/\s/g, "");
+					if(/^<br\/\><b>Fatalerror\<\/b>:Allowedmemorysizeof/.test(temp)){
+						muestraMensaje("Error", "Exceso de memoria utilizada", "e");
+						fail("Exceso de memoria utilizada");
+					}
+					else{
+						alert("Error en " + e.name + " !!!");
+						fail(e.message);
+					}
 					console.error(e);
 					console.log(respuesta);
 				}
@@ -890,12 +898,14 @@ FormData.prototype.removeSpace = function() {
 function add_event_to_label_checkbox(){
 	for(var x of document.querySelectorAll("label.check-button")){
 
-		x.setAttribute("tabindex","0");
-		
-		x.onkeypress=function(e){
-			if(e.key == 'Enter'){
-				if(document.getElementById(this.getAttribute("for"))){
-					document.getElementById(this.getAttribute("for")).click();
+		if(x.onkeypress==null){
+			x.setAttribute("tabindex","0");
+			
+			x.onkeypress=function(e){
+				if(e.key == 'Enter'){
+					if(document.getElementById(this.getAttribute("for"))){
+						document.getElementById(this.getAttribute("for")).click();
+					}
 				}
 			}
 		}
@@ -986,8 +996,12 @@ document.addEventListener("DOMContentLoaded", function(){
 			}
 
 
-			var darkmode_btn = crearElem("button","class,btn","Dark mode change");
-			darkmode_btn.onclick=function(){
+
+
+			var darkmode_btn = crearElem("a","class,dropdown-item cursor-pointer,href,#,onclick,return false");
+			darkmode_btn.innerHTML="<span>Modo Oscuro</span> <span class='bi dark-mode-btn-dropdown-icon'></span>"
+			darkmode_btn.onclick=function(e){
+				e.preventDefault();
 				if(document.body.classList.contains("dark-mode")){
 					document.body.classList.remove("dark-mode");
 					document.cookie = "modo_oscuro=; expires=Thu, 01 Jan 1970 00:00:00 UTC"; // se elimina la cookie
@@ -996,9 +1010,19 @@ document.addEventListener("DOMContentLoaded", function(){
 					document.body.classList.add("dark-mode");
 					document.cookie = "modo_oscuro=dark-mode; expires=" + new Date(Date.now() + 365*24*60*60*1000).toUTCString();// en un año XD
 				}
+
 			}
 
-			document.body.appendChild(crearElem("div","class,darkmode_btn-container",darkmode_btn));
+			//document.body.appendChild(crearElem("div","class,darkmode_btn-container",darkmode_btn));
+
+			drop_menu = document.querySelector("#userDropdown+div.dropdown-menu");
+
+			console.log(drop_menu);
+
+			$(drop_menu).prepend(darkmode_btn);
+			// $(drop_menu).prepend('<div class="dropdown-divider"></div>');
+			//drop_menu.appendChild(crearElem("div","class,dropdown-divider"));
+			//drop_menu.appendChild(darkmode_btn);
 		}
 
 	}

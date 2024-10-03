@@ -1,3 +1,4 @@
+
 <?php
 
 class Deducciones extends Conexion
@@ -44,7 +45,7 @@ class Deducciones extends Conexion
 		        WHERE 1 GROUP BY td.id_deducciones
 		    ) AS dt ON dt.id_deducciones = d.id_deducciones
 		WHERE
-		    1;');
+		    d.status is true;');
 
 		    $consulta->execute();
 			
@@ -322,7 +323,7 @@ class Deducciones extends Conexion
 
 
 
-			$consulta = $this->con->prepare("SELECT df.* ,f.nombre ,f.descripcion FROM detalles_formulas AS df LEFT JOIN deducciones AS pg ON pg.id_formula = df.id_formula LEFT JOIN formulas as f on f.id_formula = df.id_formula WHERE pg.id_deducciones = ?;");
+			$consulta = $this->con->prepare("SELECT df.* ,f.nombre ,f.descripcion FROM detalles_formulas AS df LEFT JOIN deducciones AS pg ON pg.id_formula = df.id_formula LEFT JOIN formulas as f on f.id_formula = df.id_formula WHERE pg.id_deducciones = ? ORDER BY df.orden;");
 			$consulta->execute([$this->id]);
 
 			$resp["calc_formula"] = null;
@@ -517,17 +518,34 @@ class Deducciones extends Conexion
 					$msg .= "'$nombre'<ENDL>";
 				}
 
-				throw new Exception("La prima no puede ser eliminada ya que su formula esta siendo utilizada por las siguientes formulas.<ENDL>".$msg, 1);
+				throw new Exception("La deducción no puede ser eliminada ya que su formula esta siendo utilizada por las siguientes formulas.<ENDL>".$msg."<ENDL>", 1);
 				
 			}
 
 
-			$consulta = $this->con->prepare("DELETE FROM deducciones WHERE id_deducciones = ?");
-
+			$consulta = $this->con->prepare("SELECT 1 FROM factura_deducciones WHERE id_deduccion = ?;");
 			$consulta->execute([$this->id]);
 
-			$consulta = $this->con->prepare("DELETE FROM formulas WHERE id_formula = ?");
-			$consulta->execute([$resp["id_formula"]]);
+			if(!$consulta->fetch()){
+				$consulta = $this->con->prepare("DELETE FROM deducciones WHERE id_deducciones = ?");
+
+				$consulta->execute([$this->id]);
+
+				$consulta = $this->con->prepare("DELETE FROM formulas WHERE id_formula = ?");
+				$consulta->execute([$resp["id_formula"]]);
+			}
+			else{
+
+				$consulta = $this->con->prepare("UPDATE deducciones set status = 0, id_formula = NULL WHERE id_deducciones = ?");
+				$consulta->execute([$this->id]);
+
+
+				$consulta = $this->con->prepare("DELETE FROM formulas WHERE id_formula = ?");
+				$consulta->execute([$resp["id_formula"]]);
+				$consulta = null;
+
+
+			}
 
 
 
@@ -664,3 +682,4 @@ class Deducciones extends Conexion
 		$this->id_trabajador = $value;
 	}
 } 
+?>
