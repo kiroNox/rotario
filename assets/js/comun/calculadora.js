@@ -623,7 +623,7 @@ function reset_calc_form(form){
 	form.action_form = 'testing_calc';
 	form.tested_form = false;
 
-	update_reserved_words();
+	//update_reserved_words();
 	form.querySelectorAll("input").forEach((x)=>{
 		x.classList.remove("is-invalid","is-valid");
 	})
