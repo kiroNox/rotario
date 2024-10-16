@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 03-10-2024 a las 00:55:28
+-- Tiempo de generación: 16-10-2024 a las 17:06:29
 -- Versión del servidor: 10.1.38-MariaDB
 -- Versión de PHP: 7.3.2
 
@@ -3816,30 +3816,32 @@ INSERT INTO `detalles_formulas` (`id_formula`, `formula`, `variables`, `condicio
 (66, '12.50', NULL, 'HIJOS_DISCAPACIDAD', 0),
 (67, 'SUELDO_BASE*0.10', NULL, NULL, 0),
 (61, 'TABLA_ESCALAFON', NULL, 'MEDICO', 0),
-(68, '(SUELDO_BASE + PRIMA_ESCALAFON + PRIMA_DEDICACION_SALUD) * 0.30', NULL, 'TIEMPO_TRABAJADOR >= 23', 1),
-(68, '(SUELDO_BASE + PRIMA_ESCALAFON + PRIMA_DEDICACION_SALUD) * 0.2960', NULL, 'TIEMPO_TRABAJADOR = 22', 2),
-(68, '(SUELDO_BASE + PRIMA_ESCALAFON + PRIMA_DEDICACION_SALUD) * 0.2780', NULL, 'TIEMPO_TRABAJADOR = 21', 3),
-(68, '(SUELDO_BASE + PRIMA_ESCALAFON + PRIMA_DEDICACION_SALUD) * 0.26', NULL, 'TIEMPO_TRABAJADOR = 20', 4),
-(68, '(SUELDO_BASE + PRIMA_ESCALAFON + PRIMA_DEDICACION_SALUD) * 0.2440', NULL, 'TIEMPO_TRABAJADOR = 19', 5),
-(68, '(SUELDO_BASE + PRIMA_ESCALAFON + PRIMA_DEDICACION_SALUD) * 0.2280', NULL, 'TIEMPO_TRABAJADOR = 18', 6),
-(68, '(SUELDO_BASE + PRIMA_ESCALAFON + PRIMA_DEDICACION_SALUD) * 0.2120', NULL, 'TIEMPO_TRABAJADOR = 17', 7),
-(68, '(SUELDO_BASE + PRIMA_ESCALAFON + PRIMA_DEDICACION_SALUD) * 0.1960', NULL, 'TIEMPO_TRABAJADOR = 16', 8),
-(68, '(SUELDO_BASE + PRIMA_ESCALAFON + PRIMA_DEDICACION_SALUD) * 0.18', NULL, 'TIEMPO_TRABAJADOR = 15', 9),
-(68, '(SUELDO_BASE + PRIMA_ESCALAFON + PRIMA_DEDICACION_SALUD) * 0.1660', NULL, 'TIEMPO_TRABAJADOR = 14', 10),
-(68, '(SUELDO_BASE + PRIMA_ESCALAFON + PRIMA_DEDICACION_SALUD) * 0.1520', NULL, 'TIEMPO_TRABAJADOR = 13', 11),
-(68, '(SUELDO_BASE + PRIMA_ESCALAFON + PRIMA_DEDICACION_SALUD) * 0.1380', NULL, 'TIEMPO_TRABAJADOR = 12', 12),
-(68, '(SUELDO_BASE + PRIMA_ESCALAFON + PRIMA_DEDICACION_SALUD) * 0.1240', NULL, 'TIEMPO_TRABAJADOR=11', 13),
-(68, '(SUELDO_BASE + PRIMA_ESCALAFON + PRIMA_DEDICACION_SALUD) * 0.11', NULL, 'TIEMPO_TRABAJADOR=10', 14),
-(68, '(SUELDO_BASE + PRIMA_ESCALAFON + PRIMA_DEDICACION_SALUD) * 0.0980', NULL, 'TIEMPO_TRABAJADOR=9', 15),
-(68, '(SUELDO_BASE + PRIMA_ESCALAFON + PRIMA_DEDICACION_SALUD) * 0.0860', NULL, 'TIEMPO_TRABAJADOR=8', 16),
-(68, '(SUELDO_BASE + PRIMA_ESCALAFON + PRIMA_DEDICACION_SALUD) * 0.0740', NULL, 'TIEMPO_TRABAJADOR=7', 17),
-(68, '(SUELDO_BASE + PRIMA_ESCALAFON + PRIMA_DEDICACION_SALUD) * 0.0620', NULL, 'TIEMPO_TRABAJADOR=6', 18),
-(68, '(SUELDO_BASE + PRIMA_ESCALAFON + PRIMA_DEDICACION_SALUD) * 0.05', NULL, 'TIEMPO_TRABAJADOR=5', 19),
-(68, '(SUELDO_BASE + PRIMA_ESCALAFON + PRIMA_DEDICACION_SALUD) * 0.04', NULL, 'TIEMPO_TRABAJADOR=4', 20),
-(68, '(SUELDO_BASE +PRIMA_ESCALAFON+ PRIMA_DEDICACION_SALUD) * 0.03', NULL, 'TIEMPO_TRABAJADOR=3', 21),
-(68, '(SUELDO_BASE + PRIMA_ESCALAFON + PRIMA_DEDICACION_SALUD) * 0.02', NULL, 'TIEMPO_TRABAJADOR=2', 22),
-(68, '(SUELDO_BASE + PRIMA_ESCALAFON + PRIMA_DEDICACION_SALUD) * 0.01', NULL, 'TIEMPO_TRABAJADOR=1', 23),
-(71, 'total_primas * 0 + quincena_uno + quincena_dos', '{\"total_primas\":\"PRIMA_DISCAPACIDAD_TRABAJADOR + PRIMA_HIJOS_DISCAPACITADO + PRIMA_ESCALAFON +PRIMA_DEDICACION_SALUD + PRIMA_ANTIGUEDAD\",\"quincena_uno\":\"( { [ ( SUELDO_BASE + total_primas)  * 12 ] \\/52 } *0.04 ) * LUNES_QUINCENA_UNO\",\"quincena_dos\":\"( { [ ( SUELDO_BASE + total_primas)  * 12 ] \\/52 } *0.04 ) * LUNES_QUINCENA_DOS\"}', NULL, 0);
+(72, 'PRIMA_DISCAPACIDAD_TRABAJADOR + PRIMA_HIJOS_DISCAPACITADO + PRIMA_ESCALAFON +PRIMA_DEDICACION_SALUD + PRIMA_ANTIGUEDAD', NULL, NULL, 0),
+(71, 'quincena_uno + quincena_dos', '{\"quincena_uno\":\"( { [ ( SUELDO_BASE + TOTAL_PRIMAS)  * 12 ] \\/52 } *0.04 ) * LUNES_QUINCENA_UNO\",\"quincena_dos\":\"( { [ ( SUELDO_BASE + TOTAL_PRIMAS)  * 12 ] \\/52 } *0.04 ) * LUNES_QUINCENA_DOS\"}', NULL, 0),
+(73, '0.01', NULL, 'TIEMPO_TRABAJADOR = 1', 1),
+(73, '0.02', NULL, 'TIEMPO_TRABAJADOR = 2', 2),
+(73, '0.03', NULL, 'TIEMPO_TRABAJADOR = 3', 3),
+(73, '0.04', NULL, 'TIEMPO_TRABAJADOR = 4', 4),
+(73, '0.05', NULL, 'TIEMPO_TRABAJADOR = 5', 5),
+(73, '0.062', NULL, 'TIEMPO_TRABAJADOR = 6', 6),
+(73, '0.074', NULL, 'TIEMPO_TRABAJADOR = 7', 7),
+(73, '0.0860', NULL, 'TIEMPO_TRABAJADOR = 8', 8),
+(73, '0.0980', NULL, 'TIEMPO_TRABAJADOR = 9', 9),
+(73, '0.11', NULL, 'TIEMPO_TRABAJADOR = 10', 10),
+(73, '0.1240', NULL, 'TIEMPO_TRABAJADOR = 11', 11),
+(73, '0.1380', NULL, 'TIEMPO_TRABAJADOR = 12', 12),
+(73, '0.1520', NULL, 'TIEMPO_TRABAJADOR = 13', 13),
+(73, '0.1660', NULL, 'TIEMPO_TRABAJADOR = 14', 14),
+(73, '0.18', NULL, 'TIEMPO_TRABAJADOR = 15', 15),
+(73, '0.1960', NULL, 'TIEMPO_TRABAJADOR = 16', 16),
+(73, '0.2120', NULL, 'TIEMPO_TRABAJADOR = 17', 17),
+(73, '0.2280', NULL, 'TIEMPO_TRABAJADOR = 18', 18),
+(73, '0.2440', NULL, 'TIEMPO_TRABAJADOR = 19', 19),
+(73, '0.26', NULL, 'TIEMPO_TRABAJADOR = 20', 20),
+(73, '0.2780', NULL, 'TIEMPO_TRABAJADOR = 21', 21),
+(73, '0.2960', NULL, 'TIEMPO_TRABAJADOR = 22', 22),
+(73, '0.30', NULL, 'TIEMPO_TRABAJADOR >= 23', 23),
+(68, '(SUELDO_BASE + PRIMA_ESCALAFON + PRIMA_DEDICACION_SALUD) * TABLA_ANTIGUEDAD', NULL, NULL, 0);
 
 -- --------------------------------------------------------
 
@@ -3894,9 +3896,9 @@ CREATE TABLE `factura` (
 --
 
 INSERT INTO `factura` (`id_factura`, `id_trabajador`, `fecha`, `sueldo_base`, `sueldo_integral`, `sueldo_deducido`, `status`) VALUES
-(98, 2, '2020-09-30', '150.00', '53.89', '17.41', 0),
-(99, 4, '2020-09-30', '250.00', '120.00', '23.92', 0),
-(100, 5, '2020-09-30', '150.00', '40.00', '15.62', 0);
+(105, 2, '2020-09-30', '150.00', '53.89', '7.52', 0),
+(106, 4, '2020-09-30', '250.00', '53.89', '7.52', 0),
+(107, 5, '2020-09-30', '150.00', '53.89', '7.52', 0);
 
 --
 -- Disparadores `factura`
@@ -3949,12 +3951,9 @@ CREATE TABLE `factura_deducciones` (
 --
 
 INSERT INTO `factura_deducciones` (`id_deduccion`, `id_factura`, `monto`, `islr`) VALUES
-(3, 98, '9.41', 0),
-(3, 99, '15.92', 0),
-(3, 100, '7.62', 0),
-(4, 98, '8.00', 0),
-(4, 99, '8.00', 0),
-(4, 100, '8.00', 0);
+(3, 105, '7.52', 0),
+(3, 106, '7.52', 0),
+(3, 107, '7.52', 0);
 
 --
 -- Disparadores `factura_deducciones`
@@ -4034,19 +4033,21 @@ CREATE TABLE `factura_primas_generales` (
 --
 
 INSERT INTO `factura_primas_generales` (`id_primas_generales`, `id_factura`, `monto`) VALUES
-(6, 98, '7.01'),
-(6, 99, '70.00'),
-(6, 100, '0.00'),
-(10, 98, '12.50'),
-(10, 99, '12.50'),
-(10, 100, '12.50'),
-(11, 98, '12.50'),
-(11, 99, '12.50'),
-(11, 100, '12.50'),
-(12, 98, '15.00'),
-(12, 99, '25.00'),
-(12, 100, '15.00'),
-(13, 98, '6.88');
+(6, 105, '7.01'),
+(6, 106, '7.01'),
+(6, 107, '7.01'),
+(10, 105, '12.50'),
+(10, 106, '12.50'),
+(10, 107, '12.50'),
+(11, 105, '12.50'),
+(11, 106, '12.50'),
+(11, 107, '12.50'),
+(12, 105, '15.00'),
+(12, 106, '15.00'),
+(12, 107, '15.00'),
+(13, 105, '6.88'),
+(13, 106, '6.88'),
+(13, 107, '6.88');
 
 --
 -- Disparadores `factura_primas_generales`
@@ -4093,7 +4094,7 @@ DELIMITER ;
 CREATE TABLE `formulas` (
   `id_formula` int(11) NOT NULL,
   `nombre` varchar(50) NOT NULL,
-  `descripcion` varchar(150) NOT NULL
+  `descripcion` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -4107,7 +4108,9 @@ INSERT INTO `formulas` (`id_formula`, `nombre`, `descripcion`) VALUES
 (66, 'PRIMA_HIJOS_DISCAPACITADO', 'Devuelve el monto a pagar por el concepto de hijos o hijas discapacitados'),
 (67, 'PRIMA_DEDICACION_SALUD', 'devuelve el monto por el concepto de prima por dedicación a la actividad del sistema público único nacional de salud'),
 (68, 'PRIMA_ANTIGUEDAD', 'calcula el monto por concepto de antiguedad'),
-(71, 'DEDUC_RETENCION_SEGURO', 'calcula el total de la retención del seguro social');
+(71, 'DEDUC_RETENCION_SEGURO', 'calcula el total de la retención del seguro social'),
+(72, 'TOTAL_PRIMAS', 'suma el total de las primas calculadas según la formula'),
+(73, 'TABLA_ANTIGUEDAD', 'devuelve el porcentaje a multiplicar según la antiguedad del trabajador ejemplo 10% = 0.10 es decir debe multiplicarse por un valor para obtener el porcentaje de un valor (500 * 0.10 = 50)');
 
 -- --------------------------------------------------------
 
@@ -4545,7 +4548,7 @@ CREATE TABLE `trabajadores` (
 --
 
 INSERT INTO `trabajadores` (`id_trabajador`, `id_prima_profesionalismo`, `id_rol`, `cedula`, `numero_cuenta`, `creado`, `nombre`, `apellido`, `genero`, `telefono`, `correo`, `clave`, `token`, `estado_actividad`, `comision_servicios`, `discapacitado`, `discapacidad`) VALUES
-(2, 2, 1, 'V-27250544', '00000000000000000000', '2020-06-19', 'Xavier David', 'Suarez Sanchez', 'M', '0414-5555555', 'uptaebxavier@gmail.com', '$2y$10$RMrtnT5gpHIhIKQDfAThFerj/4yU.S3PABZj.AxnALU2yFAsyrbjC', '$2y$10$7DkRHkETp7iUDzoZyh4ywOx.vYAUWxLSc9QFxCJisMKm1hpclW5gy', 1, 0, 1, ''),
+(2, 2, 1, 'V-27250544', '00000000000000000000', '2020-06-19', 'Xavier David', 'Suarez Sanchez', 'M', '0414-5555555', 'uptaebxavier@gmail.com', '$2y$10$RMrtnT5gpHIhIKQDfAThFerj/4yU.S3PABZj.AxnALU2yFAsyrbjC', '$2y$10$LyTvYa.xqdt1FwhUQ14eD.kHvex58crrR5bugv9.PqARHQ1vK4ega', 1, 0, 1, ''),
 (3, 5, 1, 'V-2725054', '00000000000000000000', '2024-06-27', 'Anabel Teresa', 'Alberto Nuñes', 'F', '0414-5555555', 'david40ene@hotmail.com', '$2y$10$Mh5AEfPtMwS4x7cQq7mGX.nEWmSEJyVIFPMgXIWycKpZHGh/Cw1MO', '1', 1, 0, 0, ''),
 (4, 6, 1, 'V-12434091', '00000000000000000000', '2024-06-26', 'Valeria Valentina', 'Camacaro Sanchez', 'F', '0414-5555555', 'aguilarvzla2@gmail.com', '$2y$10$TSJZitcQrUt2BiYRNw1Cmu9O4I2zFYIsQINVQweInmJzH1POHZx8K', '1', 1, 0, 0, ''),
 (5, 3, 2, 'V-15447800', '00000000000000000000', '2024-07-13', 'José Luis', 'Camacaro Sanchez', 'M', '0414-5555555', 'algo@algo.com', '$2y$10$PYypHr88RRrVMT6IE9G8a.gtGc91sXOpiNNubO1CZXrnp0yZwCoIm', '1', 1, 0, 0, '');
@@ -4605,8 +4608,14 @@ CREATE TABLE `usando` (
 
 INSERT INTO `usando` (`id_formula_uno`, `id_formula_dos`) VALUES
 (61, 52),
+(72, 65),
+(72, 66),
+(72, 61),
+(72, 67),
+(72, 68),
 (68, 61),
-(68, 67);
+(68, 67),
+(68, 73);
 
 -- --------------------------------------------------------
 
@@ -4922,7 +4931,7 @@ ALTER TABLE `escalafon`
 -- AUTO_INCREMENT de la tabla `factura`
 --
 ALTER TABLE `factura`
-  MODIFY `id_factura` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=101;
+  MODIFY `id_factura` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=108;
 
 --
 -- AUTO_INCREMENT de la tabla `factura_hijos`
@@ -4934,7 +4943,7 @@ ALTER TABLE `factura_hijos`
 -- AUTO_INCREMENT de la tabla `formulas`
 --
 ALTER TABLE `formulas`
-  MODIFY `id_formula` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=72;
+  MODIFY `id_formula` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=74;
 
 --
 -- AUTO_INCREMENT de la tabla `hijos`
