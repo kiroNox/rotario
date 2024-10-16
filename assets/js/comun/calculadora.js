@@ -54,6 +54,11 @@ function load_calc_functions(){// calculadora init
 						e.disabled=false;
 					});
 
+					if(document.getElementById('container_condicionales').innerHTML==''){
+						add_lista_condicional();
+						add_lista_condicional();
+					}
+
 
 				}
 				else {
@@ -80,6 +85,7 @@ function load_calc_functions(){// calculadora init
 
 				this.closest("form").action_form = "save_calc";
 				this.closest("form").querySelector("button[type='submit']").click();
+				this.closest("form").action_form = "testing_calc";
 				return false;
 			};
 
@@ -182,9 +188,10 @@ function update_reserved_words(){
 	})
 }
 
-function add_var(name,lista_add){
+function add_var(name,lista_add,value=''){
 	var label = crearElem("label",`for,id_calc_var_${name},class,m-0`,name);
 	var input = crearElem("input",`type,text,class,form-control,id,id_calc_var_${name},name,variables_calc,data-span,invalid-span-id_calc_var_${name},data-var,${name},required,true`);
+	input.value=value;
 	evento_formula(input,false);
 	input.autocomplete="off";
 	var span = crearElem("span",`id,invalid-span-id_calc_var_${name},class,invalid-span text-danger`);
@@ -230,6 +237,23 @@ function evento_formula(elem,variables=true){
 
 			var contenedor_variables = elem.dataset.variables_container;
 			lista = elem.value.match(/[a-zA-Z](?:[_-]*[a-zA-Z]*)*/g);
+
+			var old_lista=document.getElementById(contenedor_variables).querySelectorAll("input");
+
+			var temp_old_obj={};
+			if(old_lista.length>0){
+
+
+				old_lista.forEach((x)=>{
+					temp_old_obj[x.dataset.var] = x.value;
+				})
+
+
+			}
+
+
+
+
 			document.getElementById(contenedor_variables).innerHTML='';
 			if(lista){
 				var found = false;
@@ -238,7 +262,8 @@ function evento_formula(elem,variables=true){
 					found = true;
 					if(!ready[x]){
 						ready[x] = 1;
-						add_var(x,contenedor_variables);
+						var temp_value = (temp_old_obj[x])?temp_old_obj[x]:'';
+						add_var(x,contenedor_variables,temp_value);
 					}
 				}
 
@@ -331,6 +356,12 @@ function add_lista_condicional(condicional='',formula='',variables=''){
 			})
 
 		}
+	}
+
+
+	if(document.activeElement && document.activeElement.innerHTML=='+'){
+		document.getElementById(`calc_condicional-condicion-${n}`).onfocus();
+		document.getElementById(`calc_condicional-condicion-${n}`).focus();
 	}
 
 	

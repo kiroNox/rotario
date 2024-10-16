@@ -29,9 +29,6 @@ class Deducciones extends Conexion
 			$consulta = $this->con->prepare('SELECT
 		    d.id_deducciones
 		    ,d.descripcion
-		    ,IF(d.porcentaje IS TRUE,CONCAT(d.monto,"%"),CONCAT(d.monto," Bs") ) as monto
-		    ,IF(d.quincena IS true,"Quincenal","Mensual") as tiempo
-		    ,IF(d.sector_salud IS true,"Si","No") as medic_only
 		    ,IF(d.islr IS true,"Si","No") as islr_temp
 		    ,IF(d.dedicada IS FALSE,"Todos",IF(dt.total_trabajadores IS NULL,0,dt.total_trabajadores)) as dedic
 		    ,NULL as extra
