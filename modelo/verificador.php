@@ -14,6 +14,7 @@ if( !in_array($pagina, $excepciones_p) ){
 	if(isset($_SESSION["usuario_rotario"])){
 		$clase = new Conexion;
 		$con = $clase->conecta();
+		$clase->validar_conexion($con);
 		try {
 			$consulta = $con->prepare("SELECT 
 											m.nombre, perm.crear,perm.modificar,perm.eliminar,perm.consultar

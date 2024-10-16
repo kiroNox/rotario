@@ -154,69 +154,71 @@ class Facturar extends Conexion
 
 			// obtengo la lista de primas
 
-			$consulta = $this->con->prepare("SELECT
-				    p.id_primas_generales,
-				    p.id_formula,
-				    p.dedicada,
-				    '[]' AS trabajadores
-				FROM
-				    primas_generales AS p
-				WHERE
-				    p.status IS TRUE AND id_formula IS NOT NULL
-				UNION
-				SELECT
-				    p2.id_primas_generales,
-				    p2.id_formula,
-				    p2.dedicada,
-				    CONCAT(\"[\", GROUP_CONCAT(tp.id_trabajador SEPARATOR ','), \"]\")
-				FROM
-				    trabajador_prima_general AS tp
-				LEFT JOIN primas_generales AS p2
-				ON
-				    p2.id_primas_generales = tp.id_primas_generales
-				WHERE
-				    p2.status IS TRUE AND p2.id_formula IS NOT NULL AND tp.status IS TRUE GROUP BY tp.id_primas_generales;");
+				$consulta = $this->con->prepare("SELECT
+					    p.id_primas_generales,
+					    p.id_formula,
+					    p.dedicada,
+					    '[]' AS trabajadores
+					FROM
+					    primas_generales AS p
+					WHERE
+					    p.status IS TRUE AND id_formula IS NOT NULL
+					UNION
+					SELECT
+					    p2.id_primas_generales,
+					    p2.id_formula,
+					    p2.dedicada,
+					    CONCAT(\"[\", GROUP_CONCAT(tp.id_trabajador SEPARATOR ','), \"]\")
+					FROM
+					    trabajador_prima_general AS tp
+					LEFT JOIN primas_generales AS p2
+					ON
+					    p2.id_primas_generales = tp.id_primas_generales
+					WHERE
+					    p2.status IS TRUE AND p2.id_formula IS NOT NULL AND tp.status IS TRUE GROUP BY tp.id_primas_generales;");
 
-			$consulta->execute();
-			$primas = $consulta->fetchall(PDO::FETCH_ASSOC);
-			$consulta = null;
+				$consulta->execute();
+				$primas = $consulta->fetchall(PDO::FETCH_ASSOC);
+				$consulta = null;
 
 			// obtengo la lista de deducciones
 
-			$consulta = $this->con->prepare("SELECT
-				    d.id_deducciones,
-				    d.id_formula,
-				    d.dedicada,
-				    d.islr,
-				    '[]' AS trabajadores
-				FROM
-				    deducciones AS d
-				WHERE
-				    d.status IS TRUE AND d.id_formula IS NOT NULL
-				UNION
-				SELECT
-				    dd.id_deducciones,
-				    d.id_formula,
-				    d.dedicada,
-				    d.islr,
-				    CONCAT(\"[\",GROUP_CONCAT(dd.id_trabajador SEPARATOR ','),\"]\")
-				FROM
-				    trabajador_deducciones AS dd
-				JOIN deducciones AS d
-				ON
-				    d.id_deducciones = dd.id_deducciones
-				WHERE
-				    d.status IS TRUE AND d.id_formula IS NOT NULL GROUP BY dd.id_deducciones");
+				$consulta = $this->con->prepare("SELECT
+					    d.id_deducciones,
+					    d.id_formula,
+					    d.dedicada,
+					    d.islr,
+					    '[]' AS trabajadores
+					FROM
+					    deducciones AS d
+					WHERE
+					    d.status IS TRUE AND d.id_formula IS NOT NULL
+					UNION
+					SELECT
+					    dd.id_deducciones,
+					    d.id_formula,
+					    d.dedicada,
+					    d.islr,
+					    CONCAT(\"[\",GROUP_CONCAT(dd.id_trabajador SEPARATOR ','),\"]\")
+					FROM
+					    trabajador_deducciones AS dd
+					JOIN deducciones AS d
+					ON
+					    d.id_deducciones = dd.id_deducciones
+					WHERE
+					    d.status IS TRUE AND d.id_formula IS NOT NULL GROUP BY dd.id_deducciones");
 
-			$consulta->execute();
-			$deducciones = $consulta->fetchall(PDO::FETCH_ASSOC);
-			$consulta = null;
+				$consulta->execute();
+				$deducciones = $consulta->fetchall(PDO::FETCH_ASSOC);
+				$consulta = null;
 
 			// obtengo la lista de trabajadores
 			
 			$consulta_trabajadores = $this->con->prepare("SELECT
 					t.id_trabajador,
-					sb.sueldo_base
+					sb.sueldo_base,
+					sb.tipo_nomina
+
 				FROM
 					trabajadores AS t
 				JOIN sueldo_base AS sb
@@ -231,6 +233,7 @@ class Facturar extends Conexion
 
 
 			// itero sobre la lista de trabajadores
+			$this->calc_init();
 			while ($trabajador = $consulta_trabajadores->fetch(PDO::FETCH_ASSOC)) {
 
 				$this->set_id_trabajador($trabajador["id_trabajador"]);
@@ -257,7 +260,10 @@ class Facturar extends Conexion
 
 				$id_factura_last = $this->con->lastInsertId();
 
-				$this->calc_init();
+				if($trabajador["tipo_nomina"] == 'Comisión de Servicios'){
+					continue;
+				}
+
 
 
 				foreach ($primas as $prima_elem) {

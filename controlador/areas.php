@@ -43,7 +43,7 @@ if (is_file("vista/" . $pagina . ".php")) {
 
                 // eliminar
             case "destroy":
-               $respuesta = $claseAreas->eliminar_area(id: $_POST['id']);
+               $respuesta = $claseAreas->eliminar_area($_POST['id']);
                 echo json_encode([
                     'estado' => 200,
                     'respuesta' => $respuesta
@@ -79,7 +79,7 @@ if (is_file("vista/" . $pagina . ".php")) {
                 ]);
                 break;
                 case "show":
-                    $areas = $claseAreas->show_area(id: $_POST['id']);
+                    $areas = $claseAreas->show_area($_POST['id']);
                     echo json_encode([
                         'estado' => 200,
                         'datos' => $areas,

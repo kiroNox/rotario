@@ -68,7 +68,7 @@
 											<button class="btn btn-primary" id="btn_txt">Descargar TXT</button>
 											<button class="btn btn-primary" id="btn_concluir_factura">Concluir Factura</button>
 
-											<button id="btn_prueba_bd_calc">probar formula desde la bd</button>
+											<button id="btn_prueba_bd_calc" class="d-none">probar formula desde la bd</button>
 										</div>
 									</div>
 									<div class="m-auto">
@@ -328,6 +328,8 @@
 
 
 
+
+
 			muestraMensaje("¿Seguro?", mensaje, icono,function(result){
 				if(result){
 					
@@ -362,6 +364,11 @@
 		document.getElementById('btn_calcular_facturas').onclick=function(){
 			muestraMensaje("¿Seguro?", "Desea Calcular las facturas de los trabajadores", "?",function(result){
 				if(result){
+					fecha = new Date();
+
+					document.getElementById('calcular_anio').value=fecha.getFullYear();
+					document.getElementById('calcular_mes').value=fecha.getMonth();
+
 					$("#modal_calcular").modal("show");
 
 				}

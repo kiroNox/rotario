@@ -96,8 +96,8 @@
 									<option value="">- Seleccione -</option>
 									<option value="1">Alto Nivel</option>
 									<option value="2">Contratado</option>
-									<option value="3">Comisión de servicios</option>
-									<option value="4">Obrero Fijo</option>
+									<option value="3">Obrero Fijo</option>
+									<option value="4">Comisión de servicios</option>
 								</select>
 								<span id="invalid-span-tipo_nomina" class="invalid-span text-danger"></span>
 							</div>

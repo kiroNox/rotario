@@ -19,6 +19,7 @@ trait Calculadora{
 
 
 	PUBLIC function calc_init(){
+		// TODO sacarlo de los controladores
 		$this->calc_f = new stdClass();
 		$this->calc_var = new stdClass();
 		$this->calc_evaluando = new stdClass();
@@ -400,6 +401,9 @@ trait Calculadora{
 		},false,true);
 
 
+		$this->validar_conexion($this->con);
+
+
 		$consulta = $this->con->query("SELECT descripcion, id_prima_profesionalismo FROM prima_profesionalismo WHERE 1");
 
 
@@ -447,7 +451,9 @@ trait Calculadora{
 			}
 		}
 
+		$this->close_bd($this->con);
 
+		// no se usa como tal esta en otro lado
 		$this->set_calc_function("DEDICADA","Se aconseja utilizar solo en la(s) condicional(es), al crear una formula cuya prima/deducción esta dedicada a un trabajador en especifico, devuelve 1 si el trabajador esta en la lista, 0 si no",function() use ($fn_general){
 			return null;
 		},false,true);

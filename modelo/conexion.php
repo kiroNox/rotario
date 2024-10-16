@@ -14,7 +14,28 @@ class Conexion{
 			$pdo = new PDO("mysql:host=".$this->ip.";dbname=".$this->bd."",$this->usuario,$this->contrasena);
 			$pdo->exec("set names utf8");
 			$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-			return $pdo;
+			$this->private_con = $pdo;
+			
+			return new Class{
+				PUBLIC $attrexeption = true;
+				PRIVATE function exception(){
+					throw new Exception("Base de datos cerrada", 1);
+				}
+				PUBLIC function commit($string ='' ){
+					$this->exception();
+				}
+				PUBLIC function rollBack($string ='' ){
+					$this->exception();
+				}
+				PUBLIC function query($string ='' ){
+					$this->exception();
+				}
+				PUBLIC function prepare($string ='' ){
+					$this->exception();
+				}
+			};
+
+
 			} catch (Exception $e) {
 				return $e->getMessage();
 			}
@@ -25,7 +46,7 @@ class Conexion{
 				$pdo = $this->private_con;
 			}
 			else if(isset($pdo->attrexeption)){
-				$pdo->exeption();
+				$pdo->exception();
 			}
 			else{
 				throw new Exception("Error al conectar con la BD", 1);
@@ -46,19 +67,19 @@ class Conexion{
 			$con = null;
 			$con = new Class{
 				PUBLIC $attrexeption = true;
-				PRIVATE function exeption(){
+				PRIVATE function exception(){
 					throw new Exception("Base de datos cerrada", 1);
 				}
-				PUBLIC function commit(){
-					$this->exeption();
-				}
-				PUBLIC function rollBack(){
+				PUBLIC function commit($string ='' ){
 					$this->exception();
 				}
-				PUBLIC function query(){
+				PUBLIC function rollBack($string ='' ){
 					$this->exception();
 				}
-				PUBLIC function prepare(){
+				PUBLIC function query($string ='' ){
+					$this->exception();
+				}
+				PUBLIC function prepare($string ='' ){
 					$this->exception();
 				}
 			};
