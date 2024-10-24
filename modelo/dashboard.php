@@ -2,7 +2,7 @@
 
 class dashboard extends Conexion
 {
-	PRIVATE $id, $desde;
+	PRIVATE $id;
 
 	function __construct($con = '')
 	{
@@ -16,51 +16,65 @@ class dashboard extends Conexion
 	}
 
 	public function totalTrabajadores() {
+        $this->validar_conexion($this->con);
         $sql = "SELECT COUNT(*) as total FROM trabajadores";
         $stmt = $this->con->prepare($sql);
         $stmt->execute();
+        $this->close_bd($this->con);
         return $stmt->fetch(PDO::FETCH_ASSOC)['total'];
     }
 
     public function totalVacacionesActivas() {
+        $this->validar_conexion($this->con);
         $sql = "SELECT COUNT(*) as total FROM vacaciones WHERE hasta > CURDATE()";
         $stmt = $this->con->prepare($sql);
         $stmt->execute();
+        $this->close_bd($this->con);
         return $stmt->fetch(PDO::FETCH_ASSOC)['total'];
     }
 
     public function totalAreas() {
+        $this->validar_conexion($this->con);
         $sql = "SELECT COUNT(*) as total FROM areas";
         $stmt = $this->con->prepare($sql);
         $stmt->execute();
+        $this->close_bd($this->con);
         return $stmt->fetch(PDO::FETCH_ASSOC)['total'];
     }
 
     public function totalFacturas() {
+        $this->validar_conexion($this->con);
         $sql = "SELECT COUNT(*) as total FROM factura";
         $stmt = $this->con->prepare($sql);
         $stmt->execute();
+        $this->close_bd($this->con);
         return $stmt->fetch(PDO::FETCH_ASSOC)['total'];
     }
 
     public function totalPermisos() {
+        $this->validar_conexion($this->con);
         $sql = "SELECT COUNT(*) as total FROM permisos_trabajador";
         $stmt = $this->con->prepare($sql);
         $stmt->execute();
+        $this->close_bd($this->con);
         return $stmt->fetch(PDO::FETCH_ASSOC)['total'];
     }
 
     public function totalReposos() {
+        $this->validar_conexion($this->con);
         $sql = "SELECT COUNT(*) as total FROM reposo";
         $stmt = $this->con->prepare($sql);
         $stmt->execute();
+        $this->close_bd($this->con);
         return $stmt->fetch(PDO::FETCH_ASSOC)['total'];
     }
 
     public function totalHijos() {
+        $this->validar_conexion($this->con);
         $sql = "SELECT COUNT(*) as total FROM hijos";
         $stmt = $this->con->prepare($sql);
         $stmt->execute();
+        $this->close_bd($this->con);
         return $stmt->fetch(PDO::FETCH_ASSOC)['total'];
     }
 

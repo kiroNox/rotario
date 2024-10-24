@@ -4,7 +4,7 @@
 class Deducciones extends Conexion
 {
 	use Calculadora;
-	PRIVATE $con, $id, $descripcion ,$monto ,$porcentaje ,$quincena ,$multi_dia ,$islr ,$sector_salud ,$dedicada ,$meses ,$semanas ,$trabajadores;
+	PRIVATE $con, $id, $descripcion ,$quincena ,$islr ,$dedicada ,$trabajadores;
 	PRIVATE $id_trabajador;
 
 
@@ -63,20 +63,14 @@ class Deducciones extends Conexion
 
 	}
 
-	PUBLIC function registrar_deduccion_s($descripcion ,$islr ,$dedicada ,$trabajadores, $formula ){
+	PUBLIC function registrar_deduccion_s($descripcion ,$islr ,$dedicada ,$trabajadores, $formula, $quincena ){
 
 		$this->set_descripcion($descripcion);
-		// $this->set_monto($monto);
-		// $this->set_porcentaje($porcentaje);
-		// $this->set_quincena($quincena);
-		// $this->set_multi_dia($multi_dia);
 		$this->set_islr($islr);
-		// $this->set_sector_salud($sector_salud);
 		$this->set_dedicada($dedicada);
-		// $this->set_meses($meses);
-		// $this->set_semanas($semanas);
 		$this->set_trabajadores($trabajadores);
 		$this->set_obj_formula($formula);
+		$this->set_quincena($quincena);
 
 		return $this->registrar_deduccion();
 	}
@@ -87,7 +81,7 @@ class Deducciones extends Conexion
 	}
 
 
-	PUBLIC function modificar_deduccion_s($id, $descripcion, $islr, $dedicada, $trabajadores, $formula ){
+	PUBLIC function modificar_deduccion_s($id, $descripcion, $islr, $dedicada, $trabajadores, $formula, $quincena ){
 
 		$this->set_id($id);
 		$this->set_descripcion($descripcion);
@@ -95,6 +89,7 @@ class Deducciones extends Conexion
 		$this->set_dedicada($dedicada);
 		$this->set_trabajadores($trabajadores);
 		$this->set_obj_formula($formula);
+		$this->set_quincena($quincena);
 
 		return $this->modificar_deduccion();
 	}
@@ -152,22 +147,16 @@ class Deducciones extends Conexion
 
 
 			$consulta = $this->con->prepare("INSERT INTO `deducciones`
-				(`descripcion`, `islr`, `dedicada`, `id_formula`) 
+				(`descripcion`, `islr`, `dedicada`, `id_formula`, `quincena`) 
 				VALUES 
-				(:descripcion, :islr, :dedicada, :id_formula)");
+				(:descripcion, :islr, :dedicada, :id_formula, ,:quincena)");
 
 
 			$consulta->bindValue(":descripcion",$this->descripcion);
-			// $consulta->bindValue(":monto",$this->monto);
-			// $consulta->bindValue(":porcentaje",$this->porcentaje);
-			// $consulta->bindValue(":multi_meses",$this->meses);
-			// $consulta->bindValue(":div_sem",$this->semanas);
-			// $consulta->bindValue(":quincena",$this->quincena);
-			// $consulta->bindValue(":multi_dia",$this->multi_dia);
-			// $consulta->bindValue(":sector_salud",$this->sector_salud);
 			$consulta->bindValue(":islr",$this->islr);
 			$consulta->bindValue(":dedicada",$this->dedicada);
 			$consulta->bindValue(":id_formula",$id_formula);
+			$consulta->bindValue(":quincena",$this->quincena);
 
 			$consulta->execute();
 
@@ -274,7 +263,8 @@ class Deducciones extends Conexion
 			$consulta = $this->con->prepare("SELECT
 					    `descripcion`,
 					    `islr`,
-					    `dedicada`
+					    `dedicada`,
+					    `quincena`
 					FROM
 					    `deducciones`
 					WHERE
@@ -393,12 +383,14 @@ class Deducciones extends Conexion
 				,`islr`= :islr
 				,`dedicada`= :dedicada 
 				,`id_formula` = :id_formula
+				,`quincena` = :quincena
 				WHERE id_deducciones = :id");
 
 			$consulta->bindValue(":descripcion",$this->descripcion);
 			$consulta->bindValue(":islr",$this->islr);
 			$consulta->bindValue(":dedicada",$this->dedicada);
 			$consulta->bindValue(":id_formula",$id_formula);
+			$consulta->bindValue(":quincena",$this->quincena);
 			$consulta->bindValue(":id",$this->id);
 
 			$consulta->execute();

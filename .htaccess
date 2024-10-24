@@ -1,3 +1,4 @@
+Options -Indexes
 RewriteEngine On
 RewriteCond %{QUERY_STRING} ^%ad [NC]
 RewriteRule .? - [F,L]

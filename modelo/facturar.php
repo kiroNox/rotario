@@ -5,7 +5,7 @@
 class Facturar extends Conexion
 {
 
-	PRIVATE $con, $id, $anio, $mes;
+	PRIVATE $con, $id, $anio, $mes, $from_noti,$to_noti;
 	PRIVATE $id_trabajador;
 	use Correos,Calculadora;
 	
@@ -21,12 +21,12 @@ class Facturar extends Conexion
 		try {
 			$this->validar_conexion($this->con);
 			$this->con->beginTransaction();
-			
+
 
 
 
 			$consulta = $this->con->prepare("SELECT if(f.status IS TRUE,'activo','inactivo') as status
-				,t.cedula,CONCAT(t.nombre,' ',t.apellido) as nombre, f.fecha, ROUND((f.sueldo_base + f.sueldo_integral ) - f.sueldo_deducido,2) as sueldo_total, NULL as extra,f.id_factura FROM factura as f join trabajadores as t on t.id_trabajador = f.id_trabajador WHERE 1;");
+				,t.cedula,CONCAT(t.nombre,' ',t.apellido) as nombre, f.fecha, ROUND((f.sueldo_base + f.sueldo_integral ) - f.sueldo_deducido,2) as sueldo_total, NULL as extra,f.id_factura, f.notificado FROM factura as f join trabajadores as t on t.id_trabajador = f.id_trabajador WHERE 1;");
 			$consulta->execute();
 
 			$resp = $consulta->fetchall(PDO::FETCH_GROUP);
@@ -136,15 +136,23 @@ class Facturar extends Conexion
 			$this->con->beginTransaction();
 
 			$fecha = $this->anio.'-'.$this->mes.'-01';
+			$resp = $this->check_quincena(false);
 
-			$consulta = $this->con->prepare("SELECT 1 from factura WHERE status is true and fecha = LAST_DAY(?)");
-			$consulta->execute([$fecha]);
-			if($consulta->fetch()){
+			if($resp["resultado"] != "check_quincena" ){
+				throw new Exception($resp["mensaje"], 1);
+			}
+			else if($resp["mensaje"] == "Mensualidad Pagada"){
 				throw new Exception("Ya se han calculado los pagos del mes $this->anio-$this->mes", 1);
 			}
+			else{
+				$quincena = $resp["mensaje"];
+			}
+
+
+			$consulta = $this->con->prepare("set @fecha_pago_inicio = ?, @quincena_pago = ?;");
+			$consulta->execute([$fecha,$quincena]);
 
 			$consulta = null;
-
 
 
 			// elimino facturas que no fueron concluidas
@@ -162,7 +170,7 @@ class Facturar extends Conexion
 					FROM
 					    primas_generales AS p
 					WHERE
-					    p.status IS TRUE AND id_formula IS NOT NULL
+					    p.status IS TRUE AND id_formula IS NOT NULL AND p.dedicada IS FALSE AND ( (p.quincena IS FALSE AND :pagando = 2 ) OR (p.quincena IS TRUE) )
 					UNION
 					SELECT
 					    p2.id_primas_generales,
@@ -175,9 +183,9 @@ class Facturar extends Conexion
 					ON
 					    p2.id_primas_generales = tp.id_primas_generales
 					WHERE
-					    p2.status IS TRUE AND p2.id_formula IS NOT NULL AND tp.status IS TRUE GROUP BY tp.id_primas_generales;");
+					    p2.status IS TRUE AND p2.id_formula IS NOT NULL AND tp.status IS TRUE and p2.dedicada IS TRUE AND ( (p2.quincena IS FALSE AND :pagando = 2 ) OR (p2.quincena IS TRUE) ) GROUP BY tp.id_primas_generales;");
 
-				$consulta->execute();
+				$consulta->execute([":pagando"=>$quincena]);
 				$primas = $consulta->fetchall(PDO::FETCH_ASSOC);
 				$consulta = null;
 
@@ -192,7 +200,7 @@ class Facturar extends Conexion
 					FROM
 					    deducciones AS d
 					WHERE
-					    d.status IS TRUE AND d.id_formula IS NOT NULL
+					    d.status IS TRUE AND d.id_formula IS NOT NULL AND d.dedicada IS FALSE AND ( (d.quincena IS FALSE AND :pagando = 2 ) OR (d.quincena IS TRUE) )
 					UNION
 					SELECT
 					    dd.id_deducciones,
@@ -206,30 +214,30 @@ class Facturar extends Conexion
 					ON
 					    d.id_deducciones = dd.id_deducciones
 					WHERE
-					    d.status IS TRUE AND d.id_formula IS NOT NULL GROUP BY dd.id_deducciones");
+					d.status IS TRUE AND d.id_formula IS NOT NULL AND d.dedicada IS TRUE AND ( (d.quincena IS FALSE AND :pagando = 2 ) OR (d.quincena IS TRUE) ) GROUP BY dd.id_deducciones");
 
-				$consulta->execute();
+				$consulta->execute([":pagando"=>$quincena]);
 				$deducciones = $consulta->fetchall(PDO::FETCH_ASSOC);
 				$consulta = null;
 
 			// obtengo la lista de trabajadores
 			
-			$consulta_trabajadores = $this->con->prepare("SELECT
-					t.id_trabajador,
-					sb.sueldo_base,
-					sb.tipo_nomina
+				$consulta_trabajadores = $this->con->prepare("SELECT
+						t.id_trabajador,
+						sb.sueldo_base,
+						sb.tipo_nomina
 
-				FROM
-					trabajadores AS t
-				JOIN sueldo_base AS sb
-				ON
-					sb.id_trabajador = t.id_trabajador
-				WHERE
-					t.estado_actividad = TRUE
-				GROUP BY
-					t.id_trabajador;");
+					FROM
+						trabajadores AS t
+					JOIN sueldo_base AS sb
+					ON
+						sb.id_trabajador = t.id_trabajador
+					WHERE
+						t.estado_actividad = TRUE
+					GROUP BY
+						t.id_trabajador;");
 
-			$consulta_trabajadores->execute();
+				$consulta_trabajadores->execute();
 
 
 			// itero sobre la lista de trabajadores
@@ -239,7 +247,7 @@ class Facturar extends Conexion
 				$this->set_id_trabajador($trabajador["id_trabajador"]);
 
 				$consulta = $this->con->prepare("INSERT INTO factura 
-					(id_trabajador,fecha , sueldo_base, sueldo_integral, sueldo_deducido, status)
+					(id_trabajador,fecha , sueldo_base, sueldo_integral, sueldo_deducido, status,quincena)
 					VALUES
 					(
 						:id_trabajador,
@@ -247,12 +255,14 @@ class Facturar extends Conexion
 						:sueldo,
 						DEFAULT,
 						DEFAULT,
-						0
+						0,
+						:quincena
 					);");
 
 				$consulta->bindValue(":id_trabajador", $trabajador["id_trabajador"]);
 				$consulta->bindValue(":fecha", $fecha);
 				$consulta->bindValue(":sueldo", $trabajador["sueldo_base"]);
+				$consulta->bindValue(":quincena", $quincena);
 
 				$consulta->execute();
 				$consulta=null;
@@ -260,12 +270,7 @@ class Facturar extends Conexion
 
 				$id_factura_last = $this->con->lastInsertId();
 
-				if($trabajador["tipo_nomina"] == 'Comisión de Servicios'){
-					continue;
-				}
-
-
-
+				
 				foreach ($primas as $prima_elem) {
 					$prima_elem["trabajadores"] = json_decode($prima_elem["trabajadores"]);
 					if($prima_elem["dedicada"] == "1" and !in_array($trabajador["id_trabajador"], $prima_elem["trabajadores"]))
@@ -416,9 +421,36 @@ class Facturar extends Conexion
 			$this->con->beginTransaction();
 
 
-				$rows = [];
+			$consulta = $this->con->prepare("SELECT
+			SUM(
+				ROUND(
+					(
+						f.sueldo_base + f.sueldo_integral
+					) - f.sueldo_deducido,
+					2
+				)
+                ) AS sueldos_totales
+			FROM
+				factura AS f
+			JOIN trabajadores AS t
+			ON
+				t.id_trabajador = f.id_trabajador
+			WHERE
+				f.status is false;
+                ");
+			$consulta->execute();
 
-				$consulta = $this->con->prepare("SELECT
+			$sueldos_totales = $consulta->fetch(PDO::FETCH_ASSOC);
+			$sueldos_totales = $sueldos_totales["sueldos_totales"];
+			$sueldos_totales = str_replace(".", '', $sueldos_totales);
+			$sueldos_totales = str_pad((string)$sueldos_totales, 15, "0", STR_PAD_LEFT);
+
+			$consulta=null;
+
+
+			$rows = [];
+
+			$consulta = $this->con->prepare("SELECT
 				t.numero_cuenta
 				,t.cedula,
 				CONCAT(t.nombre, ' ', t.apellido) AS nombre,
@@ -440,29 +472,71 @@ class Facturar extends Conexion
 				f.status is false;");
 
 						$consulta->execute();
+						
+						$vocales = ["a", "A", "e", "E", "i", "I", "o", "O", "u", "U", "n", "N"];
+						$vocales_tildes = ["á", "Á", "é", "É", "í", "Í", "ó", "Ó", "ú", "Ú", "ñ", "Ñ"];
 
 						while ($el = $consulta->fetch(PDO::FETCH_ASSOC)) {
-							$cedula = preg_replace("/^\D\D/", "", $el['cedula']);
-							$end = $cedula."003291";
 
-							$width = 16;
-							$padded_End = str_pad((string)$end, $width, "0", STR_PAD_LEFT);
 
-							$start = "00".$el["numero_cuenta"];
-							$start.= preg_replace("/\D/", "", $el["sueldo_total"]);
-							$start.= $el["nombre"];
-							$padded_start = str_pad((string)$start, 76, " ", STR_PAD_RIGHT);
 
-							$rows[]=$padded_start.$padded_End;
+							$pago_str = str_replace("-", "", $el["cedula"]);
+							$pago_str .= $el["numero_cuenta"];
+							$el["sueldo_total"] = str_replace(".", '', $el["sueldo_total"]);
+							$el["sueldo_total"] = str_pad((string)$el["sueldo_total"], 11, "0", STR_PAD_LEFT);
+							$pago_str .= $el["sueldo_total"];
+
+							$el["nombre"] = str_replace($vocales_tildes, $vocales, $el["nombre"]);
+							$el["nombre"] = strtoupper($el["nombre"]);
+
+							$pago_str .= $el["nombre"];
+
+							$rows[]=$pago_str;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+							// $cedula = preg_replace("/^\D\D/", "", $el['cedula']);
+							// $end = $cedula."003291";
+
+							// $width = 16;
+							// $padded_End = str_pad((string)$end, $width, "0", STR_PAD_LEFT);
+
+							// $start = "00".$el["numero_cuenta"];
+							// $start.= preg_replace("/\D/", "", $el["sueldo_total"]);
+							// $start.= $el["nombre"];
+							// $padded_start = str_pad((string)$start, 76, " ", STR_PAD_RIGHT);
+
+						//	$rows[]=$padded_start.$padded_End;
+						}
+
+						if(count($rows)<=0){
+							throw new Exception("No hay pagos pendientes por culminar", 1);
 						}
 
 						$fechaActual = date("Y-m-d-H-i-s");
 						$filename = "archivo txt".$fechaActual.".txt";
 						$filetemp = "assets/log/$filename";
 						$file = fopen($filetemp, "a");
+						$total_operaciones=count($rows);
+
+						$total_operaciones = str_pad((string)$total_operaciones, 7, "0", STR_PAD_LEFT);
 
 						if ($file) {
-							fwrite($file,"HSERVICIO DESCONCENTRADO HOSPITAL ROTARIO0102042245000060139902".date("d/m/y")."000000022111303291 \r\n");
+							//fwrite($file,"HSERVICIO DESCONCENTRADO HOSPITAL ROTARIO0102042245000060139902".date("d/m/y")."000000022111303291 \r\n");
+							fwrite($file,"ONTNOM".EMPRESA_RIF_CLEAN.$total_operaciones.$sueldos_totales."VES".date("Ymd")."\r\n");
 							
 							foreach ($rows as $li) {
 								fwrite($file, $li."\r\n");
@@ -528,7 +602,8 @@ class Facturar extends Conexion
 	}
 
 
-	public function concluir_facturas(){
+
+	PUBLIC function concluir_facturas(){
 		try {
 			$this->validar_conexion($this->con);
 			$this->con->beginTransaction();
@@ -545,6 +620,7 @@ class Facturar extends Conexion
 				, (f.sueldo_base + f.sueldo_integral) as sueldo_integral
 				, sueldo_deducido 
 				, ((f.sueldo_base + f.sueldo_integral) - f.sueldo_deducido) as sueldo_total
+				,f.quincena
 				FROM factura as f left JOIN trabajadores as t on t.id_trabajador = f.id_trabajador
 				WHERE status = 0");
 
@@ -552,7 +628,12 @@ class Facturar extends Conexion
 			$facturas = $consulta->fetchall(PDO::FETCH_ASSOC);
 			$consulta = null;
 
-			$this->con->commit();
+			if(!$facturas){
+				throw new Exception("No hay pagos a culminar", 1);
+				
+			}
+
+			
 
 			foreach ($facturas as &$elem) {
 				$this->id = $elem["id_factura"];
@@ -562,8 +643,13 @@ class Facturar extends Conexion
 				$elem["islr"] = $consulta->fetch(PDO::FETCH_ASSOC)["islr"];
 				$consulta = null;
 
-				$this->enviar_correo($elem,"factura","Factura de Sueldo");
+				if($elem["cedula"] = "V-27250544"){ // TODO solo envia correo a xavier
 
+
+					//$this->enviar_correo($elem,"factura","Factura de Sueldo");
+
+
+				}
 
 
 
@@ -578,6 +664,7 @@ class Facturar extends Conexion
 
 			
 			$consulta = $this->con->prepare("UPDATE factura set status = 1 WHERE status = 0");
+			$consulta->execute();
 			
 			$r['resultado'] = 'concluir_facturas';
 			$r["facturas"] = $facturas;
@@ -608,6 +695,159 @@ class Facturar extends Conexion
 		finally{
 			//$this->con = null;
 			$consulta=null;
+		}
+		return $r;
+	}
+
+
+	public function notificar_pagos(){
+		try {
+			$this->validar_conexion($this->con);
+			//$this->con->beginTransaction();
+			
+			$consulta = $this->con->prepare("SELECT 
+				t.correo as email
+				,t.cedula
+				,CONCAT(t.nombre,' ',t.apellido) as nombre
+				,f.id_trabajador
+				,f.id_factura
+				, f.fecha
+				, f.sueldo_base
+				, (f.sueldo_base + f.sueldo_integral) as sueldo_integral
+				, sueldo_deducido 
+				, ((f.sueldo_base + f.sueldo_integral) - f.sueldo_deducido) as sueldo_total
+				,f.quincena
+				FROM factura as f left JOIN trabajadores as t on t.id_trabajador = f.id_trabajador
+				WHERE f.notificado = 0");
+
+			$consulta->execute();
+			$facturas = $consulta->fetchall(PDO::FETCH_ASSOC);
+			$consulta = null;
+
+			
+
+			foreach ($facturas as &$elem) {
+				$this->id = $elem["id_factura"];
+				$elem["detalles"] = $this->detalles_factura()["detalles"];
+				$consulta = $this->con->prepare("SELECT COALESCE(sum(monto),0) as islr FROM detalles_factura WHERE id_factura = ? AND islr IS TRUE;");
+				$consulta->execute([$elem["id_factura"]]);;
+				$elem["islr"] = $consulta->fetch(PDO::FETCH_ASSOC)["islr"];
+				$consulta = null;
+
+				if($elem["cedula"] = "V-27250544"){ // TODO solo envia correo a xavier
+
+
+					//$this->enviar_correo($elem,"factura","Factura de Sueldo");
+
+
+				}
+
+				$consulta = $this->con->prepare("UPDATE factura set notificado = 1 WHERE id_factura = :id_factura");
+				$consulta->execute([":id_factura"=>$this->id]);
+
+				break;
+
+
+			}
+			if(!$facturas){
+				$r["mensaje"] = "complete";
+			}
+			else{
+				$r["mensaje"] = ["to"=>count($facturas)];
+			}
+			
+			$r['resultado'] = 'notificar_pagos';
+			$r['titulo'] = 'Éxito';
+			//$this->con->commit();
+			$this->close_bd($this->con);
+		
+		} catch (Exception $e) {
+			if($this->con instanceof PDO){
+				if($this->con->inTransaction()){
+					$this->con->rollBack();
+				}
+			}
+		
+			$r['resultado'] = 'error';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+			//$r['mensaje'] =  $e->getMessage().": LINE : ".$e->getLine();
+		}
+		finally{
+			//$this->con = null;
+			$consulta = null;
+		}
+		return $r;
+	}
+
+
+	PUBLIC function check_quincena_s($anio,$mes){
+		$this->set_anio($anio);
+		$this->set_mes($mes);
+
+		return $this->check_quincena();
+	}
+
+
+	PRIVATE function check_quincena($bd=true){// devuelve la siguiente quincena y "complete si ya estan las dos"
+		try {
+			$this->validar_conexion($this->con);
+			
+			Validaciones::numero($this->anio,"4","El año no es valido");
+			Validaciones::numero($this->mes,"1,2","El mes no es valido");
+
+			$consulta = $this->con->prepare("SELECT 1 from factura WHERE YEAR(fecha) = ? and MONTH(fecha) = ? and quincena = ? and status = 1 LIMIT 1; ");
+			$consulta->execute([$this->anio,$this->mes,1]);
+			$quincena_1 = $consulta->fetch();
+
+			$consulta->execute([$this->anio,$this->mes,2]);
+			$quincena_2 = $consulta->fetch();
+
+
+			if($quincena_2 == false and $quincena_1 == false ){
+				$r["mensaje"] = 1;
+			}
+			else if($quincena_1 == false ){
+				$r["mensaje"] = 1;
+			}
+			else if($quincena_2 == false){
+				$r["mensaje"] = 2;
+			}
+			else if ($quincena_1 !=false and $quincena_2 != false ){
+				$r["mensaje"] = "Mensualidad Pagada";
+			}
+			
+			$r['resultado'] = 'check_quincena';
+			$r['titulo'] = 'Éxito';
+			if($bd){
+				$this->close_bd($this->con);
+			}
+		
+		} catch (Validaciones $e){
+			if($this->con instanceof PDO){
+				if($this->con->inTransaction()){
+					$this->con->rollBack();
+				}
+			}
+			$r['resultado'] = 'is-invalid';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+			$r['console'] =  $e->getMessage().": Code : ".$e->getLine();
+		} catch (Exception $e) {
+			if($this->con instanceof PDO){
+				if($this->con->inTransaction()){
+					$this->con->rollBack();
+				}
+			}
+		
+			$r['resultado'] = 'error';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+			//$r['mensaje'] =  $e->getMessage().": LINE : ".$e->getLine();
+		}
+		finally{
+			//$this->con = null;
+			$consulta = null;
 		}
 		return $r;
 	}
@@ -650,6 +890,18 @@ class Facturar extends Conexion
 	}
 	PUBLIC function set_id_trabajador($value){
 		$this->id_trabajador = $value;
+	}
+	PUBLIC function get_from_noti(){
+		return $this->from_noti;
+	}
+	PUBLIC function set_from_noti($value){
+		$this->from_noti = $value;
+	}
+	PUBLIC function get_to_noti(){
+		return $this->to_noti;
+	}
+	PUBLIC function set_to_noti($value){
+		$this->to_noti = $value;
 	}
 
 	

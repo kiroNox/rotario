@@ -88,7 +88,7 @@ function enviaAjax(datos, func_success,func_beforesend="loader_main") {
 	}
 	var xhr;
 	var promesa = new Promise(function(exito,fail) {
-		 xhr = $.ajax({
+		xhr = $.ajax({
 			async: true,
 			url: "",
 			type: "POST",
@@ -137,7 +137,9 @@ function enviaAjax(datos, func_success,func_beforesend="loader_main") {
 			},
 			error: function (request, status, err) {
 				if (status == "timeout") {
-					muestraMensaje("Servidor Ocupado", "Intente de nuevo", "error");
+					if(fail() != 'timeout'){
+						muestraMensaje("Servidor Ocupado", "Intente de nuevo", "error");
+					}
 
 				} 
 				else if(request.readyState===0){
@@ -874,6 +876,7 @@ FormData.prototype.groupby = function(name) {
 	this.set(name,JSON.stringify(temp));
 };
 FormData.prototype.setter = function(name,verdad = 1,falso = 0) {
+	// si ya existia el dato 'name' el valor es 'verdad' si no es 'falso'
 	this.set(name,(this.has(name))?verdad:falso);
 };
 
@@ -1017,7 +1020,6 @@ document.addEventListener("DOMContentLoaded", function(){
 
 			drop_menu = document.querySelector("#userDropdown+div.dropdown-menu");
 
-			console.log(drop_menu);
 
 			$(drop_menu).prepend(darkmode_btn);
 			// $(drop_menu).prepend('<div class="dropdown-divider"></div>');

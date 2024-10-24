@@ -153,9 +153,11 @@
 							Factura Nº
 						</div>
 						<div class="p-1">
-							<span style="white-space: nowrap;">
+							<span style="display: inline;white-space: nowrap;">
 							<?= $data["fecha"] ?> <br>
-							<?= $data["id_factura"] ?> 
+							<?= $data["id_factura"] ?> <br>
+
+							Quincena: <div style="display: inline;font-weight: bold;font-family: monospace;"><?=$data["quincena"]=='1'?"I":"II" ?></div>
 
 								
 							</span>

@@ -16,6 +16,7 @@ class estadisticas extends Conexion
 	}
 
 	public function obtenerFechaMinimaVacaciones() {
+		$this->validar_conexion($this->con);
 		$sql = "SELECT MIN(desde) AS fecha_minima FROM vacaciones";
 		$stmt = $this->con->prepare($sql);
 		$stmt->execute();
@@ -23,6 +24,7 @@ class estadisticas extends Conexion
 	}
 	
 	public function obtenerFechaMaximaVacaciones() {
+		$this->validar_conexion($this->con);
 		$sql = "SELECT MAX(hasta) AS fecha_maxima FROM vacaciones";
 		$stmt = $this->con->prepare($sql);
 		$stmt->execute();
@@ -30,6 +32,7 @@ class estadisticas extends Conexion
 	}
 
 	public function obtenerVacacionesAnuales() {
+		$this->validar_conexion($this->con);
         $sql = "SELECT MONTH(vacaciones.desde) AS mes, COUNT(*) AS total_empleados
                 FROM vacaciones
                 GROUP BY MONTH(vacaciones.desde)";
@@ -39,6 +42,7 @@ class estadisticas extends Conexion
     }
 
 	public function obtenerVacacionesYRepososPorRangoFechas($fecha_inicio, $fecha_fin) {
+		$this->validar_conexion($this->con);
 		// Obtener vacaciones
 		$sql_vacaciones = "SELECT MONTH(desde) as mes, COUNT(*) as total_empleados
 						   FROM vacaciones
@@ -88,6 +92,7 @@ class estadisticas extends Conexion
 	
 
     public function obtenerNivelesEducativos() {
+		$this->validar_conexion($this->con);
         $sql = "SELECT pp.descripcion AS nivel_educativo, COUNT(*) AS total_empleados
                 FROM trabajadores t
                 JOIN prima_profesionalismo pp ON t.id_prima_profesionalismo = pp.id_prima_profesionalismo

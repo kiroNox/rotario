@@ -352,28 +352,45 @@
 												</div>
 											</div>
 										</div> -->
-										<div class="d-table-row">
-											<div class="d-table-cell">
-												<label for="primas_generales_dedicada" class="m-0 cursor-pointer no-select">Dedicada</label>
-											</div>
-											<div class="d-table-cell pl-2">
+
+										<div class="d-flex justify-content-start mb-3 align-items-center">
+											<label for="primas_generales_mensual" class="m-0 cursor-pointer no-select">Quincenal</label>
+											<input type="checkbox" id="primas_generales_mensual" name="mensual" class="check-button">
+											<label for="primas_generales_mensual" class="check-button mx-2" tabindex="0"></label>
+											<label for="primas_generales_mensual" class="m-0 cursor-pointer no-select">Mensual</label>
+										</div>
+
+										<div class="d-flex justify-content-start align-items-center">
+											<input type="checkbox" id="primas_generales_dedicada" name="dedicada" class="check-button">
+											<label for="primas_generales_dedicada" class="check-button" tabindex="0"></label>
+											<label for="primas_generales_dedicada" class="m-0 cursor-pointer no-select pl-2">Dedicada</label>
+										</div>
+
+
+
+
+										<!-- <div class="d-table-row">
+											<div class="d-table-cell pr-2">
 												<div class="d-flex align-items-center">
 													<input type="checkbox" id="primas_generales_dedicada" name="dedicada" class="check-button">
 													<label for="primas_generales_dedicada" class="check-button" tabindex="0"></label>
 												</div>
 											</div>
-										</div>
-										<div class="d-table-row">
 											<div class="d-table-cell">
-												<label for="primas_generales_mensual" class="m-0 cursor-pointer no-select">Mensual</label>
+												<label for="primas_generales_dedicada" class="m-0 cursor-pointer no-select">Dedicada</label>
 											</div>
-											<div class="d-table-cell pl-2">
+										</div> -->
+										<!-- <div class="d-table-row">
+											<div class="d-table-cell px-2">
 												<div class="d-flex align-items-center">
 													<input type="checkbox" id="primas_generales_mensual" name="mensual" class="check-button">
 													<label for="primas_generales_mensual" class="check-button" tabindex="0"></label>
 												</div>
 											</div>
-										</div>
+											<div class="d-table-cell">
+												<label for="primas_generales_mensual" class="m-0 cursor-pointer no-select">Mensual</label>
+											</div>
+										</div> -->
 									</div>
 								</div>
 							</div>
@@ -439,597 +456,18 @@
 
 			//$("#modal_registrar_prima_general").modal("show");
 
-			load_all_primas();
+			load_primas_generales();
+
+			// load_all_primas();
 			// inicializar primas hijos
-				document.getElementById('hijo_porcentaje').onchange = document.getElementById('hijo_menor').onchange = document.getElementById('hijo_discapacidad').onchange = change_restrict_hijos;
-				eventoMonto("hijo_monto");
-				eventoKeyup("hijo_descripcion", /^[a-zA-Z\säÄëËïÏöÖüÜáéíóúáéíóúÁÉÍÓÚÂÊÎÔÛâêîôûàèìòùÀÈÌÒÙñÑ]{1,50}$/, "Solo se permiten letras");
-
-				document.getElementById('f1').onsubmit=function(e){
-					e.preventDefault();
-					document.querySelector("#f1 button[type='submit']").focus();
-					document.querySelector("#f1 button[type='submit']").blur();
-
-					f1 = this;
-
-					if(f1.sending === true){
-						return false;
-					}
-
-					elem = document.querySelectorAll("#f1 input:not(input[type='checkbox']):not(input[type='hidden'])");
-					for(var el of elem){
-						if(!el.validarme()){
-							return false;
-						}
-					}
-
-					if (document.getElementById('hijo_porcentaje').checked){
-						var monto = document.getElementById('hijo_monto').value;
-						monto = sepMilesMonto(monto,true);
-						monto = parseFloat(monto);
-						if(monto>100){
-							muestraMensaje("Error", "El monto no puede ser mayor a 100 si la casilla de porcentaje esta activada", "e");
-							document.getElementById('hijo_monto').focus();
-							document.getElementById('hijo_monto').classList.replace("is-valid", "is-invalid");
-							return false;
-						}
-					}
-
-					if(document.getElementById('id_prima_hijo_hidden').value!=''){
-
-						mensaje = "Seguro de que desea modificar la prima";
-					}
-					else{
-						mensaje = "Esta seguro de registrar la prima";
-					}
-
-					muestraMensaje("¿Seguro?", mensaje, "?",function(result){
-						if(result){
-
-
-
-							var datos = new FormData($("#f1")[0]);
-							datos.set("hijo_monto",sepMilesMonto(document.getElementById('hijo_monto').value,true));
-							datos.set("hijo_porcentaje",(datos.has("hijo_porcentaje"))?1:0);
-							datos.set("hijo_menor",(datos.has("hijo_menor"))?1:0);
-							datos.set("hijo_discapacidad",(datos.has("hijo_discapacidad"))?1:0);
-
-							if(document.getElementById('id_prima_hijo_hidden').value!=''){
-								datos.append("accion","modificar_prima_hijo");
-							}
-							else{
-								datos.append("accion","registrar_prima_hijo");
-							}
-
-							f1.sending = true;
-
-							enviaAjax(datos,function(respuesta, exito, fail){
-							
-								var lee = JSON.parse(respuesta);
-								if(lee.resultado == "registrar_prima_hijo"){
-
-									muestraMensaje("Éxito", "La prima por hijos fue registrada exitosa mente", "s");
-
-									cargar_prima_hijos(lee.mensaje);
-
-									$("#modal_registrar_prima_hijos").modal("hide");
-
-
-									
-								}
-								else if (lee.resultado == 'modificar_prima_hijo'){
-									muestraMensaje("Éxito", "La prima por hijos fue modificada exitosa mente", "s");
-
-									cargar_prima_hijos(lee.mensaje);
-
-									$("#modal_registrar_prima_hijos").modal("hide");
-								}
-								else if (lee.resultado == 'is-invalid'){
-									muestraMensaje(lee.titulo, lee.mensaje,"error");
-								}
-								else if(lee.resultado == "error"){
-									muestraMensaje(lee.titulo, lee.mensaje,"error");
-									console.error(lee.mensaje);
-								}
-								else if(lee.resultado == "console"){
-									console.log(lee.mensaje);
-								}
-								else{
-									muestraMensaje(lee.titulo, lee.mensaje,"error");
-								}
-								f1.sending = false;
-							},"loader_body").p.catch((a)=>{
-								f1.sending = false;
-							});
-						}
-
-					});
-
-
-				}
-
-				$('#modal_registrar_prima_hijos').on('hidden.bs.modal', function (e) {
-					$("#f1 input").each((index,el)=>{
-						if(el.type=='checkbox'){
-							el.checked = false;
-						}
-						else{
-							el.value = '';
-							el.classList.remove("is-invalid","is-valid");
-						}
-					});
-					document.querySelector('#f1 button[type="submit"]').innerHTML = "Registrar";
-					document.getElementById('hijo_info_prima').innerHTML='';
-				})
-
-				rowsEventActions("tbody_primas_hijos",function(action,rowId){
-					if(action == "modificar"){
-						muestraMensaje("¿Seguro?", "Seguro de que desea modificar la prima", "?",function(result){
-							if(result){
-								var datos = new FormData();
-								datos.append("accion","get_prima_hijos");
-								datos.append("id",rowId);
-								enviaAjax(datos,function(respuesta, exito, fail){
-								
-									var lee = JSON.parse(respuesta);
-									if(lee.resultado == "get_prima_hijos"){
-
-										document.getElementById('id_prima_hijo_hidden').value = rowId;
-										document.getElementById('hijo_descripcion').value = lee.mensaje.descripcion;
-										document.getElementById('hijo_monto').value = lee.mensaje.monto;
-										document.getElementById('hijo_monto').onkeyup();
-										document.getElementById('hijo_monto').classList.remove("is-valid","is-invalid");
-
-										document.getElementById('hijo_porcentaje').checked = (lee.mensaje.porcentaje == '1')?true:false;
-										document.getElementById('hijo_menor').checked = (lee.mensaje.menor_edad == '1')?true:false;
-										document.getElementById('hijo_discapacidad').checked = (lee.mensaje.discapacidad == '1')?true:false;
-										
-										document.getElementById('hijo_discapacidad').onchange();
-
-										document.querySelector('#f1 button[type="submit"]').innerHTML = "Modificar";
-
-										$("#modal_registrar_prima_hijos").modal("show");
-
-										
-									}
-									else if (lee.resultado == 'is-invalid'){
-										muestraMensaje(lee.titulo, lee.mensaje,"error");
-									}
-									else if(lee.resultado == "error"){
-										muestraMensaje(lee.titulo, lee.mensaje,"error");
-										console.error(lee.mensaje);
-									}
-									else if(lee.resultado == "console"){
-										console.log(lee.mensaje);
-									}
-									else{
-										muestraMensaje(lee.titulo, lee.mensaje,"error");
-									}
-								});
-							}
-
-						});
-
-					}
-					else if (action == "eliminar"){
-
-						muestraMensaje("¿Seguro?", "Esta seguro de que desea eliminar la prima seleccionada", "?",function(result){
-							if(result){
-
-								var datos = new FormData();
-								datos.append("accion","eliminar_prima_hijo");
-								datos.append("id",rowId);
-								enviaAjax(datos,function(respuesta, exito, fail){
-								
-									var lee = JSON.parse(respuesta);
-									if(lee.resultado == "eliminar_prima_hijo"){
-										muestraMensaje("Éxito", "La prima fue eliminada exitosamente", "s");
-										load_primas_hijos();
-									}
-									else if (lee.resultado == 'is-invalid'){
-										muestraMensaje(lee.titulo, lee.mensaje,"error");
-									}
-									else if(lee.resultado == "error"){
-										muestraMensaje(lee.titulo, lee.mensaje,"error");
-										console.error(lee.mensaje);
-									}
-									else if(lee.resultado == "console"){
-										console.log(lee.mensaje);
-									}
-									else{
-										muestraMensaje(lee.titulo, lee.mensaje,"error");
-									}
-								});
-							}
-						});
-
-					}
-				})
-
+				
 			// inicializar primas antigüedad
 
-				eventoMonto("prima_antiguedad_monto");
-				eventoKeyup("prima_antiguedad_year", /^[0-9]+$/, "Solo se permiten números");
-
-
-
-				rowsEventActions("tbody_primas_antiguedad",(action, rowId)=>{
-
-				 	if(action == "modificar"){
-
-				 		var datos = new FormData();
-				 		datos.append("accion","get_prima_antiguedad");
-				 		datos.append("id",rowId);
-
-				 		enviaAjax(datos,function(respuesta, exito, fail){
-				 		
-				 			var lee = JSON.parse(respuesta);
-				 			if(lee.resultado == "get_prima_antiguedad"){
-				 				document.getElementById('prima_antiguedad_id').value = rowId;
-				 				document.getElementById('prima_antiguedad_year').value = lee.mensaje.year;
-				 				document.getElementById('prima_antiguedad_monto').value = lee.mensaje.monto;
-
-				 				document.querySelector("#f2 button[type='submit']").innerHTML = "Modificar";
-
-				 				$("#modal_registrar_prima_antiguedad").modal("show");
-
-
-				 				
-				 			}
-				 			else if (lee.resultado == 'is-invalid'){
-				 				muestraMensaje(lee.titulo, lee.mensaje,"error");
-				 			}
-				 			else if(lee.resultado == "error"){
-				 				muestraMensaje(lee.titulo, lee.mensaje,"error");
-				 				console.error(lee.mensaje);
-				 			}
-				 			else if(lee.resultado == "console"){
-				 				console.log(lee.mensaje);
-				 			}
-				 			else{
-				 				muestraMensaje(lee.titulo, lee.mensaje,"error");
-				 			}
-				 		});
-
-				 	}
-				 	else if (action == "eliminar"){
-
-				 		muestraMensaje("¿Seguro?", "Esta seguro de querer eliminar la prima seleccionada?", "?", function(result){
-				 			if(result){
-				 				var datos = new FormData();
-					 			datos.append("accion","eliminar_prima_antiguedad");
-					 			datos.append("id",rowId);
-
-					 			enviaAjax(datos,function(respuesta, exito, fail){
-					 			
-					 				var lee = JSON.parse(respuesta);
-					 				if(lee.resultado == "eliminar_prima_antiguedad"){
-					 					
-					 					muestraMensaje("Éxito", "La prima ha sido eliminada exitosamente", "s");
-					 					cargar_prima_antiguedad(lee.mensaje);
-
-					 				}
-					 				else if (lee.resultado == 'is-invalid'){
-					 					muestraMensaje(lee.titulo, lee.mensaje,"error");
-					 				}
-					 				else if(lee.resultado == "error"){
-					 					muestraMensaje(lee.titulo, lee.mensaje,"error");
-					 					console.error(lee.mensaje);
-					 				}
-					 				else if(lee.resultado == "console"){
-					 					console.log(lee.mensaje);
-					 				}
-					 				else{
-					 					muestraMensaje(lee.titulo, lee.mensaje,"error");
-					 				}
-					 			});
-				 			}
-				 		});
-
-				 	}
-				});
-
-				document.getElementById('f2').onsubmit=function(e){
-					e.preventDefault();
-
-					f2 = this;
-
-					if(f2.sending === true){
-						return false;
-					}
-
-					//TODO validaciones
-
-
-
-					if(document.getElementById('prima_antiguedad_id').value!=''){
-
-						mensaje = "Seguro de que desea modificar la prima";
-					}
-					else{
-						mensaje = "Esta seguro de registrar la prima";
-					}
-
-					muestraMensaje("¿Seguro?", mensaje, "?",function(result){
-						if(result){
-
-							var datos = new FormData($("#f2")[0]);
-
-							var temp_monto = parseFloat(sepMilesMonto(datos.get("porcentaje_monto"),true));
-
-							if(temp_monto > 100){
-								muestraMensaje("Error", "El porcentaje no puede ser mayor a 100", "e");
-								return false;
-							}
-							else if(temp_monto <= 0){
-								muestraMensaje("Error", "El porcentaje no puede ser menor o igual a 0", "e");
-								return false;	
-							}
-
-							if(datos.get("monto") == '' || datos.get("anio") == ''){
-								muestraMensaje("Error", "Los datos no pueden estar vacíos", "e");
-								return false;
-							}
-
-							// TODO validaciones
-
-
-							if(document.getElementById('prima_antiguedad_id').value!=''){
-
-								datos.append("accion","modificar_prima_antiguedad");
-							}
-							else{
-								datos.append("accion","registrar_prima_antiguedad");
-							}
-
-							datos.set("porcentaje_monto",sepMilesMonto(document.getElementById('prima_antiguedad_monto').value,true));
-
-
-							f2.sending = true;
-							enviaAjax(datos,function(respuesta, exito, fail){
-							
-								var lee = JSON.parse(respuesta);
-								if(lee.resultado == "registrar_prima_antiguedad"){
-									muestraMensaje("Exito", "La prima fue registrada exitosamente", "s");
-
-									cargar_prima_antiguedad(lee.mensaje);
-									$("#modal_registrar_prima_antiguedad").modal("hide");
-								}
-								else if(lee.resultado == "modificar_prima_antiguedad"){
-									muestraMensaje("Exito", "La prima fue modificada exitosamente", "s");
-
-									cargar_prima_antiguedad(lee.mensaje);
-									$("#modal_registrar_prima_antiguedad").modal("hide");
-								}
-								else if (lee.resultado == 'is-invalid'){
-									muestraMensaje(lee.titulo, lee.mensaje,"error");
-								}
-								else if(lee.resultado == "error"){
-									muestraMensaje(lee.titulo, lee.mensaje,"error");
-									console.error(lee.mensaje);
-								}
-								else if(lee.resultado == "console"){
-									console.log(lee.mensaje);
-								}
-								else{
-									muestraMensaje(lee.titulo, lee.mensaje,"error");
-								}
-								f2.sending = false;
-
-							}).p.catch((a)=>{
-								f2.sending = false;
-							});
-
-						}
-					});
-
-
-
-				}
-
-				$('#modal_registrar_prima_antiguedad').on('hidden.bs.modal', function (e) {
-					$("#input").each(function(index,el){
-						el.value = '';
-						el.classList.remove("is-invalid", "is-valid");
-					});
-
-					document.querySelector("#f2 button[type='submit']").innerHTML = "Registrar";
-				})
+				
 
 			// inicializar primas escalafón
 
-				eventoMonto("primas_escalafon_monto");
-
-				eventoKeyup("primas_escalfon_escala", /^[ivxlcdm]+$/i, "Se esperan números romanos ej I,IV,IX");
-
-				eventoKeyup("primas_escalafon_tiempo", /^[\d\-\s]+$/, "se espera un plazo de tiempo ej 1 - 2 (años) este es solo un campo informativo");
-
-				document.getElementById('f3').onsubmit=function(e){
-
-					e.preventDefault();
-
-					f3 = this;
-
-					if(f3.sending === true){
-						return false;
-					}
-
-
-					// TODO validaciones
-
-
-
-
-					if(document.getElementById('primas_escalfon_id').value!=''){
-
-						mensaje = "Seguro de que desea modificar la prima";
-					}
-					else{
-						mensaje = "Esta seguro de registrar la prima";
-					}
-
-					muestraMensaje("¿Seguro?", mensaje, "?",function(result){
-						if(result){
-
-
-							var datos = new FormData($("#f3")[0]);
-
-							var temp_monto = parseFloat(sepMilesMonto(datos.get("porcentaje"),true));
-
-							if(temp_monto > 100){
-								muestraMensaje("Error", "El porcentaje no puede ser mayor a 100", "e");
-								return false;
-							}
-							else if(temp_monto <= 0){
-								muestraMensaje("Error", "El porcentaje no puede ser menor o igual a 0", "e");
-								return false;	
-							}
-							
-
-							if(document.getElementById('primas_escalfon_id').value!=''){
-
-								datos.append("accion","modificar_prima_escalafon");
-							}
-							else{
-								datos.append("accion","registrar_prima_escalafon");
-							}
-
-							datos.set("porcentaje", sepMilesMonto(document.getElementById('primas_escalafon_monto').value,true) )
-							datos.set("tiempo", removeSpace(datos.get("tiempo")));
-
-
-							f3.sending = true;
-							enviaAjax(datos,function(respuesta, exito, fail){
-							
-								var lee = JSON.parse(respuesta);
-								if(lee.resultado == "registrar_prima_escalafon"){
-
-									muestraMensaje("Éxito", "La prima fue registrada exitosamente", "s");
-									cargar_prima_escalafon(lee.mensaje);
-									$("#modal_registrar_prima_escalafon").modal("hide");
-
-									
-								}
-								else if (lee.resultado == "modificar_prima_escalafon"){
-									muestraMensaje("Éxito", "La prima fue modificada exitosamente", "s");
-									cargar_prima_escalafon(lee.mensaje);
-									$("#modal_registrar_prima_escalafon").modal("hide");
-								}
-								else if (lee.resultado == 'is-invalid'){
-									muestraMensaje(lee.titulo, lee.mensaje,"error");
-								}
-								else if(lee.resultado == "error"){
-									muestraMensaje(lee.titulo, lee.mensaje,"error");
-									console.error(lee.mensaje);
-								}
-								else if(lee.resultado == "console"){
-									console.log(lee.mensaje);
-								}
-								else{
-									muestraMensaje(lee.titulo, lee.mensaje,"error");
-								}
-								f3.sending = false;
-							},"loader_body").p.catch((a)=>{
-								f3.sending = false;
-							});
-
-
-
-
-
-
-						}
-					});
-
-				};
-
-				$('#modal_registrar_prima_escalafon').on('hidden.bs.modal', function (e) {
-					$("#f3 input").each((index,el)=>{
-						el.value = '';
-						el.classList.remove("is-invalid","is-valid");
-					});
-
-					document.querySelector("#f3 button[type='submit']").innerHTML = "Registrar";
-				})
-
-
-				rowsEventActions("tbody_primas_escalafon",(action, rowId)=>{
-
-				 	if(action == "modificar"){
-
-				 		var datos = new FormData();
-				 		datos.append("accion","get_prima_escalafon");
-				 		datos.append("id",rowId);
-
-				 		enviaAjax(datos,function(respuesta, exito, fail){
-				 		
-				 			var lee = JSON.parse(respuesta);
-				 			if(lee.resultado == "get_prima_escalafon"){
-				 				document.getElementById('primas_escalfon_id').value = rowId;
-				 				document.getElementById('primas_escalfon_escala').value = lee.mensaje.escala;
-				 				document.getElementById('primas_escalafon_monto').value = lee.mensaje.monto;
-				 				document.getElementById('primas_escalafon_tiempo').value = lee.mensaje.tiempo;
-				 				document.getElementById('primas_escalafon_monto').onkeyup();
-				 				document.getElementById('primas_escalafon_monto').classList.remove("is-valid", "is-invalid");
-
-
-				 				document.querySelector("#f3 button[type='submit']").innerHTML = "Modificar";
-
-				 				$("#modal_registrar_prima_escalafon").modal("show");
-
-
-				 				
-				 			}
-				 			else if (lee.resultado == 'is-invalid'){
-				 				muestraMensaje(lee.titulo, lee.mensaje,"error");
-				 			}
-				 			else if(lee.resultado == "error"){
-				 				muestraMensaje(lee.titulo, lee.mensaje,"error");
-				 				console.error(lee.mensaje);
-				 			}
-				 			else if(lee.resultado == "console"){
-				 				console.log(lee.mensaje);
-				 			}
-				 			else{
-				 				muestraMensaje(lee.titulo, lee.mensaje,"error");
-				 			}
-				 		});
-
-				 	}
-				 	else if (action == "eliminar"){
-
-				 		muestraMensaje("¿Seguro?", "Esta seguro de querer eliminar la prima seleccionada?", "?", function(result){
-				 			var datos = new FormData();
-				 			datos.append("accion","eliminar_prima_escalafon");
-				 			datos.append("id",rowId);
-
-				 			enviaAjax(datos,function(respuesta, exito, fail){
-				 			
-				 				var lee = JSON.parse(respuesta);
-				 				if(lee.resultado == "eliminar_prima_escalafon"){
-				 					
-				 					muestraMensaje("Éxito", "La prima ha sido eliminada exitosamente", "s");
-				 					cargar_prima_escalafon(lee.mensaje);
-
-				 				}
-				 				else if (lee.resultado == 'is-invalid'){
-				 					muestraMensaje(lee.titulo, lee.mensaje,"error");
-				 				}
-				 				else if(lee.resultado == "error"){
-				 					muestraMensaje(lee.titulo, lee.mensaje,"error");
-				 					console.error(lee.mensaje);
-				 				}
-				 				else if(lee.resultado == "console"){
-				 					console.log(lee.mensaje);
-				 				}
-				 				else{
-				 					muestraMensaje(lee.titulo, lee.mensaje,"error");
-				 				}
-				 			});
-				 		});
-
-				 	}
-				});
+				
 
 			// inicializar primas generales
 
@@ -1045,37 +483,14 @@
 						muestraMensaje("Advertencia", "Se aconseja colocar en la(s) condicional(es) la variable: <ENDL> 'DEDICADA' <ENDL> de no hacerlo, si utiliza el nombre de esta formula en otra, la lista dedicada sera ignorada y se ejecutará para otros trabajadores", "¡");
 						add_trabajador();
 						document.getElementById('primas_generales_container_trabajadores').classList.remove("d-none");
-						// document.getElementById('primas_generales_salud').checked = false;
-						// document.getElementById('primas_generales_salud').disabled = true;
-						document.getElementById('primas_generales_mensual').disabled = false;
-
-
-						// $("#primas_generales_salud, label[for='primas_generales_salud']").each((index,el)=>{
-						// 	el.style="opacity:0.75";
-						// });
-
-
-
-						$("#primas_generales_mensual, label[for='primas_generales_mensual']").each((index,el)=>{
-							el.style="";
-						});
 					}
 					else{
-						document.getElementById('primas_generales_mensual').checked = false;
-						document.getElementById('primas_generales_mensual').disabled = true;
 
 						document.getElementById('primas_generales_container_trabajadores').classList.add("d-none");
 						document.getElementById('tbody_trabajadores_dedicada').innerHTML='';
-						// document.getElementById('primas_generales_salud').disabled = false;
-						// $("#primas_generales_salud, label[for='primas_generales_salud']").each((index,el)=>{
-						// 	el.style="";
-						// });
-
-						$("#primas_generales_mensual, label[for='primas_generales_mensual']").each((index,el)=>{
-							el.style="opacity:0.75";
-						});
 					}
 				}
+
 				document.getElementById('primas_generales_dedicada').onclick();
 
 				rowsEventActions("tbody_trabajadores_dedicada" ,function(action,rowId,btn){
@@ -1141,13 +556,13 @@
 								
 									var lee = JSON.parse(respuesta);
 									if(lee.resultado == "get_prima_general"){
+
+
+										var temp_quincena = (lee.mensaje.quincena=='0')?true:false;
+										document.getElementById('primas_generales_mensual').checked = temp_quincena;
+
 										document.getElementById('primas_generales_id').value = lee.mensaje.id;
-										//document.getElementById('primas_generales_monto').value = lee.mensaje.monto;
-										//document.getElementById('primas_generales_monto').onchange();
-										//document.getElementById('primas_generales_monto').classList.remove("is-valid");
 										document.getElementById('primas_generales_descripcion').value = lee.mensaje.descripcion;
-										//document.getElementById('primas_generales_porcentaje').checked = (lee.mensaje.porcentaje=='1')?true:false;
-										// document.getElementById('primas_generales_salud').checked = (lee.mensaje.sector_salud=='1')?true:false;
 										document.getElementById('primas_generales_dedicada').checked = (lee.mensaje.dedicada=='1')?true:false;
 										document.getElementById('primas_generales_dedicada').onclick();
 
@@ -1168,6 +583,7 @@
 											load_formulas_form(lee.mensaje.calc_formula);
 
 											document.getElementById('f4').tested_form=true;
+											document.getElementById('save-form-btn-1').innerHTML='Modificar Prima';
 											$(modal).modal("show");
 										})
 
@@ -1255,9 +671,13 @@
 						}
 					}
 
-					datos.set("sector_salud",datos.has("sector_salud") ? "1":"0");
-					datos.set("mensual",datos.has("mensual") ? "1":"0");
-					datos.set("dedicada",datos.has("dedicada") ? "1":"0");
+					datos.setter("sector_salud");
+					datos.setter("mensual",0,1);
+					datos.setter("dedicada");
+
+					// datos.set("sector_salud",datos.has("sector_salud") ? "1":"0");
+					// datos.set("mensual",datos.has("mensual") ? "1":"0");
+					// datos.set("dedicada",datos.has("dedicada") ? "1":"0");
 
 					if(datos.get("dedicada") == '1' && !datos.has("trabajadores")){
 						muestraMensaje("Error", `Debe agregar al menos un trabajador si la prima esta seleccionada como "dedicada"`, "w");
@@ -1273,60 +693,93 @@
 						//alert("esto aun no");;
 						//return false;
 					}
-					this.action_form = 'testing_calc';
 
 
-					enviaAjax(datos,function(respuesta, exito, fail){
-					
-						var lee = JSON.parse(respuesta);
-						if(lee.resultado == "registra_prima_general" || lee.resultado == "modificar_prima_general"){
+					var obj_msg = {};
 
-							muestraMensaje("Exito", lee.mensaje, 's');
-							cargar_prima_generales(lee.lista);
-							$("#modal_registrar_prima_general").modal("hide");
-						}
-						else if (lee.resultado == 'leer_formula'){
+					if(this.action_form == "testing_calc"){
+						obj_msg.ignore = true;
+					}
 
-							if(lee.total!==null){
-								muestraMensaje("Prueba Exitosa", `La formula fue evaluada exitosamente <ENDL> total <ENDL> ${lee.total}`, "s",);
-							}
-							else{
-								muestraMensaje("Prueba Exitosa <br> (Advertencia)", "La condicional no se ha cumplido por lo tanto el resultado es '0' <ENDL> se sugiere probar la formula con una condicional positiva para evitar errores", "¡",);
-							}
-							f4.tested_form = true;
-						}
-						else if (lee.resultado == 'leer_formula_condicional'){
-							if(lee.total!==null){
-								muestraMensaje("Prueba Exitosa", `La formula '${lee.n_formula}' fue evaluada exitosamente <ENDL> total <ENDL> ${lee.total}`, "s");
-							}
-							else{
-								muestraMensaje("Prueba Exitosa <br> (Advertencia)", "Ninguna condicional se ha cumplido por lo tanto el resultado es '0' <ENDL> se sugiere probar cada formula con una condicional positiva para evitar errores", "¡",);
-							}
+					if(document.getElementById('primas_generales_id').value != ''){
+						var sms = "¿Desea modificar la prima seleccionada?";
+					}
+					else{
+						var sms = "¿Esta seguro de registrar la nueva prima?";
+					}
 
 
 
-							f4.tested_form = true;
-						}
-						else if (lee.resultado == 'is-invalid'){
-							muestraMensaje(lee.titulo, lee.mensaje,"error");
-						}
-						else if(lee.resultado == "error"){
-							muestraMensaje(lee.titulo, lee.mensaje,"error");
-							console.error(lee.mensaje);
-						}
-						else if(lee.resultado == "console"){
-							console.log(lee.mensaje);
-						}
-						else if(lee.resultado == "console-table" ){
-							console.table(JSON.parse(lee.mensaje));
+					muestraMensaje("¿Seguro?", sms , "?",obj_msg, (resul)=>{
+						if(resul){
+							this.action_form = 'testing_calc';
+
+
+							enviaAjax(datos,function(respuesta, exito, fail){
+							
+								var lee = JSON.parse(respuesta);
+								if(lee.resultado == "registra_prima_general" || lee.resultado == "modificar_prima_general"){
+
+									muestraMensaje("Exito", lee.mensaje, 's');
+									cargar_prima_generales(lee.lista);
+									$("#modal_registrar_prima_general").modal("hide");
+								}
+								else if (lee.resultado == 'leer_formula'){
+
+									if(lee.total!==null){
+										muestraMensaje("Prueba Exitosa", `La formula fue evaluada exitosamente <ENDL> total <ENDL> ${lee.total}`, "s",);
+									}
+									else{
+										muestraMensaje("Prueba Exitosa <br> (Advertencia)", "La condicional no se ha cumplido por lo tanto el resultado es '0' <ENDL> se sugiere probar la formula con una condicional positiva para evitar errores", "¡",);
+									}
+									f4.tested_form = true;
+								}
+								else if (lee.resultado == 'leer_formula_condicional'){
+									if(lee.total!==null){
+										muestraMensaje("Prueba Exitosa", `La formula '${lee.n_formula}' fue evaluada exitosamente <ENDL> total <ENDL> ${lee.total}`, "s");
+									}
+									else{
+										muestraMensaje("Prueba Exitosa <br> (Advertencia)", "Ninguna condicional se ha cumplido por lo tanto el resultado es '0' <ENDL> se sugiere probar cada formula con una condicional positiva para evitar errores", "¡",);
+									}
+
+
+
+									f4.tested_form = true;
+								}
+								else if (lee.resultado == 'is-invalid'){
+									muestraMensaje(lee.titulo, lee.mensaje,"error");
+								}
+								else if(lee.resultado == "error"){
+									muestraMensaje(lee.titulo, lee.mensaje,"error");
+									console.error(lee.mensaje);
+								}
+								else if(lee.resultado == "console"){
+									console.log(lee.mensaje);
+								}
+								else if(lee.resultado == "console-table" ){
+									console.table(JSON.parse(lee.mensaje));
+								}
+								else{
+									muestraMensaje(lee.titulo, lee.mensaje,"error");
+								}
+								f4.sending = false; 
+							},"loader_body").p.finally((a)=>{
+								f4.sending = undefined; 
+							});
+
 						}
 						else{
-							muestraMensaje(lee.titulo, lee.mensaje,"error");
+							f4.action_form = "testing_calc";
+							f4.sending = undefined;
 						}
-						f4.sending = false; 
-					},"loader_body").p.finally((a)=>{
-						f4.sending = false; 
 					});
+
+
+
+
+
+
+
 
 
 

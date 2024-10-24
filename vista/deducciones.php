@@ -93,27 +93,19 @@
 										</div>
 										<div class="row mt-2">
 											<div class="col-12 col-sm-6">
-												<!-- <div class="d-flex flex-row align-items-center">
-													<label for="deducciones_quincena" class="m-0 cursor-pointer no-select">Mensual</label>
-													<input type="checkbox" class="check-button" id="deducciones_quincena" name="deducciones_quincena">
-													<label for="deducciones_quincena" class="check-button mx-2"></label>
-													<label for="deducciones_quincena" class="m-0 cursor-pointer no-select">Quincenal</label>
+												
+												<div class="d-flex justify-content-start mb-3 align-items-center">
+													<label for="primas_generales_mensual" class="m-0 cursor-pointer no-select">Quincenal</label>
+													<input type="checkbox" id="primas_generales_mensual" name="mensual" class="check-button">
+													<label for="primas_generales_mensual" class="check-button mx-2" tabindex="0"></label>
+													<label for="primas_generales_mensual" class="m-0 cursor-pointer no-select">Mensual</label>
 												</div>
-												<div class="d-flex flex-row align-items-center">
-													<input type="checkbox" class="check-button" id="deducciones_multi_dia" name="deducciones_multi_dia">
-													<label for="deducciones_multi_dia" class="check-button"></label>
-													<label for="deducciones_multi_dia" class="mb-0 ml-2 cursor-pointer no-select">Multiplicar n lunes</label>
-												</div> -->
 												<div class="d-flex flex-row align-items-center">
 													<input type="checkbox" class="check-button" id="deducciones_islr" name="deducciones_islr">
 													<label for="deducciones_islr" class="check-button"></label>
 													<label for="deducciones_islr" class="mb-0 ml-2 cursor-pointer no-select">ISLR</label>
 												</div>
-												<!-- <div class="d-flex flex-row align-items-center">
-													<input type="checkbox" class="check-button" id="deducciones_sector_salud" name="deducciones_sector_salud">
-													<label for="deducciones_sector_salud" class="check-button"></label>
-													<label for="deducciones_sector_salud" class="mb-0 ml-2 cursor-pointer no-select">Sector Salud</label>
-												</div> -->
+											
 												<div class="d-flex flex-row align-items-center">
 													<input type="checkbox" id="deducciones_dedicada" name="deducciones_dedicada" class="check-button">
 													<label for="deducciones_dedicada" class="check-button" tabindex="0"></label>
@@ -276,6 +268,11 @@
 											var lee = JSON.parse(respuesta);
 											if(lee.resultado == "get_deduccion"){
 
+												var temp_quincena = (lee.mensaje.quincena=='1')?false:true;
+
+												document.getElementById('primas_generales_mensual').checked = temp_quincena;
+
+
 
 												document.getElementById('deducciones_id').value = rowId;
 												document.getElementById('deducciones_descripcion').value = lee.mensaje.descripcion ;
@@ -417,7 +414,7 @@
 								var sms = "¿Desea modificar la deducción seleccionada?";
 							}
 							else{
-								var sms = "¿ESta seguro de registra la nueva deducción?";
+								var sms = "¿Esta seguro de registrar la nueva deducción?";
 							}
 
 							muestraMensaje("¿Seguro?", sms , "?",obj_msg, (resul)=>{
@@ -439,6 +436,7 @@
 									datos.setter("deducciones_islr");
 									// datos.setter("deducciones_sector_salud");
 									datos.setter("deducciones_dedicada");
+									datos.setter("mensual",0,1);
 
 									// datos.setter("deducciones_meses", datos.get("deducciones_meses"));
 									// datos.setter("deducciones_semanas", datos.get("deducciones_semanas"));

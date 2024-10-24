@@ -25,7 +25,7 @@ trait Calculadora{
 		$this->calc_evaluando = new stdClass();
 		$this->calc_list_formulas = new stdClass();
 		$this->calc_error = null;
-		$this->calc_decimales_recibidos = 4;
+		$this->calc_decimales_recibidos = 2;
 		$this->calc_decimales_respuesta = 2;
 
 		$this->calc_diff_var_formula[] = $this->calc_separadores[] = '\\+';
@@ -290,9 +290,53 @@ trait Calculadora{
 
 
 
-		$this->set_calc_function("LUNES_MES","Devuelve el total de lunes en el mes actual",function() use ($fn_general){
+		$this->set_calc_function("LUNES_MES","Devuelve el total de lunes en el mes actual en la prueba, al calcular el sueldo se hará con la fecha ingresada",function() use ($fn_general){
 
 			return $fn_general(function(){
+
+				$consulta = $this->con->query("SELECT 
+					COALESCE(DATE_FORMAT(@fecha_pago_inico, '%Y-%m-1'),DATE_FORMAT(CURRENT_DATE, '%Y-%m-1') ),
+					if(@quincena_pago is not null,
+					   if(@quincena_pago=1,DATE_FORMAT(@fecha_pago_inicio, '%Y-%m-15'),
+					      if(@quincena_pago=2,LAST_DAY(@fecha_pago_inicio),false)
+					     )
+					   ,LAST_DAY(CURRENT_DATE))
+					INTO 
+					@fecha_pago_inicio_function,
+					@fecha_pago_fin_function;
+					SELECT DATE_FORMAT(CURRENT_DATE, '%Y-%m-1') as test;");
+
+
+
+
+
+
+				$consulta = $this->con->prepare("SELECT IF(DAYOFWEEK(:inicio)=2,1,0) as lunes, DATE_ADD(:inicio, INTERVAL 1 DAY) as nex FROM trabajadores WHERE :inicio <> :fin LIMIT 1;");
+
+
+
+
+				$consulta = $this->con->query("SET @fecha_pago_inicio = null,@fecha_pago_fin= NULL;");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 				$consulta = $this->con->query("SELECT f_contar_lunes(CURRENT_DATE,3) lunes;");
 
 				if($resp = $consulta->fetch(PDO::FETCH_ASSOC)){
@@ -305,7 +349,7 @@ trait Calculadora{
 			});
 		},false,true);
 
-		$this->set_calc_function("LUNES_QUINCENA_UNO","Devuelve el total de lunes en la primera quincena del mes actual",function() use ($fn_general){
+		$this->set_calc_function("LUNES_QUINCENA_UNO_DOS","Devuelve el total de lunes en la primera quincena del mes actual",function() use ($fn_general){
 
 			return $fn_general(function(){
 				$consulta = $this->con->query("SELECT f_contar_lunes(CURRENT_DATE,1) lunes;");
@@ -320,17 +364,74 @@ trait Calculadora{
 			});
 		},false,true);
 
-		$this->set_calc_function("LUNES_QUINCENA_DOS","Devuelve el total de lunes en la segunda quincena del mes",function() use ($fn_general){
+		$this->set_calc_function("LUNES_QUINCENA","Devuelve el total de lunes en la primera quincena del mes actual, Al calcular el sueldo de los trabajadores lo hará según la fecha ingresada y quincena correspondiente",function() use ($fn_general){
 
 			return $fn_general(function(){
-				$consulta = $this->con->query("SELECT f_contar_lunes(CURRENT_DATE,2) lunes;");
 
-				if($resp = $consulta->fetch(PDO::FETCH_ASSOC)){
-					return $resp["lunes"];
+				//$consulta = $this->con->query("set @fecha_pago_inicio = '2024-12-14', @quincena_pago = 2;");
+
+				//$consulta = null;
+
+
+				$consulta = $this->con->query("SELECT 
+					COALESCE(DATE_FORMAT(@fecha_pago_inicio, if( @quincena_pago is null or @quincena_pago = 1, '%Y-%m-1','%Y-%m-16') ),DATE_FORMAT(CURRENT_DATE, '%Y-%m-1') ),
+
+
+					if(@quincena_pago is not null,
+					   if(@quincena_pago=1,DATE_FORMAT(@fecha_pago_inicio, '%Y-%m-15'),
+					      if(@quincena_pago=2,LAST_DAY(@fecha_pago_inicio),false)
+					     )
+					   ,DATE_FORMAT(CURRENT_DATE, '%Y-%m-15'))
+					INTO 
+					@fecha_pago_inicio_function,
+					@fecha_pago_fin_function;");
+
+
+
+
+
+
+				$consulta = $this->con->prepare("SELECT IF(DAYOFWEEK(@fecha_pago_inicio_function)=2,1,0) as lunes, @fecha_pago_inicio_function := DATE_ADD(@fecha_pago_inicio_function, INTERVAL 1 DAY) as nex FROM trabajadores WHERE @fecha_pago_inicio_function <= @fecha_pago_fin_function LIMIT 1;");
+
+
+				$consulta->execute();
+
+				$resp = $consulta->fetch(PDO::FETCH_ASSOC);
+
+				$contador = 0;
+
+				while ($resp!=false) {
+
+					if($contador>100){
+						throw new Exception("bucle infinito", 1);
+					}
+
+					if($resp["lunes"]=='1'){$contador++;}
+					$consulta->execute();
+
+					$resp = $consulta->fetch(PDO::FETCH_ASSOC);
 				}
-				else{
-					return 0;
-				}
+
+				$consulta = $this->con->query("set @fecha_pago_inicio_function = NULL,
+					@fecha_pago_fin_function = NULL;");
+				$consulta = null;
+
+
+				return $contador;
+
+
+
+
+
+
+				// $consulta = $this->con->query("SELECT f_contar_lunes(CURRENT_DATE,2) lunes;");
+
+				// if($resp = $consulta->fetch(PDO::FETCH_ASSOC)){
+				// 	return $resp["lunes"];
+				// }
+				// else{
+				// 	return 0;
+				// }
 
 			});
 		},false,true);
@@ -1264,7 +1365,7 @@ trait Calculadora{
 		}
 	}
 
-	PUBLIC function update_list_formulas(){
+	PRIVATE function update_list_formulas(){
 		try {
 
 
@@ -2092,7 +2193,7 @@ trait Calculadora{
 
 
 
-	PUBLIC function get_named_form_used($formula,$control_anterior=null,$arreglo_anterior=null){// obtiene las formulas nombradas por el usuario
+	PRIVATE function get_named_form_used($formula,$control_anterior=null,$arreglo_anterior=null){// obtiene las formulas nombradas por el usuario
 
 
 		$this->set_calc_formula($formula); // limpio la formula de los espacios en blanco
@@ -2218,7 +2319,9 @@ trait Calculadora{
 					case '*':
 					$left = ($this->left->resolved)?$this->left->total:$this->left->value;
 					$right = ($this->right->resolved)?$this->right->total:$this->right->value;
-					$total = floatval(number_format($left, $numeros_decimales, '.', '')) * floatval(number_format($right,$numeros_decimales,'.',''));
+//					$total = floatval(number_format($left, $numeros_decimales, '.', '')) * floatval(number_format($right,$numeros_decimales,'.',''));
+
+					$total = $left*$right;
 					$total = floatval(number_format($total, $numeros_decimales, '.',''));
 					$this->set_total($total);
 					$this->set_resolved();
@@ -2231,7 +2334,8 @@ trait Calculadora{
 					if($right == 0){
 						throw new Exception("No se puede dividir entre cero en la posicion (".($this->orden + 1).") de la formula '$this->formula'", 1);
 					}
-					$total = floatval(number_format($left, $numeros_decimales, '.', '')) / floatval(number_format($right,$numeros_decimales,'.',''));
+					//$total = floatval(number_format($left, $numeros_decimales, '.', '')) / floatval(number_format($right,$numeros_decimales,'.',''));
+					$total = $left / $right;
 					$total = floatval(number_format($total, $numeros_decimales, '.',''));
 					$this->set_total($total);
 					$this->set_resolved();
@@ -2241,7 +2345,8 @@ trait Calculadora{
 					case '+':
 					$left = ($this->left->resolved)?$this->left->total:$this->left->value;
 					$right = ($this->right->resolved)?$this->right->total:$this->right->value;
-					$total = floatval(number_format($left,$numeros_decimales,'.','')) + floatval(number_format($right,$numeros_decimales,'.',''));
+					//$total = floatval(number_format($left,$numeros_decimales,'.','')) + floatval(number_format($right,$numeros_decimales,'.',''));
+					$total = $left + $right;
 					$total = floatval(number_format($total, $numeros_decimales, '.',''));
 					$this->set_total($total);
 					$this->set_resolved();
@@ -2251,7 +2356,8 @@ trait Calculadora{
 					case '-':
 					$left = ($this->left->resolved)?$this->left->total:$this->left->value;
 					$right = ($this->right->resolved)?$this->right->total:$this->right->value;
-					$total = floatval(number_format($left,$numeros_decimales,'.','')) - floatval(number_format($right,$numeros_decimales,'.',''));
+					//$total = floatval(number_format($left,$numeros_decimales,'.','')) - floatval(number_format($right,$numeros_decimales,'.',''));
+					$total = $left - $right;
 					$total = floatval(number_format($total, $numeros_decimales, '.',''));
 					$this->set_total($total);
 					$this->set_resolved();

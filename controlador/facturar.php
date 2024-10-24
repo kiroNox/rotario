@@ -46,6 +46,22 @@
 					$cl->no_permision_msg();
 				}
 			}
+			else if($accion =="check_quincena" ){
+				if(isset($permisos["facturas"]["consultar"]) and $permisos["facturas"]["consultar"] == "1"){
+					echo json_encode( $cl->check_quincena_s($_POST["anio"], $_POST["mes"]));
+				}
+				else{
+					$cl->no_permision_msg();
+				}
+			}
+			else if($accion == "notificar_pagos"){
+				if(isset($permisos["facturas"]["crear"]) and $permisos["facturas"]["crear"] == "1"){
+					echo json_encode( $cl->notificar_pagos() );
+				}	
+				else{
+					$cl->no_permision_msg();
+				}
+			}
 			
 
 			else{

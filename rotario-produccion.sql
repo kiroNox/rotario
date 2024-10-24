@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 16-10-2024 a las 17:06:29
+-- Tiempo de generación: 19-10-2024 a las 23:53:58
 -- Versión del servidor: 10.1.38-MariaDB
 -- Versión de PHP: 7.3.2
 
@@ -983,6 +983,10 @@ BEGIN
     DECLARE contador int DEFAULT 0;
 
     SET inicio = DATE_FORMAT(fecha_lunes, '%Y-%m-01');
+    
+    IF (@quincena_user IS NOT NULL) THEN 
+    	set quincena = @quincena_user;
+    END IF;
 
     IF quincena = 3 THEN # cuenta los lunes del 01 al ultimo del mes
         SET fin = LAST_DAY(inicio);
@@ -3614,7 +3618,367 @@ INSERT INTO `bitacora` (`id_trabajador`, `fecha`, `descripcion`) VALUES
 (2, '2024-10-02 22:49:50', 'Ingreso en el modulo (Gestionar formulas)'),
 (2, '2024-10-02 22:49:54', 'Ingreso en el modulo (Gestionar formulas)'),
 (2, '2024-10-02 22:53:08', 'Ingreso en el modulo (Gestionar formulas)'),
-(2, '2024-10-02 22:54:06', 'Ingreso en el modulo (Gestionar formulas)');
+(2, '2024-10-02 22:54:06', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-03 00:24:36', 'Inicio de sesión'),
+(2, '2024-10-03 00:24:38', 'Ingreso en el modulo (Bitacora)'),
+(2, '2024-10-03 00:24:53', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-03 00:37:21', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-03 00:39:25', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-03 01:26:11', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-03 01:26:34', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-03 01:26:47', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-03 01:27:12', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-03 01:30:04', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-03 01:30:22', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-03 01:33:45', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-03 01:36:09', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-03 01:36:39', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-03 01:39:30', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-03 01:40:48', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-03 01:41:18', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-03 01:59:38', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-03 02:00:39', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-03 02:02:08', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-03 02:04:41', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-03 02:04:44', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-03 02:05:22', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-03 02:08:54', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-03 02:09:01', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-03 02:11:18', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-03 02:50:23', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-03 02:53:41', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-03 03:00:12', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-03 03:43:57', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-03 04:29:43', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-03 04:36:49', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-03 04:37:21', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-16 01:05:40', 'Inicio de sesión'),
+(2, '2024-10-16 01:05:42', 'Ingreso en el modulo (Bitacora)'),
+(2, '2024-10-16 01:05:56', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-16 01:13:12', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-16 01:14:41', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-16 01:18:49', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-16 01:20:57', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-16 01:22:49', 'Ingreso en el modulo (Hijos)'),
+(2, '2024-10-16 01:22:52', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-10-16 01:24:36', 'Ingreso en el modulo (Hijos)'),
+(2, '2024-10-16 01:24:39', 'Ingreso en el modulo (areasTrabajador)'),
+(2, '2024-10-16 01:25:39', 'Ingreso en el modulo (Areas)'),
+(2, '2024-10-16 01:25:48', 'Ingreso en el modulo (asistencias)'),
+(2, '2024-10-16 01:28:09', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-10-16 01:28:14', 'Ingreso en el modulo (Primas)'),
+(2, '2024-10-16 01:28:28', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-16 01:29:07', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-10-16 01:30:30', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-10-16 01:30:33', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-16 01:31:07', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-16 01:41:15', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-10-16 01:42:00', 'Asigno el sueldo del trabajador V-2725054'),
+(2, '2024-10-16 01:42:16', 'Asigno el sueldo del trabajador V-2725054'),
+(2, '2024-10-16 01:42:20', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-10-16 01:44:13', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-10-16 01:44:23', 'Asigno el sueldo del trabajador V-2725054'),
+(2, '2024-10-16 01:44:28', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-16 01:49:20', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-10-16 01:49:29', 'Borro el sueldo del trabajador V-2725054'),
+(2, '2024-10-16 01:49:40', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-16 01:50:15', 'Ingreso en el modulo (2)'),
+(2, '2024-10-16 01:51:03', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-10-16 01:51:06', 'Ingreso en el modulo (Permisos)'),
+(2, '2024-10-16 01:51:31', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-10-16 01:51:41', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-16 01:56:47', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-16 01:57:12', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-16 01:58:13', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-16 01:59:39', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-16 02:00:37', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-16 13:27:42', 'Inicio de sesión'),
+(2, '2024-10-16 13:28:28', 'Ingreso en el modulo (Primas)'),
+(2, '2024-10-16 13:28:44', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-10-16 13:29:44', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-10-16 13:29:52', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-10-16 13:30:03', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-10-16 13:30:40', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-10-16 13:30:47', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-16 13:37:37', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-10-16 13:37:45', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-10-16 13:38:37', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-10-16 13:39:31', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-10-16 13:40:03', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-10-16 13:40:51', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-10-16 13:41:33', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-10-16 13:42:13', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-10-16 13:42:33', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-10-16 13:42:54', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-10-16 13:47:42', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-10-16 13:49:19', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-10-16 13:49:59', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-10-16 13:55:41', 'Modificó la deducción de  (Retención del seguro social) año(s)'),
+(2, '2024-10-16 13:56:08', 'Ingreso en el modulo (Primas)'),
+(2, '2024-10-16 13:58:08', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-16 14:10:03', 'Ingreso en el modulo (Primas)'),
+(2, '2024-10-16 14:10:34', 'Ingreso en el modulo (Primas)'),
+(2, '2024-10-16 14:30:03', 'Ingreso en el modulo (Primas)'),
+(2, '2024-10-16 14:31:02', 'Modificó la prima general (Antiguedad) <br>'),
+(2, '2024-10-16 14:31:24', 'Ingreso en el modulo (Primas)'),
+(2, '2024-10-16 14:56:21', 'Modificó la prima general (Antiguedad) <br>'),
+(2, '2024-10-16 15:05:31', 'Ingreso en el modulo (Primas)'),
+(2, '2024-10-16 15:26:43', 'Ingreso en el modulo (Usuarios)'),
+(2, '2024-10-16 15:27:09', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-16 15:30:43', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-16 15:31:41', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-16 15:34:15', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-16 15:36:11', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-16 15:37:55', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-16 16:44:39', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-16 16:51:00', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-16 16:53:09', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-16 16:53:09', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-16 16:58:59', 'Ingreso en el modulo (Primas)'),
+(2, '2024-10-16 16:59:25', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-16 17:03:31', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-16 17:03:39', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-16 17:05:28', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-16 17:10:29', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-16 17:12:21', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-16 17:12:27', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-16 17:13:33', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-16 17:14:59', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-16 22:07:05', 'Inicio de sesión'),
+(2, '2024-10-16 22:09:03', 'Ingreso en el modulo (Bitacora)'),
+(2, '2024-10-16 22:10:20', 'Ingreso en el modulo (Bitacora)'),
+(2, '2024-10-16 22:10:42', 'Ingreso en el modulo (Primas)'),
+(2, '2024-10-16 22:10:55', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-16 22:12:04', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-16 22:12:13', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-16 22:14:33', 'Inicio de sesión'),
+(2, '2024-10-16 22:14:35', 'Ingreso en el modulo (Bitacora)'),
+(2, '2024-10-16 22:16:22', 'Ingreso en el modulo (Gestionar formulas)'),
+(2, '2024-10-17 00:16:14', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-10-17 00:16:21', 'Ingreso en el modulo (Primas)'),
+(2, '2024-10-17 00:18:53', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-10-17 00:19:15', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-10-17 00:19:20', 'Ingreso en el modulo (Primas)'),
+(2, '2024-10-17 00:20:46', 'Ingreso en el modulo (Primas)'),
+(2, '2024-10-17 00:21:27', 'Ingreso en el modulo (Primas)'),
+(2, '2024-10-17 00:57:28', 'Ingreso en el modulo (Primas)'),
+(2, '2024-10-17 00:57:57', 'Ingreso en el modulo (Primas)'),
+(2, '2024-10-17 01:01:00', 'Ingreso en el modulo (Primas)'),
+(2, '2024-10-17 01:02:52', 'Ingreso en el modulo (Primas)'),
+(2, '2024-10-17 01:03:41', 'Ingreso en el modulo (Primas)'),
+(2, '2024-10-17 01:04:13', 'Ingreso en el modulo (Primas)'),
+(2, '2024-10-17 01:05:34', 'Ingreso en el modulo (Primas)'),
+(2, '2024-10-17 01:06:05', 'Ingreso en el modulo (Primas)'),
+(2, '2024-10-17 01:06:52', 'Ingreso en el modulo (Primas)'),
+(2, '2024-10-17 01:17:12', 'Ingreso en el modulo (Primas)'),
+(2, '2024-10-17 01:19:09', 'Ingreso en el modulo (Primas)'),
+(2, '2024-10-17 01:26:56', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-10-17 01:28:12', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-10-17 01:49:13', 'Ingreso en el modulo (Primas)'),
+(2, '2024-10-17 01:49:54', 'Ingreso en el modulo (Primas)'),
+(2, '2024-10-17 01:52:39', 'Ingreso en el modulo (Primas)'),
+(2, '2024-10-17 01:53:08', 'Ingreso en el modulo (Primas)'),
+(2, '2024-10-17 01:54:15', 'Ingreso en el modulo (Primas)'),
+(2, '2024-10-17 01:54:46', 'Ingreso en el modulo (Primas)'),
+(2, '2024-10-17 01:55:36', 'Ingreso en el modulo (Primas)'),
+(2, '2024-10-17 01:56:11', 'Ingreso en el modulo (Primas)'),
+(2, '2024-10-17 01:56:58', 'Ingreso en el modulo (Primas)'),
+(2, '2024-10-17 01:57:55', 'Modificó la prima general (Antiguedad) <br>'),
+(2, '2024-10-17 01:58:36', 'Modificó la prima general (Antiguedad) <br>'),
+(2, '2024-10-17 01:58:50', 'Modificó la prima general (Antiguedad) <br>'),
+(2, '2024-10-17 01:59:28', 'Ingreso en el modulo (Primas)'),
+(2, '2024-10-17 01:59:36', 'Modificó la prima general (Antiguedad) <br>'),
+(2, '2024-10-17 01:59:44', 'Modificó la prima general (Antiguedad) <br>'),
+(2, '2024-10-17 02:03:35', 'Registró la prima general (probando)'),
+(2, '2024-10-17 02:03:47', 'Modificó la prima general (probando) <br>'),
+(2, '2024-10-17 02:03:57', 'Eliminó la prima general (probando)'),
+(2, '2024-10-17 02:04:19', 'Registró la prima general (probando)'),
+(2, '2024-10-17 02:04:29', 'Eliminó la prima general (probando)'),
+(2, '2024-10-17 02:06:38', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-10-17 02:07:22', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-10-17 02:09:43', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-10-17 02:10:50', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-10-17 02:25:02', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-10-17 02:25:07', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-10-17 02:25:22', 'Modificó la deducción de  (Retención del seguro social) año(s)'),
+(2, '2024-10-17 02:26:41', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-10-17 02:27:00', 'Modificó la deducción de  (Retención del seguro social) año(s)'),
+(2, '2024-10-17 02:27:13', 'Modificó la prima general (Antiguedad) <br>'),
+(2, '2024-10-17 02:33:08', 'Ingreso en el modulo (Primas)'),
+(2, '2024-10-17 02:34:20', 'Ingreso en el modulo (Primas)'),
+(2, '2024-10-17 02:36:18', 'Ingreso en el modulo (Primas)'),
+(2, '2024-10-17 02:37:06', 'Registró la prima general (Prueba para eliminar primas y formula)'),
+(2, '2024-10-17 02:37:23', 'Modificó la prima general (Prueba para eliminar primas y formula) <br>'),
+(2, '2024-10-17 02:40:20', 'Ingreso en el modulo (Primas)'),
+(2, '2024-10-17 02:40:40', 'Modificó la prima general (Antiguedad) <br>'),
+(2, '2024-10-17 07:19:40', 'Inicio de sesión'),
+(2, '2024-10-17 07:19:42', 'Ingreso en el modulo (Bitacora)'),
+(2, '2024-10-17 07:19:49', 'Ingreso en el modulo (Areas)'),
+(2, '2024-10-17 07:19:55', 'Ingreso en el modulo (Nivel Educativo)'),
+(2, '2024-10-17 07:20:01', 'Ingreso en el modulo (areasTrabajador)'),
+(2, '2024-10-17 07:20:03', 'Ingreso en el modulo (Areas)'),
+(2, '2024-10-17 07:20:05', 'Ingreso en el modulo (asistencias)'),
+(2, '2024-10-17 07:22:20', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 08:31:46', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 08:32:57', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 08:55:33', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 09:21:43', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 09:27:44', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 10:06:48', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 10:09:26', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 10:10:31', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 10:11:05', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 10:29:35', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-10-17 10:29:55', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 10:42:05', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 10:58:38', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 11:14:53', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-10-17 11:14:57', 'Ingreso en el modulo (Primas)'),
+(2, '2024-10-17 11:44:04', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 11:48:57', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 11:53:27', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 11:54:37', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 11:57:08', 'Ingreso en el modulo (Bitacora)'),
+(2, '2024-10-17 11:57:12', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 11:58:26', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 12:08:33', 'Ingreso en el modulo (Estadistica)'),
+(2, '2024-10-17 12:08:33', 'Ingreso en el modulo (Estadistica)'),
+(2, '2024-10-17 12:08:33', 'Ingreso en el modulo (Estadistica)'),
+(2, '2024-10-17 12:08:34', 'Ingreso en el modulo (Estadistica)'),
+(2, '2024-10-17 12:08:35', 'Ingreso en el modulo (Estadistica)'),
+(2, '2024-10-17 12:11:14', 'Ingreso en el modulo (2)'),
+(2, '2024-10-17 12:14:26', 'Ingreso en el modulo (2)'),
+(2, '2024-10-17 12:14:36', 'Ingreso en el modulo (2)'),
+(2, '2024-10-17 12:22:54', 'Ingreso en el modulo (2)'),
+(2, '2024-10-17 12:24:58', 'Ingreso en el modulo (2)'),
+(2, '2024-10-17 12:25:21', 'Ingreso en el modulo (Estadistica)'),
+(2, '2024-10-17 12:25:21', 'Ingreso en el modulo (Estadistica)'),
+(2, '2024-10-17 12:25:21', 'Ingreso en el modulo (Estadistica)'),
+(2, '2024-10-17 12:25:21', 'Ingreso en el modulo (Estadistica)'),
+(2, '2024-10-17 12:27:22', 'Ingreso en el modulo (2)'),
+(2, '2024-10-17 12:27:30', 'Ingreso en el modulo (2)'),
+(2, '2024-10-17 12:40:09', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 12:41:04', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 14:08:32', 'Inicio de sesión'),
+(2, '2024-10-17 14:08:34', 'Ingreso en el modulo (Bitacora)'),
+(2, '2024-10-17 14:08:38', 'Ingreso en el modulo (Primas)'),
+(2, '2024-10-17 14:09:04', 'Ingreso en el modulo (Primas)'),
+(2, '2024-10-17 14:49:14', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-10-17 14:51:40', 'Modificó la deducción de  (Retención del seguro social) año(s)'),
+(2, '2024-10-17 14:59:58', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 15:00:29', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 15:00:33', 'Ingreso en el modulo (Deducciones)'),
+(2, '2024-10-17 15:00:51', 'Modificó la deducción de  (Retención del seguro social) año(s)'),
+(2, '2024-10-17 15:08:25', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 15:09:08', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 20:47:05', 'Inicio de sesión'),
+(2, '2024-10-17 20:47:07', 'Ingreso en el modulo (Bitacora)'),
+(2, '2024-10-17 20:47:10', 'Ingreso en el modulo (Primas)'),
+(2, '2024-10-17 20:53:49', 'Ingreso en el modulo (Primas)'),
+(2, '2024-10-17 21:02:23', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 21:24:06', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 21:24:17', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 21:24:38', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 21:25:32', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 21:26:03', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 21:26:53', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 21:30:19', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 21:34:17', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 21:35:47', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 21:37:38', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 21:41:37', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 21:42:07', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 21:44:50', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 21:45:59', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 21:46:51', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 21:47:52', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 21:48:27', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 21:48:59', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 21:49:38', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 21:50:16', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 21:51:58', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 21:55:42', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 21:56:28', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 21:57:05', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 22:01:38', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 22:01:58', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 22:02:38', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 22:37:26', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 22:38:30', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 22:41:15', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 22:41:27', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 22:57:53', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 22:59:05', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 22:59:31', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 23:00:02', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 23:00:22', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 23:10:10', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 23:12:04', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 23:13:14', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 23:14:56', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 23:15:07', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 23:17:26', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 23:19:08', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 23:20:42', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 23:21:37', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 23:22:17', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 23:22:52', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 23:23:36', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 23:23:43', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-17 23:25:16', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-18 00:05:06', 'Inicio de sesión'),
+(2, '2024-10-18 00:05:07', 'Ingreso en el modulo (Bitacora)'),
+(2, '2024-10-18 00:13:42', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-18 00:33:22', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-18 00:33:43', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-18 00:51:28', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-18 00:52:09', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-18 00:52:30', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-18 00:54:15', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-18 00:54:51', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-18 00:56:17', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-18 00:57:14', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-18 00:59:37', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-18 01:00:01', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-18 01:01:10', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-18 01:01:28', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-18 01:03:59', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-18 01:43:46', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-18 01:45:19', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-18 01:47:29', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-18 01:51:54', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-18 01:52:34', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-18 01:59:06', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-18 01:59:39', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-18 02:01:02', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-18 02:02:04', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-18 02:03:57', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-18 02:05:22', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-18 02:05:53', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-18 04:07:57', 'Ingreso en el modulo (Primas)'),
+(2, '2024-10-18 04:09:14', 'Registró la prima general (servicio completo)'),
+(2, '2024-10-18 04:09:27', 'Eliminó la prima general (servicio completo)'),
+(2, '2024-10-18 04:11:39', 'Ingreso en el modulo (Primas)'),
+(2, '2024-10-18 04:11:57', 'Registró la prima general (servicio completo)'),
+(2, '2024-10-18 04:12:12', 'Modificó la prima general (servicio completo) <br>'),
+(2, '2024-10-18 04:12:16', 'Eliminó la prima general (servicio completo)'),
+(2, '2024-10-18 04:12:22', 'Eliminó la prima general (Prueba para eliminar primas y formula)'),
+(2, '2024-10-18 05:54:36', 'Ingreso en el modulo (2)'),
+(2, '2024-10-18 05:55:46', 'Ingreso en el modulo (Nivel Educativo)'),
+(2, '2024-10-19 19:00:10', 'Inicio de sesión'),
+(2, '2024-10-19 19:00:12', 'Ingreso en el modulo (Bitacora)'),
+(2, '2024-10-19 19:00:17', 'Ingreso en el modulo (Primas)'),
+(2, '2024-10-19 19:00:21', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-19 19:00:38', 'Ingreso en el modulo (Gestionar Facturas)'),
+(2, '2024-10-19 20:44:14', 'Inicio de sesión'),
+(2, '2024-10-19 20:44:15', 'Ingreso en el modulo (Bitacora)'),
+(2, '2024-10-19 21:05:23', 'Ingreso en el modulo (Bitacora)'),
+(2, '2024-10-19 21:05:27', 'Ingreso en el modulo (Hijos)'),
+(2, '2024-10-19 21:48:15', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-10-19 21:49:56', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-10-19 21:50:24', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-10-19 21:50:45', 'Ingreso en el modulo (Bitácora)'),
+(2, '2024-10-19 21:52:12', 'Ingreso en el modulo (Bitácora)');
 
 -- --------------------------------------------------------
 
@@ -3669,6 +4033,7 @@ CREATE TABLE `cargos` (
 CREATE TABLE `deducciones` (
   `id_deducciones` int(11) NOT NULL,
   `descripcion` varchar(45) NOT NULL,
+  `quincena` tinyint(1) NOT NULL,
   `islr` tinyint(1) NOT NULL,
   `dedicada` tinyint(1) NOT NULL,
   `id_formula` int(11) DEFAULT NULL,
@@ -3679,9 +4044,8 @@ CREATE TABLE `deducciones` (
 -- Volcado de datos para la tabla `deducciones`
 --
 
-INSERT INTO `deducciones` (`id_deducciones`, `descripcion`, `islr`, `dedicada`, `id_formula`, `status`) VALUES
-(3, 'Retención del seguro social', 0, 0, 71, 1),
-(4, 'probando para modificar', 0, 0, NULL, 0);
+INSERT INTO `deducciones` (`id_deducciones`, `descripcion`, `quincena`, `islr`, `dedicada`, `id_formula`, `status`) VALUES
+(3, 'Retención del seguro social', 1, 0, 0, 71, 1);
 
 -- --------------------------------------------------------
 
@@ -3817,7 +4181,6 @@ INSERT INTO `detalles_formulas` (`id_formula`, `formula`, `variables`, `condicio
 (67, 'SUELDO_BASE*0.10', NULL, NULL, 0),
 (61, 'TABLA_ESCALAFON', NULL, 'MEDICO', 0),
 (72, 'PRIMA_DISCAPACIDAD_TRABAJADOR + PRIMA_HIJOS_DISCAPACITADO + PRIMA_ESCALAFON +PRIMA_DEDICACION_SALUD + PRIMA_ANTIGUEDAD', NULL, NULL, 0),
-(71, 'quincena_uno + quincena_dos', '{\"quincena_uno\":\"( { [ ( SUELDO_BASE + TOTAL_PRIMAS)  * 12 ] \\/52 } *0.04 ) * LUNES_QUINCENA_UNO\",\"quincena_dos\":\"( { [ ( SUELDO_BASE + TOTAL_PRIMAS)  * 12 ] \\/52 } *0.04 ) * LUNES_QUINCENA_DOS\"}', NULL, 0),
 (73, '0.01', NULL, 'TIEMPO_TRABAJADOR = 1', 1),
 (73, '0.02', NULL, 'TIEMPO_TRABAJADOR = 2', 2),
 (73, '0.03', NULL, 'TIEMPO_TRABAJADOR = 3', 3),
@@ -3841,7 +4204,8 @@ INSERT INTO `detalles_formulas` (`id_formula`, `formula`, `variables`, `condicio
 (73, '0.2780', NULL, 'TIEMPO_TRABAJADOR = 21', 21),
 (73, '0.2960', NULL, 'TIEMPO_TRABAJADOR = 22', 22),
 (73, '0.30', NULL, 'TIEMPO_TRABAJADOR >= 23', 23),
-(68, '(SUELDO_BASE + PRIMA_ESCALAFON + PRIMA_DEDICACION_SALUD) * TABLA_ANTIGUEDAD', NULL, NULL, 0);
+(68, '(SUELDO_BASE + PRIMA_ESCALAFON + PRIMA_DEDICACION_SALUD) * TABLA_ANTIGUEDAD', NULL, NULL, 0),
+(71, '( { [ ( SUELDO_BASE + TOTAL_PRIMAS)  * 12 ] /52 } *0.04 ) * LUNES_QUINCENA', NULL, NULL, 0);
 
 -- --------------------------------------------------------
 
@@ -3888,23 +4252,19 @@ CREATE TABLE `factura` (
   `sueldo_base` decimal(12,2) NOT NULL DEFAULT '0.00',
   `sueldo_integral` decimal(12,2) NOT NULL DEFAULT '0.00',
   `sueldo_deducido` decimal(12,2) NOT NULL DEFAULT '0.00',
-  `status` tinyint(1) NOT NULL DEFAULT '0'
+  `status` tinyint(1) NOT NULL DEFAULT '0',
+  `quincena` int(11) NOT NULL DEFAULT '1',
+  `notificado` tinyint(1) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Volcado de datos para la tabla `factura`
---
-
-INSERT INTO `factura` (`id_factura`, `id_trabajador`, `fecha`, `sueldo_base`, `sueldo_integral`, `sueldo_deducido`, `status`) VALUES
-(105, 2, '2020-09-30', '150.00', '53.89', '7.52', 0),
-(106, 4, '2020-09-30', '250.00', '53.89', '7.52', 0),
-(107, 5, '2020-09-30', '150.00', '53.89', '7.52', 0);
 
 --
 -- Disparadores `factura`
 --
 DELIMITER $$
 CREATE TRIGGER `BI_factura` BEFORE INSERT ON `factura` FOR EACH ROW BEGIN
+IF NEW.quincena = 1 THEN
+	set NEW.fecha = DATE_FORMAT(NEW.fecha,'%Y-%m-15');
+END IF;
 END
 $$
 DELIMITER ;
@@ -3945,15 +4305,6 @@ CREATE TABLE `factura_deducciones` (
   `monto` decimal(12,2) NOT NULL,
   `islr` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Volcado de datos para la tabla `factura_deducciones`
---
-
-INSERT INTO `factura_deducciones` (`id_deduccion`, `id_factura`, `monto`, `islr`) VALUES
-(3, 105, '7.52', 0),
-(3, 106, '7.52', 0),
-(3, 107, '7.52', 0);
 
 --
 -- Disparadores `factura_deducciones`
@@ -4027,27 +4378,6 @@ CREATE TABLE `factura_primas_generales` (
   `id_factura` int(11) NOT NULL,
   `monto` decimal(12,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Volcado de datos para la tabla `factura_primas_generales`
---
-
-INSERT INTO `factura_primas_generales` (`id_primas_generales`, `id_factura`, `monto`) VALUES
-(6, 105, '7.01'),
-(6, 106, '7.01'),
-(6, 107, '7.01'),
-(10, 105, '12.50'),
-(10, 106, '12.50'),
-(10, 107, '12.50'),
-(11, 105, '12.50'),
-(11, 106, '12.50'),
-(11, 107, '12.50'),
-(12, 105, '15.00'),
-(12, 106, '15.00'),
-(12, 107, '15.00'),
-(13, 105, '6.88'),
-(13, 106, '6.88'),
-(13, 107, '6.88');
 
 --
 -- Disparadores `factura_primas_generales`
@@ -4286,9 +4616,7 @@ INSERT INTO `permisos_trabajador` (`id_permisos`, `id_trabajador`, `tipo_de_perm
 CREATE TABLE `primas_generales` (
   `id_primas_generales` int(11) NOT NULL,
   `descripcion` varchar(100) NOT NULL,
-  `monto` decimal(13,2) DEFAULT '0.00',
-  `porcentaje` tinyint(1) DEFAULT '0',
-  `sector_salud` tinyint(1) DEFAULT NULL,
+  `quincena` tinyint(1) NOT NULL,
   `dedicada` tinyint(1) NOT NULL,
   `id_formula` int(11) DEFAULT NULL,
   `status` tinyint(1) DEFAULT '1' COMMENT 'prima activa o no'
@@ -4298,12 +4626,13 @@ CREATE TABLE `primas_generales` (
 -- Volcado de datos para la tabla `primas_generales`
 --
 
-INSERT INTO `primas_generales` (`id_primas_generales`, `descripcion`, `monto`, `porcentaje`, `sector_salud`, `dedicada`, `id_formula`, `status`) VALUES
-(6, 'Escalafón', NULL, NULL, 0, 0, 61, 1),
-(10, 'prima por discapacidad', NULL, NULL, 0, 0, 65, 1),
-(11, 'Ayuda por hijos o hijas con discapacidad', NULL, NULL, 0, 0, 66, 1),
-(12, 'Dedicación A La Actividad Del Sistema Publico Unico Nacional de Salud', NULL, NULL, 0, 0, 67, 1),
-(13, 'Antiguedad', NULL, NULL, 0, 0, 68, 1);
+INSERT INTO `primas_generales` (`id_primas_generales`, `descripcion`, `quincena`, `dedicada`, `id_formula`, `status`) VALUES
+(6, 'Escalafón', 1, 0, 61, 1),
+(10, 'prima por discapacidad', 1, 0, 65, 1),
+(11, 'Ayuda por hijos o hijas con discapacidad', 1, 0, 66, 1),
+(12, 'Dedicación A La Actividad Del Sistema Publico Unico Nacional de Salud', 1, 0, 67, 1),
+(13, 'Antiguedad', 1, 0, 68, 1),
+(16, 'Prueba para eliminar primas y formula', 0, 0, NULL, 0);
 
 -- --------------------------------------------------------
 
@@ -4548,7 +4877,7 @@ CREATE TABLE `trabajadores` (
 --
 
 INSERT INTO `trabajadores` (`id_trabajador`, `id_prima_profesionalismo`, `id_rol`, `cedula`, `numero_cuenta`, `creado`, `nombre`, `apellido`, `genero`, `telefono`, `correo`, `clave`, `token`, `estado_actividad`, `comision_servicios`, `discapacitado`, `discapacidad`) VALUES
-(2, 2, 1, 'V-27250544', '00000000000000000000', '2020-06-19', 'Xavier David', 'Suarez Sanchez', 'M', '0414-5555555', 'uptaebxavier@gmail.com', '$2y$10$RMrtnT5gpHIhIKQDfAThFerj/4yU.S3PABZj.AxnALU2yFAsyrbjC', '$2y$10$LyTvYa.xqdt1FwhUQ14eD.kHvex58crrR5bugv9.PqARHQ1vK4ega', 1, 0, 1, ''),
+(2, 2, 1, 'V-27250544', '00000000000000000000', '2020-06-19', 'Xavier David', 'Suarez Sanchez', 'M', '0414-5555555', 'uptaebxavier@gmail.com', '$2y$10$RMrtnT5gpHIhIKQDfAThFerj/4yU.S3PABZj.AxnALU2yFAsyrbjC', '$2y$10$STN7.Whi5P/oB6y4csR.T.nqCncl4IpaJ6mQw5fT5BJEMt3Vn3c3G', 1, 0, 1, ''),
 (3, 5, 1, 'V-2725054', '00000000000000000000', '2024-06-27', 'Anabel Teresa', 'Alberto Nuñes', 'F', '0414-5555555', 'david40ene@hotmail.com', '$2y$10$Mh5AEfPtMwS4x7cQq7mGX.nEWmSEJyVIFPMgXIWycKpZHGh/Cw1MO', '1', 1, 0, 0, ''),
 (4, 6, 1, 'V-12434091', '00000000000000000000', '2024-06-26', 'Valeria Valentina', 'Camacaro Sanchez', 'F', '0414-5555555', 'aguilarvzla2@gmail.com', '$2y$10$TSJZitcQrUt2BiYRNw1Cmu9O4I2zFYIsQINVQweInmJzH1POHZx8K', '1', 1, 0, 0, ''),
 (5, 3, 2, 'V-15447800', '00000000000000000000', '2024-07-13', 'José Luis', 'Camacaro Sanchez', 'M', '0414-5555555', 'algo@algo.com', '$2y$10$PYypHr88RRrVMT6IE9G8a.gtGc91sXOpiNNubO1CZXrnp0yZwCoIm', '1', 1, 0, 0, '');
@@ -4615,7 +4944,8 @@ INSERT INTO `usando` (`id_formula_uno`, `id_formula_dos`) VALUES
 (72, 68),
 (68, 61),
 (68, 67),
-(68, 73);
+(68, 73),
+(71, 72);
 
 -- --------------------------------------------------------
 
@@ -4913,7 +5243,7 @@ ALTER TABLE `asistencias`
 -- AUTO_INCREMENT de la tabla `deducciones`
 --
 ALTER TABLE `deducciones`
-  MODIFY `id_deducciones` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id_deducciones` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `detalles_factura`
@@ -4931,7 +5261,7 @@ ALTER TABLE `escalafon`
 -- AUTO_INCREMENT de la tabla `factura`
 --
 ALTER TABLE `factura`
-  MODIFY `id_factura` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=108;
+  MODIFY `id_factura` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=153;
 
 --
 -- AUTO_INCREMENT de la tabla `factura_hijos`
@@ -4979,7 +5309,7 @@ ALTER TABLE `permisos_trabajador`
 -- AUTO_INCREMENT de la tabla `primas_generales`
 --
 ALTER TABLE `primas_generales`
-  MODIFY `id_primas_generales` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id_primas_generales` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT de la tabla `primas_hijos`

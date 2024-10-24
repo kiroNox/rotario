@@ -11,5 +11,22 @@
 	define("EMAIL_NAME", "Xavier");
 	define("EMAIL_HOST", "smtp.gmail.com");
 	define("NOMBRE_EMPRESA", "Servicio Desconcentrado Hospital Rotario");
+	define("EMPRESA_RIF_CLEAN", "G000000000");
+	define("EMPRESA_RIF", "G-00000000-0");
+
+	define("MESES", [
+		"ENERO",
+		"FEBRERO",
+		"MARZO",
+		"ABRIL",
+		"MAYO",
+		"JUNIO",
+		"JULIO",
+		"AGOSTO",
+		"SEPTIEMBRE",
+		"OCTUBRE",
+		"NOVIEMBRE",
+		"DICIEMBRE",
+	])
 
 ?>

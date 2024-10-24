@@ -5,7 +5,8 @@
  */
 class administrar_empleados extends Conexion
 {
-	PRIVATE $id, $desde, $hasta, $dias_totales, $descripcion, $tipo_reposo, $tipo_de_permiso, $cedula, $nombre, $apellido, $telefono, $correo, $numero_cuenta, $fecha_nacimiento, $sexo, $salario, $id_tabla;
+	PRIVATE $id, $desde, $hasta, $dias_totales, $descripcion, $tipo_reposo, $tipo_de_permiso, $cedula, $nombre, $apellido, $telefono, $correo, $numero_cuenta, $fecha_nacimiento, $sexo, $salario, $id_tabla, $con;
+
 
 	function __construct($con = '')
 	{
@@ -180,7 +181,7 @@ class administrar_empleados extends Conexion
 		return $r;
 	}
 
-	 private function registrar_vacacion() {
+	private function registrar_vacacion() {
         try {
             $this->validar_conexion($this->con);
             $this->con->beginTransaction();

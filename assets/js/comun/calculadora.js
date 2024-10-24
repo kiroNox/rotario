@@ -54,11 +54,6 @@ function load_calc_functions(){// calculadora init
 						e.disabled=false;
 					});
 
-					if(document.getElementById('container_condicionales').innerHTML==''){
-						add_lista_condicional();
-						add_lista_condicional();
-					}
-
 
 				}
 				else {
@@ -85,7 +80,9 @@ function load_calc_functions(){// calculadora init
 
 				this.closest("form").action_form = "save_calc";
 				this.closest("form").querySelector("button[type='submit']").click();
-				this.closest("form").action_form = "testing_calc";
+				if(!this.closest("form").checkValidity()){
+					this.closest("form").action_form = "testing_calc";
+				}
 				return false;
 			};
 
@@ -297,15 +294,18 @@ function add_lista_condicional(condicional='',formula='',variables=''){
 	var n = lista_condicionales_actuales.length + 1;
 
 	var div = crearElem("div",`id,calc_lista-condicion-${n},class,position-relative`,`
-		<label for="calc_condicional-condicion-${n}">Condición - ${n}</label>
-		<input required type="text" class="form-control" id="calc_condicional-condicion-${n}" name="calc_condicional-condicion" data-span="invalid-span-calc_condicional-condicion-${n}" value="${condicional}">
-		<div class="suggestions" data-input="calc_condicional-condicion-${n}"></div>
-		<span id="invalid-span-calc_condicional-condicion-${n}" class="invalid-span text-danger"></span>
-
-		<label for="calc_formula_input-condicion-${n}">Formula - ${n}</label>
-		<input required type="text" class="form-control" id="calc_formula_input-condicion-${n}" name="calc_formula_input-condicion" data-span="invalid-span-calc_formula_input-condicion-${n}" data-variables_container="list_calc_variables-condicion-${n}" data-condicion="calc_condicional-condicion-${n}" data-orden="${n}" value="${formula}">
-		<div class="suggestions" data-input="calc_formula_input-condicion-${n}"></div>
-		<span id="invalid-span-calc_formula_input-condicion-${n}" class="invalid-span text-danger"></span>
+		<div>
+			<label for="calc_condicional-condicion-${n}">Condición - ${n}</label>
+			<input required type="text" class="form-control" id="calc_condicional-condicion-${n}" name="calc_condicional-condicion" data-span="invalid-span-calc_condicional-condicion-${n}" value="${condicional}">
+			<div class="suggestions" data-input="calc_condicional-condicion-${n}"></div>
+			<span id="invalid-span-calc_condicional-condicion-${n}" class="invalid-span text-danger"></span>
+		</div>
+		<div>
+			<label for="calc_formula_input-condicion-${n}">Formula - ${n}</label>
+			<input required type="text" class="form-control" id="calc_formula_input-condicion-${n}" name="calc_formula_input-condicion" data-span="invalid-span-calc_formula_input-condicion-${n}" data-variables_container="list_calc_variables-condicion-${n}" data-condicion="calc_condicional-condicion-${n}" data-orden="${n}" value="${formula}">
+			<div class="suggestions" data-input="calc_formula_input-condicion-${n}"></div>
+			<span id="invalid-span-calc_formula_input-condicion-${n}" class="invalid-span text-danger"></span>
+		</div>
 
 		<div class="container lista-variables">
 			<h4>Formula - ${n} - Variables</h4>

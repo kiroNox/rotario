@@ -66,7 +66,8 @@
             "collapse"=>"Documentos",
             "icono"=>"fas fa-fw fa-folder",
             "lista" => [
-                ["permisos"=>"innecesario", "href"=>"generar","descrip" => "Generar Documentos"]
+                ["permisos"=>"innecesario", "href"=>"generar","descrip" => "Generar Documentos"],
+                ["permisos"=>"innecesario", "href"=>"generar_balance","descrip" => "Generar Balance de primas"]
             ]
         ];
 

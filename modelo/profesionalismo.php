@@ -4,6 +4,7 @@ class Profesionalismo extends Conexion
 {
 
 	PRIVATE $con, $id, $descripcion, $monto;
+	// TODO quitar los motnos
 
 
 

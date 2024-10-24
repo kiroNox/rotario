@@ -23,15 +23,19 @@ class Conexion{
 				}
 				PUBLIC function commit($string ='' ){
 					$this->exception();
+					return false;
 				}
 				PUBLIC function rollBack($string ='' ){
 					$this->exception();
+					return false;
 				}
 				PUBLIC function query($string ='' ){
 					$this->exception();
+					return false;
 				}
 				PUBLIC function prepare($string ='' ){
 					$this->exception();
+					return false;
 				}
 			};
 
@@ -72,15 +76,19 @@ class Conexion{
 				}
 				PUBLIC function commit($string ='' ){
 					$this->exception();
+					return false;
 				}
 				PUBLIC function rollBack($string ='' ){
 					$this->exception();
+					return false;
 				}
 				PUBLIC function query($string ='' ){
 					$this->exception();
+					return false;
 				}
 				PUBLIC function prepare($string ='' ){
 					$this->exception();
+					return false;
 				}
 			};
 		}

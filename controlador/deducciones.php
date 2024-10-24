@@ -32,6 +32,7 @@
 						,$_POST["deducciones_dedicada"]
 						,$_POST["trabajadores"]
 						,$_POST["formula"]
+						,$_POST["mensual"]
 
 
 					) );
@@ -52,6 +53,7 @@
 						,$_POST["deducciones_dedicada"]
 						,$_POST["trabajadores"]
 						,$_POST["formula"]
+						,$_POST["mensual"]
 
 					) );
 				}
