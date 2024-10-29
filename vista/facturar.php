@@ -443,6 +443,7 @@
 
 					if(lee.mensaje=='complete'){
 						loader_body_msg_correos(false);
+						load_facturas();
 						exito(true);
 						muestraMensaje("Advertencia", "Los correos están desactivados temporalmente", "s");
 						console.error("correos desactivados");

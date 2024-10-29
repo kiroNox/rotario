@@ -3,6 +3,8 @@
 
 		if(!empty($_POST)){// si hay alguna consulta tipo POST
 
+
+
 			$cl = new Loging;
 
 			$accion = $_POST["accion"];// siempre se pasa un parametro con la accion que se va a realizar
@@ -22,7 +24,6 @@
 			else if($accion == "change_pass"){
 				echo json_encode($cl->change_pass($_POST["new_pass"],$_POST["id"]));
 			}
-			$cl->set_con(null);// cierro la conexión
 			exit;
 		}
 

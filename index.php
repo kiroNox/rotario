@@ -13,11 +13,12 @@
 			"principal",
 			"login",
 			"reset-pass",
-			"out"
+			"out",
+			"404"
 		];
 		
 		require_once("vendor/autoload.php");
-		require_once ("modelo/loader.php");
+		// require_once ("modelo/loader.php");
 		require_once "modelo/verificador.php";
 		require_once "modelo/notificacion.php";
 		require_once("controlador/$pagina.php");
@@ -26,11 +27,5 @@
 	}
 	else{
 		require_once("vista/404.php");
-		//echo "pagina en construcción I <br>";
 	}
-	// Para preguntar:
-	/*
-		Nivel de precicion de los calculos (el redondeo)
-		para las deducciones quincenales como se hace en febrero
-	*/
  ?>

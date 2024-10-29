@@ -396,7 +396,7 @@
 				var ajax = enviaAjax(datos,function(respuesta, exito, fail){
 					
 					var lee = JSON.parse(respuesta);
-					if(lee.resultado == "valid_cedula_parent"){
+					if(lee.resultado == "valid_parent"){
 
 						document.getElementById(etiqueta.dataset.paretnname).innerText = lee.mensaje;
 						

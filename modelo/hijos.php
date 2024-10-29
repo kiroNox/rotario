@@ -70,7 +70,7 @@ class Hijos extends Conexion
 
 				$madre_resp = $this->valid_parent_s($this->cedula_madre);
 
-				if($madre_resp["resultado"] != "valid_cedula_parent"){
+				if($madre_resp["resultado"] != "valid_parent"){
 					throw new Exception($madre_resp["mensaje"]." (madre)", 1);
 				}
 			}
@@ -81,7 +81,7 @@ class Hijos extends Conexion
 			if($this->cedula_padre != ''){
 
 				$padre_resp = $this->valid_parent_s($this->cedula_padre);
-				if($padre_resp["resultado"] != "valid_cedula_parent"){
+				if($padre_resp["resultado"] != "valid_parent"){
 					throw new Exception($padre_resp["mensaje"]." (padre)", 1);
 				}
 
@@ -302,7 +302,7 @@ class Hijos extends Conexion
 				$nombre = preg_replace("/^\s*\b(\w+).*/", "$1", $consulta["nombre"]);
 				$nombre .= preg_replace("/^\s*\b(\w+).*/", " $1", $consulta["apellido"]);
 				
-				$r['resultado'] = 'valid_cedula_parent';
+				$r['resultado'] = 'valid_parent';
 				$r['mensaje'] =  $nombre;
 				$r['id'] = $consulta["id_trabajador"];
 			}
@@ -352,7 +352,7 @@ class Hijos extends Conexion
 
 				$madre_resp = $this->valid_parent_s($this->cedula_madre);
 
-				if($madre_resp["resultado"] != "valid_cedula_parent"){
+				if($madre_resp["resultado"] != "valid_parent"){
 					throw new Exception($madre_resp["mensaje"]." (madre)", 1);
 				}
 			}
@@ -363,7 +363,7 @@ class Hijos extends Conexion
 			if($this->cedula_padre != ''){
 
 				$padre_resp = $this->valid_parent_s($this->cedula_padre);
-				if($padre_resp["resultado"] != "valid_cedula_parent"){
+				if($padre_resp["resultado"] != "valid_parent"){
 					throw new Exception($padre_resp["mensaje"]." (padre)", 1);
 				}
 

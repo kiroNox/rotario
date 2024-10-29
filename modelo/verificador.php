@@ -43,6 +43,8 @@ if( !in_array($pagina, $excepciones_p) ){
 				if($pagina == 'log'){
 					$pagina = 'dashboard';
 				}
+
+				
 			}
 			else{
 

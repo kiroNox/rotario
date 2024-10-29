@@ -286,6 +286,7 @@ class Usuarios extends Conexion
 
 	PRIVATE function registrar_usuario(){
 		try {
+			
 			$this->validar_conexion($this->con);
 			$this->con->beginTransaction();
 			Validaciones::validarCedula($this->cedula);
@@ -414,6 +415,7 @@ class Usuarios extends Conexion
 			$r['titulo'] = 'Error';
 			$r['mensaje'] =  $e->getMessage();
 			$r["temp"] = $e->getTrace();
+			$r["line"] = $e->getLine().__METHOD__;
 			//$r['mensaje'] =  $e->getMessage().": LINE : ".$e->getLine();
 		}
 		return $r;

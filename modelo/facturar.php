@@ -643,16 +643,6 @@ class Facturar extends Conexion
 				$elem["islr"] = $consulta->fetch(PDO::FETCH_ASSOC)["islr"];
 				$consulta = null;
 
-				if($elem["cedula"] = "V-27250544"){ // TODO solo envia correo a xavier
-
-
-					//$this->enviar_correo($elem,"factura","Factura de Sueldo");
-
-
-				}
-
-
-
 
 			}
 
@@ -741,6 +731,8 @@ class Facturar extends Conexion
 
 
 				}
+
+				sleep(1);
 
 				$consulta = $this->con->prepare("UPDATE factura set notificado = 1 WHERE id_factura = :id_factura");
 				$consulta->execute([":id_factura"=>$this->id]);
