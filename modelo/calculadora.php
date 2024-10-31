@@ -601,11 +601,22 @@ trait Calculadora{
 
 
 			$r["resultado"] = "leer_formula";
-			$r["total"] = $this->resolve_groups($formula_array,$formula);
-			$r["total"] = floatval(number_format($r["total"],$this->calc_decimales_respuesta,'.',''));
+			$total = $this->resolve_groups($formula_array,$formula);
+
+			if(is_string($total) and preg_match("/%/", $total)){
+				$r["porcentaje"] = true;
+				$r["total"] = $total;
+			}
+			else{
+				$r["porcentaje"] = false;
+				$r["total"] = floatval(number_format($total, $this->calc_decimales_respuesta, '.', ''));
+			}
+
+
 			$r["formula"] = $this->calc_formula;
 			$r["tipo"] = "normal";
 			$r["variables"] = $this->get_all_var($variables);
+
 			$r[] = $formula_array;
 
 		} catch (Exception $e) {
@@ -716,9 +727,16 @@ trait Calculadora{
 				if($condicion_1["resultado"] == "error"){
 					throw new Exception($condicion_1["mensaje"], $condicion_1["calc_error"]);
 				}
+				if($condicion_1["porcentaje"]===true){
+					throw new Exception("fue devuelto un porcentaje (".$condicion_1["total"].") y no es valido como resultado entre las condiciones ", 1);
+				}
+
 				
 				if($condicion_2["resultado"] == "error"){
 					throw new Exception($condicion_2["mensaje"], $condicion_2["calc_error"]);
+				}
+				if($condicion_2["porcentaje"]===true){
+					throw new Exception("fue devuelto un porcentaje (".$condicion_2["total"].") y no es valido como resultado entre las condiciones ", 2);
 				}
 
 				$respuesta = false;
@@ -814,6 +832,9 @@ trait Calculadora{
 				}
 
 				if($cond["resultado"] == "leer_formula"){// si la evaluación de la condicional fue exitosa
+					if($cond["porcentaje"]==true){
+						throw new Exception("fue devuelto un porcentaje (".$cond["total"].") y no es valido como resultado entre las condiciones ", 1);
+					}	
 					if(($cond["total"] > 0)){ // si el resultado es mayor a cero (verdadero)
 
 
@@ -2086,12 +2107,12 @@ trait Calculadora{
 		return $r; 
 	}
 
-	PUBLIC function bd_leer_formula_s($id_formula){// probar formulas por id
+	PUBLIC function bd_leer_formula_s($id_formula,$lanzar=true){// probar formulas por id
 		try {
 			$this->validar_conexion($this->con);
 			//$this->con->beginTransaction();
 			
-			$this->bd_leer_formula($id_formula);
+			$r = $this->bd_leer_formula($id_formula);
 			
 			$r['resultado'] = 'console';
 			$r['titulo'] = 'Éxito';
@@ -2099,11 +2120,6 @@ trait Calculadora{
 			//$this->con->commit();
 		
 		} catch (Exception $e) {
-			if($this->con instanceof PDO){
-				if($this->con->inTransaction()){
-					$this->con->rollBack();
-				}
-			}
 		
 			$r['resultado'] = 'error';
 			$r['titulo'] = 'Error';
@@ -2172,8 +2188,9 @@ trait Calculadora{
 			}
 
 			if($respuesta["resultado"] != 'leer_formula'  and $respuesta["resultado"] != "leer_formula_condicional"){
-				showvar($respuesta);
-				throw new Exception("CALC_ERROR", 1);
+				$sms = "Error en '".$elem[0]["nombre"]."'<ENDL><ENDL>";
+				$sms .= (isset($respuesta["resultado"]))?$respuesta["mensaje"]:'';
+				throw new Exception($sms, 1);
 			}
 
 
@@ -2251,8 +2268,17 @@ trait Calculadora{
 			}
 			$this->resolved = false;
 
-			if((!$left instanceof calc_nodo) and (!is_numeric($left))){throw new Exception("$left no es un numero valido para calcular", 1);}
-			if($right !=null and(!$right instanceof calc_nodo) and (!is_numeric($right))){throw new Exception("$right no es un numero valido para calcular", 1);}
+			if((!$left instanceof calc_nodo) and ( !is_numeric($left) )){
+
+				if(!is_numeric( preg_replace("/%/", "", $left) )){
+					throw new Exception("$left no es un numero valido para calcular", 1);
+				}
+			}
+			if($right !=null and(!$right instanceof calc_nodo) and (!is_numeric($right))){
+				if(!is_numeric( preg_replace("/%/", "", $right) )){
+					throw new Exception("$right no es un numero valido para calcular", 1);
+				}
+			}
 			$this->leaft = false;// es hoja
 			$this->left = $left;
 			$this->operador = $operador;
@@ -2303,6 +2329,10 @@ trait Calculadora{
 					$this->set_total($valor);
 					$this->set_resolved();
 				}
+				else if(is_numeric( preg_replace("/%/", "", $valor) )){
+					$this->set_total($valor);
+					$this->set_resolved();
+				}
 				else {throw new Exception("Fue devuelto un valor distinto de un numero", 999);
 				}
 				return true;
@@ -2315,11 +2345,41 @@ trait Calculadora{
 
 
 
+				$left = ($this->left->resolved)?$this->left->total:$this->left->value;
+				$right = ($this->right->resolved)?$this->right->total:$this->right->value;
+
+				if(!is_numeric($left) ){
+					if(preg_match("/%/", $left)){
+						throw new Exception("El porcentaje ($left) no puede estar del lado izquierdo de la operación", 1);
+						
+					}
+					else{
+						throw new Exception("$left no es un numero valido para calcular", 1);
+					}
+				}
+
+				$evaluando_porcentaje_derecho = false;
+
+				if( is_string($right) and is_numeric( $righttemp = preg_replace("/%/", "", $right) ) ){
+					$right = (Float) $righttemp;
+					$evaluando_porcentaje_derecho = true;
+					if($right === 0){
+						$evaluando_porcentaje_derecho = false;
+					}
+				}
+				else if (is_string($right)){
+					throw new Exception("$right no es un numero valido para calcular", 1);
+
+				}
+
 				switch ($this->value) {
 					case '*':
-					$left = ($this->left->resolved)?$this->left->total:$this->left->value;
-					$right = ($this->right->resolved)?$this->right->total:$this->right->value;
-//					$total = floatval(number_format($left, $numeros_decimales, '.', '')) * floatval(number_format($right,$numeros_decimales,'.',''));
+
+					if($evaluando_porcentaje_derecho===true){
+						$right = $right / 100;
+					}
+
+
 
 					$total = $left*$right;
 					$total = floatval(number_format($total, $numeros_decimales, '.',''));
@@ -2329,12 +2389,15 @@ trait Calculadora{
 					break;
 
 					case '/':
-					$left = ($this->left->resolved)?$this->left->total:$this->left->value;
-					$right = ($this->right->resolved)?$this->right->total:$this->right->value;
-					if($right == 0){
+					
+					if($right === 0){
 						throw new Exception("No se puede dividir entre cero en la posicion (".($this->orden + 1).") de la formula '$this->formula'", 1);
 					}
-					//$total = floatval(number_format($left, $numeros_decimales, '.', '')) / floatval(number_format($right,$numeros_decimales,'.',''));
+
+					if($evaluando_porcentaje_derecho===true){
+						$right = $right / 100;
+					}
+
 					$total = $left / $right;
 					$total = floatval(number_format($total, $numeros_decimales, '.',''));
 					$this->set_total($total);
@@ -2343,9 +2406,11 @@ trait Calculadora{
 					break;
 
 					case '+':
-					$left = ($this->left->resolved)?$this->left->total:$this->left->value;
-					$right = ($this->right->resolved)?$this->right->total:$this->right->value;
-					//$total = floatval(number_format($left,$numeros_decimales,'.','')) + floatval(number_format($right,$numeros_decimales,'.',''));
+
+					if($evaluando_porcentaje_derecho===true){
+						$right = ($right / 100) * $left;
+					}
+
 					$total = $left + $right;
 					$total = floatval(number_format($total, $numeros_decimales, '.',''));
 					$this->set_total($total);
@@ -2354,9 +2419,11 @@ trait Calculadora{
 					break;
 
 					case '-':
-					$left = ($this->left->resolved)?$this->left->total:$this->left->value;
-					$right = ($this->right->resolved)?$this->right->total:$this->right->value;
-					//$total = floatval(number_format($left,$numeros_decimales,'.','')) - floatval(number_format($right,$numeros_decimales,'.',''));
+
+					if($evaluando_porcentaje_derecho===true){
+						$right = ($right / 100) * $left;
+					}
+
 					$total = $left - $right;
 					$total = floatval(number_format($total, $numeros_decimales, '.',''));
 					$this->set_total($total);

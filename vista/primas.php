@@ -727,24 +727,38 @@
 								else if (lee.resultado == 'leer_formula'){
 
 									if(lee.total!==null){
-										muestraMensaje("Prueba Exitosa", `La formula fue evaluada exitosamente <ENDL> total <ENDL> ${lee.total}`, "s",);
+										if(lee.porcentaje===true){
+											muestraMensaje("Error", "La prima no puede devolver un porcentaje", "e");
+											f4.tested_form = false;
+										}
+										else{
+											muestraMensaje("Prueba Exitosa", `La formula fue evaluada exitosamente <ENDL> total <ENDL> ${lee.total}`, "s",);
+											f4.tested_form = true;
+										}
 									}
 									else{
 										muestraMensaje("Prueba Exitosa <br> (Advertencia)", "La condicional no se ha cumplido por lo tanto el resultado es '0' <ENDL> se sugiere probar la formula con una condicional positiva para evitar errores", "¡",);
+										f4.tested_form = true;
 									}
-									f4.tested_form = true;
 								}
 								else if (lee.resultado == 'leer_formula_condicional'){
 									if(lee.total!==null){
-										muestraMensaje("Prueba Exitosa", `La formula '${lee.n_formula}' fue evaluada exitosamente <ENDL> total <ENDL> ${lee.total}`, "s");
+										if(lee.porcentaje===true){
+											muestraMensaje("Error", "La prima no puede devolver un porcentaje", "e");
+											f4.tested_form = false;
+										}
+										else{
+											muestraMensaje("Prueba Exitosa", `La formula '${lee.n_formula}' fue evaluada exitosamente <ENDL> total <ENDL> ${lee.total}`, "s");
+											f4.tested_form = true;
+										}
 									}
 									else{
 										muestraMensaje("Prueba Exitosa <br> (Advertencia)", "Ninguna condicional se ha cumplido por lo tanto el resultado es '0' <ENDL> se sugiere probar cada formula con una condicional positiva para evitar errores", "¡",);
+										f4.tested_form = true;
 									}
 
 
 
-									f4.tested_form = true;
 								}
 								else if (lee.resultado == 'is-invalid'){
 									muestraMensaje(lee.titulo, lee.mensaje,"error");

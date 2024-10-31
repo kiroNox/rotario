@@ -274,8 +274,8 @@ function evento_formula(elem,variables=true){
 		}
 	}
 
-	eventoKeyup(elem, /^[0-9a-zA-Z_\.,+\-*\/{}()\[\]\s]+$/, "El campo solo permite letras sin tilde numeros, operadores (+,-,*,/) y piso (_)", undefined, func,func2);
-	eventoKeypress(elem, /^[0-9a-zA-Z_\.,+\-*\/{}()\[\]\s]*$/);
+	eventoKeyup(elem, /^[0-9a-zA-Z_\.,+\-*\/{}()\[\]\s%]+$/, "El campo solo permite letras sin tilde numeros, operadores (+,-,*,/) y piso (_)", undefined, func,func2);
+	eventoKeypress(elem, /^[0-9a-zA-Z_\.,+\-*\/{}()\[\]\s%]*$/);
 
 }
 
