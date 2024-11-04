@@ -104,7 +104,7 @@ class Profesionalismo extends Conexion
 			$r['resultado'] = 'registrar_nivel_educativo';
 			$r['titulo'] = 'Éxito';
 			$r['mensaje'] =  "El nivel educativo fue registrado exitosamente";
-			$r{"lista"} = $niveles["mensaje"];
+			$r["lista"] = $niveles["mensaje"];
 
 			$this->con->commit();
 		
@@ -337,6 +337,3 @@ class Profesionalismo extends Conexion
 	}
 
 }
-
-
- ?>
