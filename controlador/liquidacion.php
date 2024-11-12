@@ -16,26 +16,20 @@
 			}
 			else if($accion == "valid_cedula_trabajador"){
 				if(isset($permisos["liquidacion"]["consultar"]) and $permisos["liquidacion"]["consultar"] == "1"){
-					$cl2 = new Primas;
 
-					echo json_encode( $cl2->valid_cedula_trabajador_s(
+					echo json_encode( $cl->valid_cedula_trabajador_s(
 						$_POST["cedula"]
 					) );
-
-					$cl2->set_con(null);
-
-					unset($cl2);
 				}
 				else{
 					$cl->no_permision_msg();
 				}
 			}
-			else if($accion == "calcular_liquidacion"){
+			else if($accion == "nueva_liquidacion"){
 				if(isset($permisos["liquidacion"]["crear"]) and $permisos["liquidacion"]["crear"] == "1"){
 
-					echo json_encode( $cl->calcular_liquidacion_s(
+					echo json_encode( $cl->nueva_liquidacion_s(
 						$_POST["cedula"],
-						(isset($_POST["id"]))?$_POST["id"]:false
 					) );
 
 				}
@@ -78,6 +72,21 @@
 						$_POST["id"]
 					) );
 
+			}
+			else if ($accion == "get_liquidacion"){
+				echo json_encode( $cl->get_liquidacion_s(
+					$_POST["id"]
+				) );
+			}
+
+			else if ($accion == "modificar_liquidacion"){
+				echo json_encode( $cl->modificar_liquidacion_s(
+					$_POST['liquidacion_id'],
+					$_POST['trabajador_id'],
+					$_POST['liquidaciones_fecha'],
+					$_POST['liquidacion_motivo'],
+					$_POST['liquidacion_monto_total'],
+				) );
 			}
 
 			else{

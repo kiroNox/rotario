@@ -53,14 +53,71 @@ class Liquidaciones extends Conexion
 
 
 	PUBLIC function valid_cedula_trabajador_s($cedula){
+
 		$this->set_cedula($cedula);
+
 		return $this->valid_cedula_trabajador();
 	}
 
-	PUBLIC function calcular_liquidacion_s($cedula,$id_liquidacion){
+	PRIVATE function valid_cedula_trabajador(){
+		try {
+			$this->validar_conexion($this->con);
+
+
+			Validaciones::validarCedula($this->cedula);
+
+			$consulta = $this->con->prepare("SELECT nombre, apellido, id_trabajador FROM trabajadores WHERE cedula = ?;");
+			$consulta->execute([$this->cedula]);
+			if($resp = $consulta->fetch(PDO::FETCH_ASSOC)){
+				$nombre = preg_replace("/^\s*\b(\w+).*/u", "$1", $resp["nombre"]);
+				$nombre .= preg_replace("/^\s*\b(\w+).*/u", " $1", $resp["apellido"]);
+				
+				
+
+				$r['resultado'] = 'valid_cedula_trabajador';
+				$r['mensaje'] =  $nombre;
+				$r['id'] = $resp["id_trabajador"];
+
+				$consulta = null;
+				$consulta = $this->con->prepare("SELECT 1 FROM sueldo_base WHERE id_trabajador = ?;");
+				$consulta->execute([$r['id']]);
+
+				if(!$consulta->fetch()){
+					$r["resultado"] = "no_existe";
+					$r["mensaje"] = "El trabajador tiene no tiene un sueldo base registrado";
+				}
+
+
+
+
+			}
+			else{
+				$r["resultado"] = "no_existe";
+				$r["mensaje"] = "La cedula del trabajador no existe";
+			}
+			$this->close_bd($this->con);
+		
+		} catch (Validaciones $e){
+			
+			$r['resultado'] = 'is-invalid';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+			$r['console'] =  $e->getMessage().": Code : ".$e->getLine();
+		} catch (Exception $e) {
+					
+			$r['resultado'] = 'error';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+		}
+		finally{
+			$consulta = null; 
+		}
+		return $r;
+	}
+
+	PUBLIC function nueva_liquidacion_s($cedula){
 		$this->set_cedula($cedula);
-		$this->set_id_liquidacion($id_liquidacion);
-		return $this->calcular_liquidacion();
+		return $this->nueva_liquidacion();
 	}
 
 	PUBLIC function registrar_liquidacion_s($id_trabajador ,$fecha ,$motivo ,$monto ){
@@ -85,86 +142,168 @@ class Liquidaciones extends Conexion
 		return $this->eliminar_liquidacion();
 	}
 
+	PUBLIC function get_liquidacion_s($id){
+		$this->set_id_liquidacion($id);
+		return $this->get_liquidacion();
+	}
+
+	PRIVATE function get_liquidacion(){
+		try {
+			$this->validar_conexion($this->con);
+			
+			Validaciones::numero($this->id_liquidacion,"1,","El id de la liquidación no es valido"); 
+
+			$consulta = $this->con->prepare("SELECT l.*,t.cedula,t.nombre,t.apellido,t.id_trabajador FROM liquidacion as l LEFT JOIN trabajadores as t on t.id_trabajador = l.id_liquidacion WHERE id_liquidacion = ?;");
+			$consulta->execute([$this->id_liquidacion]);
+
+			$r["datos_liquidacion"] = $datos_liquidacion = $consulta->fetch(PDO::FETCH_ASSOC);
+			$consulta = null;
+
+
+			$consulta = $this->con->prepare("
+				SELECT
+				    YEAR(fecha) AS anio,
+				    MONTH(fecha) AS mes,
+				    SUM( (sueldo_base + sueldo_integral) - sueldo_deducido ) AS total_pagos
+				FROM
+				    factura
+				    LEFT JOIN trabajadores as t on t.id_trabajador = factura.id_trabajador
+				    WHERE t.id_trabajador = :id_trabajador and fecha between :fecha_contrato and :fecha_liquidacion
+				GROUP BY
+				    YEAR(fecha), MONTH(fecha)
+				ORDER BY
+				    anio, mes");
+			$consulta->bindValue(":id_trabajador",$datos_liquidacion["id_trabajador"]);
+			$consulta->bindValue(":fecha_contrato",$datos_liquidacion["fecha_contrato"]);
+			$consulta->bindValue(":fecha_liquidacion",$datos_liquidacion["fecha"]);
+
+			$consulta->execute();
+
+
+			$lista = $consulta->fetchall(PDO::FETCH_ASSOC);
+
+			foreach ($lista as &$elem) {
+				$elem["dias"] = cal_days_in_month(CAL_GREGORIAN, intval($elem["mes"]),intval($elem["anio"]));
+				$elem["fecha"] = $elem["anio"]."-". MESES[$elem["mes"] - 1];
+			}
+
+
+
+
+			
+			$r['resultado'] = 'get_liquidacion';
+			$r["lista"] = $lista;
+			//$this->con->commit();
+			$this->close_bd($this->con);
+		
+		} catch (Validaciones $e){
+			if($this->con instanceof PDO){
+				if($this->con->inTransaction()){
+					$this->con->rollBack();
+				}
+			}
+			$r['resultado'] = 'is-invalid';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+			$r['console'] =  $e->getMessage().": Code : ".$e->getLine();
+		} catch (Exception $e) {
+			if($this->con instanceof PDO){
+				if($this->con->inTransaction()){
+					$this->con->rollBack();
+				}
+			}
+		
+			$r['resultado'] = 'error';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+			//$r['mensaje'] =  $e->getMessage().": LINE : ".$e->getLine();
+		}
+		finally{
+			//$this->con = null;
+			$consulta = null;
+		}
+		return $r;
+	}
+
 
 
 
 	
 
-	PRIVATE function calcular_liquidacion(){
+	PRIVATE function nueva_liquidacion($onlyActive=true){
 		try {
 			$cedula = $this->cedula;
 			$this->validar_conexion($this->con);
-			$this->con->beginTransaction();
-			if($this->id_liquidacion===false){
+
+			Validaciones::validarCedula($cedula);
 
 
-				Validaciones::validarCedula($cedula);
-
-
-
-				$consulta = $this->con->prepare("SELECT 1 FROM trabajadores WHERE cedula = ? AND estado_actividad IS TRUE;");
-				$consulta->execute([$cedula]);
-
-				if(!$consulta->fetch()){
-					throw new Exception("EL trabajador no existe o fue eliminado", 1);
-				}
-
-				$consulta = null;
-
+			if($onlyActive){
+				$consulta = $this->con->prepare("SELECT id_trabajador FROM trabajadores WHERE cedula = ? AND estado_actividad IS TRUE;");
 			}
 			else{
-				$consulta = $this->con->prepare("SELECT 1 FROM liquidacion WHERE id_liquidacion = ?;");
-				$consulta->execute([$this->id_liquidacion]);
+				$consulta = $this->con->prepare("SELECT id_trabajador FROM trabajadores WHERE cedula = ?;");
 
-				if(!$consulta->fetch()){
-					throw new Exception("La liquidación no existe o fue eliminada", 1);
-					
-				}
+			}
+			$consulta->execute([$cedula]);
+
+			if(!$id_trabajador = $consulta->fetch(PDO::FETCH_ASSOC)){
+				throw new Exception("EL trabajador no existe o fue eliminado", 1);
+			}
+
+			$id_trabajador = $id_trabajador["id_trabajador"];
+
+			$consulta = null;
+
+			$consulta = $this->con->prepare("
+				SELECT
+				    YEAR(fecha) AS anio,
+				    MONTH(fecha) AS mes,
+				    SUM( (sueldo_base + sueldo_integral) - sueldo_deducido ) AS total_pagos
+				FROM
+				    factura
+				    LEFT JOIN trabajadores as t on t.id_trabajador = factura.id_trabajador
+				    WHERE t.id_trabajador = ? 
+				GROUP BY
+				    YEAR(fecha), MONTH(fecha)
+				ORDER BY
+				    anio, mes");
+			$consulta->execute([$id_trabajador]);
+
+			$lista = $consulta->fetchall(PDO::FETCH_ASSOC);
+
+			foreach ($lista as &$elem) {
+				$elem["dias"] = cal_days_in_month(CAL_GREGORIAN, intval($elem["mes"]),intval($elem["anio"]));
+				$elem["fecha"] = $elem["anio"]."-". MESES[$elem["mes"] - 1];
 			}
 
 
 
+					
 
+
+
+
+			$consulta = null;
 
 
 			$consulta = $this->con->prepare("SELECT
-			    f.id_factura
-			    ,f.id_trabajador
-			    ,DATE_FORMAT(f.fecha,'%Y/%m') as fecha
-			    ,SUM(f.sueldo_base) as sueldo_base
-			    ,SUM(f.sueldo_integral + f.sueldo_base) as sueldo_integral
-			    ,SUM(f.sueldo_deducido) as sueldo_deducido
-			    ,f.status
-			    ,t.creado
+			    t.creado
 			FROM
-			    factura AS f
-			    LEFT JOIN trabajadores as t on t.id_trabajador = f.id_trabajador
+				trabajadores as t
 			WHERE
-				t.cedula = ?
-			    GROUP BY id_trabajador, YEAR(fecha),MONTH(fecha)
-			    ORDER BY id_trabajador,fecha ASC;");
+				t.cedula = ?");
 
 			$consulta->execute([$cedula]);
 
-			$lista = $consulta->fetchall(PDO::FETCH_ASSOC);
-			$prestaciones = array();
-			$acumulado = 0;
-			for($i=0; $i<count($lista); $i = $i+3){
-				$sueldo_integral_diario = floatval($lista[$i]["sueldo_integral"]) / 30 ;
-
-
-
-				$acumulado = round($sueldo_integral_diario * 15,2) + $acumulado;
-				$lista[$i]["acumulado"] = number_format($acumulado,2,'.','');
-
-				$prestaciones[] = $lista[$i];
-			}
-			
-
-			
-			$r['resultado'] = 'calcular_liquidacion';
-			$r['mensaje'] =  $prestaciones;
+						
+			$r['resultado'] = 'nueva_liquidacion';
+			$r["temp"] = $id_trabajador;
+			$r['mensaje'] =  $consulta->fetch(PDO::FETCH_ASSOC);
+			$r["lista"] = $lista;
 			//$this->con->commit();
+
+			$this->close_bd($this->con);
 		
 		} catch (Validaciones $e){
 			if($this->con instanceof PDO){
@@ -202,21 +341,21 @@ class Liquidaciones extends Conexion
 
 
 			// TODO validaciones
-
-			$consulta = $this->con->prepare("SELECT id_rol FROM trabajadores WHERE id_trabajador = ?;");
-
-			$consulta->execute([$this->id_trabajador]);
-
-			if($consulta->fetch(PDO::FETCH_ASSOC)["id_rol"] == '1'){
-				throw new Exception("No es posible realizar el proceso de liquidación del trabajador por el rol de administrador del trabajador", 1);
-			}
-			
 			$consulta = $this->con->prepare("SELECT t.*,sb.id_sueldo_base FROM trabajadores as t LEFT JOIN sueldo_base as sb on sb.id_trabajador = t.id_trabajador WHERE t.id_trabajador = ?;");
 			$consulta->execute([$this->id_trabajador]);
 
 			if(!($resp = $consulta->fetch(PDO::FETCH_ASSOC))){
 				throw new Exception("El trabajador no existe o fue eliminado", 1);
 			}
+
+			$consulta = $this->con->prepare("SELECT id_rol FROM trabajadores WHERE id_trabajador = ?;");
+
+			$consulta->execute([$this->id_trabajador]);
+
+			if($resp["id_rol"] == '1'){
+				throw new Exception("No es posible realizar el proceso de liquidación del trabajador debido al rol de administrador del trabajador. Por favor modifique el rol del trabajador", 1);
+			}
+			
 
 			if($resp["estado_actividad"] =='0'){
 				throw new Exception("EL trabajador no esta activo y por lo tanto no se puede completar la liquidación", 1);
@@ -226,11 +365,22 @@ class Liquidaciones extends Conexion
 				throw new Exception("EL trabajador no tiene asignado un sueldo base y por lo tanto no se puede completar la liquidación", 1);
 			}
 
-			$consulta = $this->con->prepare("INSERT INTO liquidacion (id_trabajador, monto, descripcion, fecha) VALUES (:id_trabajador, :monto, :descripcion, :fecha);");
+			$fecha1 = $resp["creado"];
+			$fecha2 = $this->fecha;
+
+			$fecha1 = $fecha1.' 00:00:00';
+			$fecha2 = $fecha2.' 23:59:59';
+			if(strtotime($fecha1) > strtotime($fecha2)){
+				throw new Exception("La fecha de la liquidación no puede anterior a la fecha de la contratación", 1);
+			}
+
+			$consulta = $this->con->prepare("INSERT INTO liquidacion (id_trabajador, monto, descripcion, fecha, fecha_contrato) VALUES (:id_trabajador, :monto, :descripcion, :fecha, :fecha_contrato);");
 			$consulta->bindValue(":id_trabajador",$this->id_trabajador);
 			$consulta->bindValue(":monto",$this->monto);
 			$consulta->bindValue(":descripcion",$this->motivo);
 			$consulta->bindValue(":fecha",$this->fecha);
+			$consulta->bindValue(":fecha_contrato",$resp["creado"]);
+
 			$consulta->execute();
 
 			$lastId = $this->con->lastInsertId();
@@ -366,18 +516,34 @@ class Liquidaciones extends Conexion
 			}
 
 
-			$consulta = $this->con->prepare("UPDATE liquidacion set monto = :monto, descripcion = :descripcion, fecha = :fecha" );
+			$consulta = $this->con->prepare("UPDATE liquidacion set monto = :monto, descripcion = :descripcion, fecha = :fecha WHERE id_liquidacion = :id_liquidacion" );
 
 			$consulta->bindValue(":monto",$this->monto);
 			$consulta->bindValue(":descripcion",$this->motivo);
 			$consulta->bindValue(":fecha",$this->fecha);
+			$consulta->bindValue(":id_liquidacion",$this->id_liquidacion);
 
 			$consulta->execute();
+
+
+			$liquidaciones = $this->load_liquidaciones();
+
+			if($liquidaciones["resultado"]!='load_liquidaciones'){
+				throw new Exception($liquidaciones["mensaje"], 1);
+			}
+
+
+			
+
+
+
 			Bitacora::reg($this->con,"La liquidacion Nº$this->id_liquidacion fue modificada");
 			$r['resultado'] = 'modificar_liquidacion';
 			$r['titulo'] = 'Éxito';
 			$r['mensaje'] =  "La liquidación ha sido modificada exitosamente";
+			$r['lista'] =  $liquidaciones["mensaje"];
 			$this->con->commit();
+			$this->close_bd($this->con);
 		
 		} catch (Validaciones $e){
 			if($this->con instanceof PDO){
@@ -420,16 +586,16 @@ class Liquidaciones extends Conexion
 				throw new Exception("La liquidación no existe o fue eliminada", 1);
 			}
 
-			$consulta = $this->con->prepare("SELECT id_trabajador FROM liquidacion l WHERE l.id_liquidacion = ? and l.fecha = (select max(fecha) from liquidacion WHERE 1)");
-			$consulta->execute([$this->id_liquidacion]);
+			// $consulta = $this->con->prepare("SELECT id_trabajador FROM liquidacion l WHERE l.id_liquidacion = ? and l.fecha = (select max(fecha) from liquidacion WHERE 1)");
+			// $consulta->execute([$this->id_liquidacion]);
 
-			if($resp = $consulta->fetch(PDO::FETCH_ASSOC)){
+			// if($resp = $consulta->fetch(PDO::FETCH_ASSOC)){
 
-				$consulta = $this->con->prepare("UPDATE trabajadores set estado_actividad = 1 WHERE id_trabajador = ?");
-				$consulta->execute([$resp["id_trabajador"]]);
+			// 	$consulta = $this->con->prepare("UPDATE trabajadores set estado_actividad = 1 WHERE id_trabajador = ?");
+			// 	$consulta->execute([$resp["id_trabajador"]]);
 
 
-			}
+			// }
 		
 			$consulta = $this->con->prepare("DELETE FROM liquidacion WHERE id_liquidacion = ?");
 			$consulta->execute([$this->id_liquidacion]);
@@ -467,6 +633,8 @@ class Liquidaciones extends Conexion
 		}
 		return $r;
 	}
+
+
 
 	
 

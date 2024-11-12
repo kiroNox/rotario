@@ -19,7 +19,7 @@
 							</div>
 							<div class="col d-flex justify-content-end align-items-center">
 								<div>
-									<button class="btn btn-primary" data-toggle="modal" data-target="#modal_registrar_liquidacion">Registrar Liquidación</button>
+									<button class="btn btn-primary <?php if(!$permisos["validar_permisos"]("liquidacion","crear",true)){echo " d-none";} ?>" data-toggle="modal" data-target="#modal_registrar_liquidacion">Registrar Liquidación</button>
 								</div>
 							</div>
 						</div>
@@ -70,47 +70,47 @@
 											</div>
 											<div class="col-4">
 												<label for="" class="fade no-select d-block">l</label>
-												<button class="btn btn-primary" type="button" id="btn_calcular">Calcular Liquidación</button>
+												<button class="btn btn-primary" type="button" id="btn_calcular"><span class="bi bi-search"></span></button>
 											</div>
-											<div class="col-12" id="fecha_contratacion">
-												
-											</div>
+											
 										</div>
 										<hr>
 
 										<style>
-											#tbody_prestaciones td:nth-child(2)::after,
-											#tbody_prestaciones td:nth-child(3)::after,
-											#tbody_prestaciones td:nth-child(4)::after{
+											#tbody_resumen td:nth-child(3)::after{
 												content: " Bs";
 											}
 										</style>
 										<div class="row d-none" id="prestaciones_container">
+											<div class="col-12 col-md-4" id="fecha_contratacion">
+												
+											</div>
 											<div class="col-12 col-md-4">
 												<label for="liquidaciones_fecha">Fecha de liquidación</label>
 												<input required type="date" class="form-control" id="liquidaciones_fecha" name="liquidaciones_fecha" data-span="invalid-span-liquidaciones_fecha">
 												<span id="invalid-span-liquidaciones_fecha" class="invalid-span text-danger"></span>
 											</div>
-											<div class="d-none d-md-block col-4"></div>
 											<div class="col-12 col-md-4">
 												<label for="liquidacion_motivo">Motivo</label>
 												<input required type="text" class="form-control" id="liquidacion_motivo" name="liquidacion_motivo" data-span="invalid-span-liquidacion_motivo">
 												<span id="invalid-span-liquidacion_motivo" class="invalid-span text-danger"></span>
 											</div>
-											<div class="col-12">
-												<table class="table table-bordered table-hover table-middle" id="table_prestaciones">
+											<div class="col-12 mt-3">
+												 <table class="table table-bordered table-hover table-middle" id="table_resumen">
 													<thead class="bg-primary text-light">
 														<th>Mes/Año</th>
+														<th>dias del mes</th>
 														<th>Salario Mensual</th>
-														<th>Salario Integral</th>
-														<th>Prestaciones Acumuladas</th>
 													</thead>
 												
-													<tbody id="tbody_prestaciones">
+													<tbody id="tbody_resumen">
 														
 													</tbody>
 													
 												</table>
+												<div class="mt-2">
+													<button type="button" class="btn btn-primary" onclick="copy_resumen();" id="btn-copy">copiar</button>
+												</div>
 											</div>
 											<div class="col-12 mb-2">
 												<div class="row justify-content-md-end">
@@ -155,7 +155,7 @@
 		rowsEventActions("tbody_liquidaciones" ,function(action,rowId,btn){
 			if(action=='eliminar'){
 
-				muestraMensaje("¿Seguro?", "Desea eliminar la liquidación ", "s",function(result){
+				muestraMensaje("¿Seguro?", "Desea eliminar la liquidación<ENDL>Esto no restaurara el usuario, para ello debe registrarlo de nuevo", "?",function(result){
 					if(result){
 
 						var datos = new FormData();
@@ -192,6 +192,61 @@
 				
 		
 			}
+			else if (action == "modificar"){
+				muestraMensaje("¿Seguro?", "Desea modificar la liquidación", "?",function(result){
+					if(result){
+
+						var datos = new FormData();
+						datos.append("accion","get_liquidacion");
+						datos.append("id",rowId);
+						enviaAjax(datos,function(respuesta, exito, fail){
+						
+							var lee = JSON.parse(respuesta);
+							if(lee.resultado == "get_liquidacion"){
+								let datos_liquidacion = lee.datos_liquidacion;
+
+
+								document.getElementById('liquidacion_id').value=datos_liquidacion.id_liquidacion;
+								document.getElementById('trabajador_id').value=datos_liquidacion.id_trabajador;
+								document.getElementById('liquidacion_cedula').value=datos_liquidacion.cedula;
+								document.getElementById('liquidacion_motivo').value=datos_liquidacion.descripcion;
+								document.getElementById('liquidacion_monto_total').value=datos_liquidacion.monto;
+								document.getElementById('liquidaciones_fecha').value=datos_liquidacion.fecha;
+								document.getElementById('liquidacion_monto_total').onkeyup({key:""});
+
+								document.getElementById('liquidacion_cedula').readOnly=true;
+
+
+								document.getElementById('prestaciones_container').classList.remove("d-none");
+
+								document.getElementById('liquidacion_monto_total').classList.remove("is-valid","is-invalid");
+
+								document.getElementById('fecha_contratacion').innerHTML = `fecha de contratación <br>${datos_liquidacion.fecha_contrato}`;
+
+								load_lista_resumen(lee.lista);
+
+								document.querySelector("#f1 button[type='submit']").innerHTML="Modificar";
+
+
+								$("#modal_registrar_liquidacion").modal("show");
+							}
+							else if (lee.resultado == 'is-invalid'){
+								muestraMensaje(lee.titulo, lee.mensaje,"error");
+							}
+							else if(lee.resultado == "error"){
+								muestraMensaje(lee.titulo, lee.mensaje,"error");
+								console.error(lee.mensaje);
+							}
+							else if(lee.resultado == "console"){
+								console.log(lee.mensaje);
+							}
+							else{
+								muestraMensaje(lee.titulo, lee.mensaje,"error");
+							}
+						});
+					}
+				});
+			}
 		
 		});
 		
@@ -202,11 +257,12 @@
 
 		$('#modal_registrar_liquidacion').on('hidden.bs.modal', function (e) {
 			document.getElementById('prestaciones_container').classList.add("d-none");
-			document.getElementById('tbody_prestaciones').innerHTML='';
+			document.getElementById('tbody_resumen').innerHTML='';
 			document.getElementById('fecha_contratacion').innerHTML='';
 			document.getElementById('trabajador_info').innerHTML='';
 			document.getElementById('liquidaciones_fecha').value = '';
 			document.getElementById('liquidacion_id').value = '';
+			document.getElementById('liquidacion_motivo').value = '';
 			document.getElementById('trabajador_id').value = '';
 			document.getElementById('liquidacion_cedula').value = '';
 			document.getElementById('liquidacion_cedula').disabled = false;
@@ -214,6 +270,8 @@
 			document.getElementById('liquidacion_cedula').classList.remove("is-valid","is-invalid");
 			document.getElementById('liquidacion_monto_total').value = '';
 			document.getElementById('liquidacion_monto_total').classList.remove("is-valid","is-invalid");
+			document.querySelector("#f1 button[type='submit']").innerHTML="Registrar";
+
 
 
 			document.getElementById('btn_calcular').disabled = false;
@@ -225,12 +283,20 @@
 		document.getElementById('f1').onsubmit=function(e){
 			e.preventDefault();
 			// TODO validaciones
-			muestraMensaje("¿Seguro?", "Desea registrar la liquidación del trabajador, esto deshabilitara el usuario del trabajador", "w",function(result){
-				if(result){
-					var datos = new FormData($("#f1")[0]);
+			var datos = new FormData($("#f1")[0]);
 
-					datos.set("liquidacion_monto_total",sepMilesMonto(datos.get("liquidacion_monto_total"),true));
-					datos.append("accion","registrar_liquidacion");
+			datos.set("liquidacion_monto_total",sepMilesMonto(datos.get("liquidacion_monto_total"),true));
+			if(document.getElementById('liquidacion_id').value==''){
+				datos.append("accion","registrar_liquidacion");
+				var mensaje = "Desea registrar la liquidación del trabajador, esto deshabilitara el usuario del trabajador";
+			}
+			else{
+				datos.append("accion","modificar_liquidacion");
+				var mensaje = "Desea modificar la liquidación del trabajador";
+			}
+			muestraMensaje("¿Seguro?", mensaje, "w",function(result){
+				if(result){
+
 					enviaAjax(datos,function(respuesta, exito, fail){
 					
 						var lee = JSON.parse(respuesta);
@@ -249,40 +315,43 @@
 											, confirmButtonText: 'Si'
 											, denyButtonText: 'No'};
 
-								muestraMensaje("¿Enviar Correo?", "¿Desea notificar al trabajador de la liquidación?", "?",obj,function(a,result){
-									if(result.isConfirmed){
-										var datos = new FormData();
-											datos.append("accion","enviar_correo");
-											datos.append("id",parent_lee.id_liquidacion_inserted);
-											enviaAjax(datos,function(respuesta, exito, fail){
-											
-												var lee = JSON.parse(respuesta);
-												if(lee.resultado == "enviar_correo"){
+								if(lee.resultado !="modificar_liquidacion"){
+									muestraMensaje("¿Enviar Correo?", "¿Desea notificar al trabajador de la liquidación?", "?",obj,function(a,result){
+										if(result.isConfirmed){
+											var datos = new FormData();
+												datos.append("accion","enviar_correo");
+												datos.append("id",parent_lee.id_liquidacion_inserted);
+												enviaAjax(datos,function(respuesta, exito, fail){
+												
+													var lee = JSON.parse(respuesta);
+													if(lee.resultado == "enviar_correo"){
 
-													muestraMensaje("Éxito", "El correo fue enviado exitosamente", "s");
+														muestraMensaje("Éxito", "El correo fue enviado exitosamente", "s");
 
-													
-												}
-												else if (lee.resultado == 'is-invalid'){
-													muestraMensaje(lee.titulo, lee.mensaje,"error");
-												}
-												else if(lee.resultado == "error"){
-													muestraMensaje(lee.titulo, lee.mensaje,"error");
-													console.error(lee.mensaje);
-												}
-												else if(lee.resultado == "console"){
-													console.log(lee.mensaje);
-												}
-												else{
-													muestraMensaje(lee.titulo, lee.mensaje,"error");
-												}
-											},'loader_body');	
-									}
-									
-								});
+														
+													}
+													else if (lee.resultado == 'is-invalid'){
+														muestraMensaje(lee.titulo, lee.mensaje,"error");
+													}
+													else if(lee.resultado == "error"){
+														muestraMensaje(lee.titulo, lee.mensaje,"error");
+														console.error(lee.mensaje);
+													}
+													else if(lee.resultado == "console"){
+														console.log(lee.mensaje);
+													}
+													else{
+														muestraMensaje(lee.titulo, lee.mensaje,"error");
+													}
+												},'loader_body');	
+										}
+										
+									});
+								}
+
 
 								$("#modal_registrar_liquidacion").modal("hide");
-							});
+							},{modal:"modal_registrar_liquidacion"});
 						}
 						else if (lee.resultado == 'is-invalid'){
 							muestraMensaje(lee.titulo, lee.mensaje,"error");
@@ -299,7 +368,7 @@
 						}
 					},'loader_body');
 				}
-			});
+			},{modal:"modal_registrar_liquidacion"});
 		};
 
 
@@ -316,69 +385,33 @@
 
 
 			var datos = new FormData();
-			datos.append("accion","calcular_liquidacion");
+			datos.append("accion","nueva_liquidacion");
 			datos.append("cedula",cedula.value);
 			enviaAjax(datos,function(respuesta, exito, fail){
 			
 				var lee = JSON.parse(respuesta);
-				if(lee.resultado == "calcular_liquidacion"){
+				if(lee.resultado == "nueva_liquidacion"){
+
+
+
+					
+
+					load_lista_resumen(lee.lista)
+
 					
 
 
 					
 
 
-					if ($.fn.DataTable.isDataTable("#table_prestaciones")) {
-						$("#table_prestaciones").DataTable().destroy();
-					}
-					
-					$("#tbody_prestaciones").html("");
-					
-					if (!$.fn.DataTable.isDataTable("#table_prestaciones")) {
-						$("#table_prestaciones").DataTable({
-							language: {
-								lengthMenu: "Mostrar _MENU_ por página",
-								zeroRecords: "No se encontraron registros de pagos del trabajador",
-								info: "Mostrando página _PAGE_ de _PAGES_",
-								infoEmpty: "No hay registros disponibles",
-								infoFiltered: "(filtrado de _MAX_ registros totales)",
-								search: "Buscar:",
-								paginate: {
-									first: "Primera",
-									last: "Última",
-									next: "Siguiente",
-									previous: "Anterior",
-								},
-							},
-							columns:[
-								{data:"fecha"}
-								,{data:"sueldo_base"}
-								,{data:"sueldo_integral"}
-								,{data:"acumulado"}
-							],
-							data:lee.mensaje,
-							//createdRow: function(row,data){row.querySelector("td:nth-child(1)").innerText;},
-							autoWidth: false,
-							searching:false,
-							info: false,
-							ordering: false,
-							paging: false
-							//order: [[1, "asc"]], // vacio para que no ordene al principio
-							
-						});
-					}
 					document.getElementById('liquidacion_cedula').readOnly=true;
 
 
 					document.getElementById('prestaciones_container').classList.remove("d-none");
 
-					var acumulado = document.querySelector("#tbody_prestaciones tr:last-child td:last-child").innerText;
-					document.getElementById('liquidacion_monto_total').value = acumulado;
-					document.getElementById('liquidacion_monto_total').onchange();
-					document.getElementById('liquidacion_monto_total').classList.remove("is-valid");
-					document.getElementById('liquidacion_monto_total').readOnly=true;
+					document.getElementById('liquidacion_monto_total').classList.remove("is-valid","is-invalid");
 
-					document.getElementById('fecha_contratacion').innerHTML = `fecha de contratación <br>${lee.mensaje[0].creado}`;
+					document.getElementById('fecha_contratacion').innerHTML = `fecha de contratación <br>${lee.mensaje.creado}`;
 
 
 
@@ -400,6 +433,61 @@
 			},'loader_body');
 
 		}
+
+		function load_lista_resumen(datos){
+			if ($.fn.DataTable.isDataTable("#table_resumen")) {
+				$("#table_resumen").DataTable().destroy();
+			}
+			
+			$("#tbody_resumen").html("");
+			
+			if (!$.fn.DataTable.isDataTable("#table_resumen")) {
+				let table = new DataTable("#table_resumen",{
+					language: {
+						lengthMenu: "Mostrar _MENU_ por página",
+						zeroRecords: "No se encontraron registros de pagos del trabajador",
+						info: "Mostrando página _PAGE_ de _PAGES_",
+						infoEmpty: "No hay registros disponibles",
+						infoFiltered: "(filtrado de _MAX_ registros totales)",
+						search: "Buscar:",
+						paginate: {
+							first: "Primera",
+							last: "Última",
+							next: "Siguiente",
+							previous: "Anterior",
+						},
+					},
+					columns:[
+						{data:"fecha"},
+						{data:"dias"},
+						{data:"total_pagos"},
+						],
+					data:datos,
+					//createdRow: function(row,data){row.querySelector("td:nth-child(1)").innerText;},
+					autoWidth: false,
+					searching:false,
+					info: false,
+					ordering: false,
+					paging: false,
+					//order: [[1, "asc"]], // vacio para que no ordene al principio
+					
+				});
+
+				console.log(table.rows().count());
+				if (!table.rows().count()) {
+					document.getElementById('btn-copy').disabled = true;
+					document.getElementById('btn-copy').classList.add("d-none");
+				}
+				else{
+					document.getElementById('btn-copy').disabled = false;
+					document.getElementById('btn-copy').classList.remove("d-none");
+					document.getElementById('table_resumen').datos_lista=datos;
+				}
+
+
+			}
+		}
+
 
 
 		function valid_trabajador(etiqueta,valid)
@@ -545,10 +633,14 @@
 
 						var acciones = row.querySelector("td:nth-child(6)");
 						acciones.innerHTML = '';
-						//var btn = crearElem("button", "class,btn btn-warning,data-action,modificar", "<span class='bi bi-pencil-square' title='Modificar'></span>")
-						//acciones.appendChild(btn);
+						var btn = crearElem("button", "class,btn btn-warning,data-action,modificar", "<span class='bi bi-pencil-square' title='Modificar'></span>")
+						if( checkPermisos("liquidacion","modificar") )	{
+							acciones.appendChild(btn);
+						}
 						btn = crearElem("button", "class,btn btn-danger ml-1,data-action,eliminar", "<span class='bi bi-trash' title='Eliminar'></span>")
-						acciones.appendChild(btn);
+						if( checkPermisos("liquidacion","eliminar") )	{
+							acciones.appendChild(btn);
+						}
 						acciones.classList.add('text-nowrap','cell-action', 'text-center');
 					},
 					autoWidth: false
@@ -559,6 +651,24 @@
 					//order: [[1, "asc"]], // vacio para que no ordene al principio
 					
 				});
+			}
+		}
+
+		function copy_resumen(){
+			let table = document.getElementById('table_resumen');
+			console.log(table.datos_lista);
+			var texto = "";
+			table.datos_lista.forEach((x)=>{
+				x.total_pagos = x.total_pagos.replace(/\./, ",");
+				texto += `1-${x.mes}-${x.anio}\t${x.dias}\t${x.total_pagos}\n`;
+			})
+			let n = table.datos_lista.length;
+			if(n>0){
+				navigator.clipboard.writeText(texto)
+				alert("Datos copiados al portapapeles");
+			}
+			else{
+				alert("No hay datos validos para copiar");
 			}
 		}
 	</script>
