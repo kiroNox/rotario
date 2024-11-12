@@ -32,14 +32,7 @@
 			}
 			else if($accion == "asignar_sueldo"){
 				if(isset($permisos["sueldo"]["modificar"]) and $permisos["sueldo"]["modificar"] == "1"){
-					if(isset($_POST["medico_bool"])){
-						$_POST["medico_bool"] = true;
-					}
-					else{
-						$_POST["medico_bool"] = false;
-						$_POST["escalafon"] = null;
-
-					}
+					$_POST['medico_bool'] = (isset($_POST['medico_bool']))?true:false;
 					echo json_encode( $cl->asignar_sueldo_s(
 						$_POST["id_trabajador"]
 						,$_POST["sueldo"]
@@ -62,6 +55,21 @@
 					$cl->no_permision_msg();
 				}
 			}
+			else if($accion == "new_cargo"){
+				if($permisos["validar_permisos"]("sueldo","crear")){
+					echo json_encode( $cl->new_cargo_s(
+						$_POST['cargo_codigo'],
+						$_POST['new_cargo'],
+						$_POST['replace']
+					));
+				}
+			}
+			else if($accion == "load_cargos"){
+				if($permisos["validar_permisos"]("sueldo","crear")){
+					echo json_encode( $cl->load_cargos());
+				}
+			}
+
 
 			exit;
 		}

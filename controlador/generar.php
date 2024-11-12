@@ -22,6 +22,10 @@ require_once('vendor/autoload.php');
                 $cedula = $datos['cedula'];
                 $fecha_ingreso = date('d-m-Y', strtotime($datos['creado']));
                 $fecha_actual = date('d-m-Y');
+                $cargo = $datos["cargo"];
+                if($cargo!=''){
+                    $cargo = " bajo el cargo de <b>$cargo</b>";
+                }
         
                 $html = "
 <html>
@@ -67,7 +71,7 @@ require_once('vendor/autoload.php');
         <h1>Constancia de Trabajo</h1>
         <p>A quien pueda interesar:</p>
         <p>Quien suscribe, certifica que el(la) Sr(a). <b>$nombre_completo</b>, titular de la cédula de identidad <b>$cedula</b>, 
-        presta sus servicios en nuestra institución desde el <b>$fecha_ingreso</b> hasta la fecha, desempeñándose con responsabilidad y eficiencia en las tareas asignadas.</p>
+        presta sus servicios en nuestra institución desde el <b>$fecha_ingreso</b> hasta la fecha, desempeñándose con responsabilidad y eficiencia en las tareas asignadas$cargo.</p>
         <p>La presente constancia se expide a solicitud de la parte interesada en <b>$fecha_actual</b>.</p>
         <p>Atentamente,</p>
         <div class='signature'>

@@ -3,25 +3,39 @@
 	load_escalafon();
 	eventoMonto("sueldo");
 
-	eventoKeyup("cargo", /^[a-zA-Z\säÄëËïÏöÖüÜáéíóúáéíóúÁÉÍÓÚÂÊÎÔÛâêîôûàèìòùÀÈÌÒÙñÑ]{1,50}$/, "Solo se permiten letras");
+	// eventoKeyup("cargo", /^[a-zA-Z\säÄëËïÏöÖüÜáéíóúáéíóúÁÉÍÓÚÂÊÎÔÛâêîôûàèìòùÀÈÌÒÙñÑ]{1,50}$/, "Solo se permiten letras", undefined,undefined,function(elem,resp){
+	// 		if(resp){
+				
+	// 			let found = false;
+	// 			document.querySelectorAll("#lista_cargos option").forEach(options =>{
+	// 				if(elem.value == options.innerText){
+	// 					found = true;
+	// 				}
+	// 			});
 
-	eventoKeyup("tipo_nomina", /^[0-9]*$/, "Seleccion no valida");
-	eventoKeyup("escalafon", /^[0-9]*$/, "Seleccion no valida");
+	// 			console.log(found);
 
-	document.getElementById('medico_bool').onchange=function(){
-		if(this.checked){
-			document.getElementById('escalafon').disabled = false;
-			document.getElementById('escalafon').required = true;
+	// 			if(!found){
+	// 				validarKeyUp(false, "cargo", "Por favor ingrese un valor de la lista o agregue uno nuevo");
+	// 			}
+	// 			else{
+	// 				validarKeyUp(true, "cargo", "Por favor ingrese un valor de la lista o agregue uno nuevo");
 
-		}
-		else{
-			document.getElementById('escalafon').disabled = true;
-			document.getElementById('escalafon').required = false;
-		}
-	}
+	// 			}
+	// 		}
 
+	// 	});
 
-	document.getElementById('medico_bool').onchange();
+	eventoKeyup("tipo_nomina", /^[0-9]+$/, "Seleccion no valida");
+	eventoKeyup("escalafon", /^[0-9]+$/, "Seleccion no valida");
+	eventoKeyup("cargo", /^[0-9]+$/, "Seleccion no valida");
+
+	document.getElementById('escalafon').onchange = document.getElementById('tipo_nomina').onchange =function(){
+		this.onkeyup({key:""});
+	};
+
+	
+	
 
 // EVENTOS ******************************************************
 	rowsEvent("tbody_sueldos",(target,cell)=>{
@@ -43,7 +57,7 @@
 	 		if(target.tagName == "BUTTON"){
 	 			if(target.dataset.action == "eliminar"){ // ELIMINAR
 
-	 				muestraMensaje("¿Seguro?", "Seguro de que desea Eliminar la asignación de este sueldo al trabajador", "s",(resp)=>{
+	 				muestraMensaje("¿Seguro?", "Seguro de que desea Eliminar la asignación de este sueldo al trabajador", "?",(resp)=>{
 	 					if(resp){
 	 						var datos = new FormData();
 	 						datos.append("accion","eliminar_sueldo");
@@ -98,11 +112,15 @@
 	 							document.getElementById('sueldo').value = lee.mensaje.sueldo_base;
 	 							document.getElementById('sueldo').onkeyup({key:''});
 	 							document.getElementById('sueldo').classList.remove("is-valid");
-	 							document.getElementById('cargo').value = lee.mensaje.cargo;
+	 							// document.getElementById('cargo').value = lee.mensaje.cargo;
+	 							$('#cargo').val(lee.mensaje.cargo);
+	 							$('#cargo').trigger('change');
+
+
 	 							document.getElementById('medico_bool').checked = (lee.mensaje.sector_salud)?true:false;
 	 							document.getElementById('escalafon').value =lee.mensaje.id_escalafon;
 
-	 							document.getElementById('medico_bool').onchange();
+	 							// document.getElementById('medico_bool').onchange();
 	 							switch (lee.mensaje.tipo_nomina) {
 	 							 	case 'Alto Nivel':
 	 							 		document.getElementById('tipo_nomina').value = 1;
@@ -160,6 +178,9 @@
 			el.value = "";
 			el.classList.remove("is-invalid","is-valid");
 		});
+
+		$("#cargo").val("");
+		$("#cargo").trigger("change");
 		
 	})
 
@@ -173,11 +194,13 @@
 				return false;
 			}
 		}
-		muestraMensaje("¿Seguro?", "Seguro de que desea asignar este sueldo al trabajador", "s",(resp)=>{
+		muestraMensaje("¿Seguro?", "Seguro de que desea asignar este sueldo al trabajador", "?",(resp)=>{
 			if(resp){
 				var datos = new FormData($("#f1")[0]);
 				datos.append("accion","asignar_sueldo");
+
 				enviaAjax(datos,function(respuesta, exito, fail){
+
 				
 					var lee = JSON.parse(respuesta);
 					if(lee.resultado == "asignar_sueldo"){
@@ -204,10 +227,8 @@
 					else{
 						muestraMensaje(lee.titulo, lee.mensaje,"error");
 					}
-				}, "loader_body").p.catch((a)=>{
-					load_sueldos();
-					$("#modal_asignar").modal("hide");
-				});
+					
+				}, "loader_body").p.catch((a)=>{});
 			}
 		});
 	}
@@ -299,7 +320,9 @@
 							var acciones = row.querySelector("td:nth-child(8)");
 							acciones.innerHTML = '';
 							var btn = crearElem("button", "class,btn btn-warning,data-action,asignar", "<span class='bi bi-pencil-square' title='Asignar Sueldo'></span>")
-							acciones.appendChild(btn);
+							if( checkPermisos("sueldo","modificar") )	{
+								acciones.appendChild(btn);
+							}
 							btn = crearElem("button", "class,btn btn-danger ml-1,data-action,eliminar", "<span class='bi bi-trash' title='Eliminar Sueldo'></span>")
 
 								
@@ -307,7 +330,9 @@
 								btn.dataset.action = "nada";
 								btn.disabled = true; 
 							}
-							acciones.appendChild(btn);
+							if( checkPermisos("sueldo","eliminar") )	{
+								acciones.appendChild(btn);
+							}
 							acciones.classList.add('text-nowrap','cell-action');
 
 						},

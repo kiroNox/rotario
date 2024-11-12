@@ -5,7 +5,7 @@
  */
 class Sueldo extends Conexion
 {
-	PRIVATE $con, $id_trabajador, $sueldo_base, $cargo, $sector_salud, $id_escalafon, $tipo_nomina, $id_sueldo ;
+	PRIVATE $con, $id_trabajador, $sueldo_base, $cargo, $cargo_codigo, $sector_salud, $id_escalafon, $tipo_nomina, $id_sueldo ;
 
 	function __construct($con = '')
 	{
@@ -67,7 +67,7 @@ class Sueldo extends Conexion
 		try {
 			$this->validar_conexion($this->con);
 			
-			$consulta = $this->con->prepare("SELECT id_escalafon, escala FROM escalafon WHERE 1");
+			$consulta = $this->con->prepare("SELECT id_escalafon, escala FROM escalafon WHERE 1 order by valor_escala");
 			$consulta->execute();
 			$r['resultado'] = 'load_escalafon';
 			$r['mensaje'] =  $consulta->fetchall(PDO::FETCH_ASSOC);
@@ -158,8 +158,8 @@ class Sueldo extends Conexion
 			$this->con->beginTransaction();
 
 			Validaciones::monto($this->sueldo_base,"EL Sueldo base no es valido");
-			Validaciones::validarNombre($this->cargo,"1,50","El cargo contiene caracteres inválidos");
-			Validaciones::numero($this->id_escalafon,"0,","El escalafón es invalido");
+			Validaciones::numero($this->cargo,"1,","El cargo contiene caracteres inválidos");
+			Validaciones::numero($this->id_escalafon,"1,","El escalafón es invalido");
 			Validaciones::numero($this->id_trabajador,"1,","El trabajdor es invalido");
 
 			Validaciones::validar($this->tipo_nomina,"/^(?:1|2|3|4)$/","El tipo de nomina no es valido ($this->tipo_nomina)");
@@ -279,6 +279,124 @@ class Sueldo extends Conexion
 	}
 
 
+	PUBLIC function new_cargo_s($codigo,$cargo,$replace){
+
+		$replace = ($replace =="false")?false:true;
+
+		$this->set_cargo($cargo);
+		$this->set_cargo_codigo($codigo);
+		return $this->new_cargo($replace);
+	}
+
+	PRIVATE function new_cargo($replace){
+		try {
+			$this->validar_conexion($this->con);
+			$this->con->beginTransaction();
+			
+			Validaciones::numero($this->cargo_codigo,"3,10","El código no es valido debe tener al menos 3 números y no puede contener letras");
+			$this->cargo = Validaciones::removeWhiteSpace($this->cargo);
+			Validaciones::validar($this->cargo,"/^[a-zA-Z\säÄëËïÏöÖüÜáéíóúáéíóúÁÉÍÓÚÂÊÎÔÛâêîôûàèìòùÀÈÌÒÙñÑ\/]{1,50}$/u","El nombre del cargo es invalido, solo puede tener letras");
+
+			$consulta = $this->con->prepare("SELECT 1 from cargos where codigo = ?");
+			$consulta->execute([$this->cargo_codigo]);
+			$respuesta = $consulta->fetch();
+
+			
+
+			if($respuesta and !$replace){
+				throw new Exception("Codigo encontrado", 999);
+			}
+
+			$consulta = $this->con->prepare("SELECT 1 from cargos where cargo = ?");
+			$consulta->execute([$this->cargo]);
+
+			if($consulta->fetch()){
+				throw new Exception("El nombre del cargo ya existe ", 1);
+			}
+
+			$consulta = $this->con->prepare("INSERT Into cargos (codigo,cargo) VALUES (:codigo,:cargo) ON DUPLICATE KEY UPDATE cargo = :cargo");
+
+			$consulta->bindValue(":cargo",$this->cargo);
+			$consulta->bindValue(":codigo",$this->cargo_codigo);
+			$consulta->execute();
+
+
+			$r['resultado'] = 'new_cargo';
+			$r['titulo'] = 'Éxito';
+			$r["mensaje"] = $this->cargo;
+
+			$this->con->commit();
+			$this->close_bd($this->con);
+		
+		} catch (Validaciones $e){
+			if($this->con instanceof PDO){
+				if($this->con->inTransaction()){
+					$this->con->rollBack();
+				}
+			}
+			$r['resultado'] = 'is-invalid';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+			$r['console'] =  $e->getMessage().": Code : ".$e->getLine();
+		} catch (Exception $e) {
+			if($this->con instanceof PDO){
+				if($this->con->inTransaction()){
+					$this->con->rollBack();
+				}
+			}
+		
+			$r['resultado'] = 'error';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+			if($e->getCode() == 999){
+				$r["resultado"] = 'old_cargo_found';
+			}
+			//$r['mensaje'] =  $e->getMessage().": LINE : ".$e->getLine();
+		}
+		finally{
+			//$this->con = null;
+			$consulta = null;
+		}
+		return $r;
+	}
+
+	public function load_cargos()
+	{
+		try {
+			$this->validar_conexion($this->con);
+			// $this->con->beginTransaction();
+			
+			$consulta = $this->con->prepare("SELECT codigo, cargo from cargos where 1");
+
+			$consulta->execute();
+			
+			$r['resultado'] = 'load_cargos';
+			$r['titulo'] = 'Éxito';
+			$r['mensaje'] =  $consulta->fetchall(PDO::FETCH_ASSOC);
+
+			//$this->con->commit();
+			$this->close_bd($this->con);
+		
+		} catch (Exception $e) {
+			if($this->con instanceof PDO){
+				if($this->con->inTransaction()){
+					$this->con->rollBack();
+				}
+			}
+		
+			$r['resultado'] = 'error';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] =  $e->getMessage();
+			//$r['mensaje'] =  $e->getMessage().": LINE : ".$e->getLine();
+		}
+		finally{
+			//$this->con = null;
+			$consulta = null;
+		}
+		return $r;
+	}
+
+
 
 	PUBLIC function get_id_trabajador(){
 		return $this->id_trabajador;
@@ -323,6 +441,12 @@ class Sueldo extends Conexion
 	}
 	PUBLIC function set_id_sueldo($value){
 		$this->id_sueldo = $value;
+	}
+	PUBLIC function get_cargo_codigo(){
+		return $this->cargo_codigo;
+	}
+	PUBLIC function set_cargo_codigo($value){
+		$this->cargo_codigo = $value;
 	}
 
 }
