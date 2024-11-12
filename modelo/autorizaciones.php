@@ -4,7 +4,6 @@
  */
 class Autorizaciones extends Conexion
 {
-	use Calculadora;
 	PRIVATE $con, $id, $nombre, $crear, $modidficar, $eliminar, $consultar, $datos, $modulo;
 	PRIVATE $permisos;
 	
@@ -576,6 +575,89 @@ class Autorizaciones extends Conexion
 		
 		return $r;
 
+	}
+
+	PUBLIC function get_list_permisos(){
+		try {
+			if (!(session_status() == PHP_SESSION_ACTIVE) &&
+				!(isset($_SESSION['usuario_rotario'])) &&
+				!(isset($_SESSION['token_rotario']))) {
+					throw new Exception("sesion_inactiva", 1);
+				}
+
+			$this->validar_conexion($this->con);
+			$consulta = $this->con->prepare("SELECT 
+											m.nombre, perm.crear,perm.modificar,perm.eliminar,perm.consultar
+											FROM
+											trabajadores as u
+											LEFT JOIN rol as r 
+											on r.id_rol = u.`id_rol`
+											LEFT JOIN permisos as perm
+											on perm.id_rol = r.id_rol
+											LEFT JOIN modulos as m
+											on m.id_modulos = perm.id_modulos
+
+											WHERE 
+											u.id_trabajador = ? AND
+											u.token = ?;");
+
+			$consulta->execute([ $_SESSION["usuario_rotario"], $_SESSION["token_rotario"] ]);
+			$consulta = $consulta->fetchall(PDO::FETCH_ASSOC);
+			$r["permisos"] = null;
+			if($consulta){// si el token es valido retorna los permisos del usuario
+				$permisos = array();
+				foreach ($consulta as $elem) {
+					$permisos[$elem['nombre']] = array('crear' => $elem["crear"], "modificar" => $elem["modificar"], "eliminar" => $elem["eliminar"], "consultar" => $elem["consultar"] );
+				}
+
+
+				$permisos["validar_permisos"] = function ($modulo,$permiso,$return = false) use ($permisos){
+					try {
+
+						if($modulo == "validar_permisos"){
+							throw new Exception("", 1);
+						}
+
+						if(isset($permisos[$modulo][$permiso]) and $permisos[$modulo][$permiso] == "1"){
+							return true;
+						}
+						else{
+							throw new Exception("", 1);
+							
+						}
+						
+					
+					} catch (Exception $e) {
+						if($return){
+							return false;
+						}
+						echo json_encode(["resultado" => "error", "titulo" => "Sin Permisos", "mensaje" => "No posee los permisos para realizar la acción"]);
+						die;
+					}
+				};
+				$r["permisos"] = $permisos;
+				$r["resultado"] = "get_list_permisos";
+			}
+			else{
+
+				throw new Exception("invalid_token", 1);
+				
+
+				
+			}
+			$this->close_bd($con);
+
+		} catch (Exception $e) {
+			
+				$r['resultado'] = 'error';
+				$r['titulo'] = 'Error';
+				$r['mensaje'] =  $e->getMessage();
+				$r["trace"] = $e->getTrace();
+
+		}finally{
+			$this->con = null;
+		}
+		return $r;
 	}
 
 

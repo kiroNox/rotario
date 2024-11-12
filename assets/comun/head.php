@@ -11,6 +11,7 @@
 <script type="text/javascript" src="<?=BASE_URL; ?>/assets/general/datatables/datatables.min.js"></script>
 <script type="text/javascript" src="<?=BASE_URL; ?>/assets/js/comun/comun-x.js"></script>
 <script type="text/javascript" src="<?=BASE_URL; ?>/assets/js/comun/sweetalert2.js"></script>
+<script src="assets/js/comun/permisos.php"></script>
 
 
 

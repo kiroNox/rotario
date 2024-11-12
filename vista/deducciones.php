@@ -18,7 +18,7 @@
 								<h1 class="mx-md-3">Deducciones</h1>
 							</div>
 							<div class="col-12 col-md-6 d-flex align-items-center justify-content-center justify-content-md-end">
-								<button class="btn btn-primary mx-md-3" data-open_modal_calc = "modal_registar_deducciones">Registrar Deducciones</button>
+								<button class="btn btn-primary mx-md-3<?php if(!$permisos["validar_permisos"]("deducciones","crear",true)){echo " d-none";} ?>" data-open_modal_calc = "modal_registar_deducciones">Registrar Deducciones</button>
 								<!-- <button class="btn btn-primary mx-md-3" data-target="#modal_registar_deducciones" data-toggle='modal'>Registrar Deducciones</button> -->
 							</div>
 						</div>
@@ -694,9 +694,13 @@
 										var acciones = row.querySelector("td:nth-child(4)");
 										acciones.innerHTML = '';
 										var btn = crearElem("button", "class,btn btn-warning,data-action,modificar", "<span class='bi bi-pencil-square' title='Modificar Deducción'></span>")
-										acciones.appendChild(btn);
+										if( checkPermisos("deducciones","modificar") )	{
+											acciones.appendChild(btn);
+										}
 										btn = crearElem("button", "class,btn btn-danger ml-1,data-action,eliminar", "<span class='bi bi-trash' title='Eliminar Deducción '></span>")
-										acciones.appendChild(btn);
+										if( checkPermisos("deducciones","eliminar") )	{
+											acciones.appendChild(btn);
+										}
 										acciones.classList.add('text-nowrap','cell-action');
 
 									},

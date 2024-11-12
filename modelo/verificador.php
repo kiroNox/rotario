@@ -12,42 +12,18 @@ else{
 // TODO si no esta la tabla permisos deja entrar
 if( !in_array($pagina, $excepciones_p) ){
 	if(isset($_SESSION["usuario_rotario"])){
-		$clase = new Conexion;
-		$con = $clase->conecta();
-		$clase->validar_conexion($con);
-		try {
-			$consulta = $con->prepare("SELECT 
-											m.nombre, perm.crear,perm.modificar,perm.eliminar,perm.consultar
-											FROM
-											trabajadores as u
-											LEFT JOIN rol as r 
-											on r.id_rol = u.`id_rol`
-											LEFT JOIN permisos as perm
-											on perm.id_rol = r.id_rol
-											LEFT JOIN modulos as m
-											on m.id_modulos = perm.id_modulos
+		// $clase = new Conexion;
+		// $con = $clase->conecta();
 
-											WHERE 
-											u.id_trabajador = ? AND
-											u.token = ?;");
 
-			$consulta->execute([ $_SESSION["usuario_rotario"], $_SESSION["token_rotario"] ]);
-			$consulta = $consulta->fetchall(PDO::FETCH_ASSOC);
-			if($consulta){// si el token es valido retorna los permisos del usuario
-				$permisos = array();
-				foreach ($consulta as $elem) {
-					$permisos[$elem['nombre']] = array('crear' => $elem["crear"], "modificar" => $elem["modificar"], "eliminar" => $elem["eliminar"], "consultar" => $elem["consultar"] );
-				}
-				// guarda en la variable global "$permisos" los permisos del usuario de tal modo que
-				// $permisos["inicio"]["consultar"] me retornara el permiso de consultar en el modulo de incio
-				if($pagina == 'log'){
-					$pagina = 'dashboard';
-				}
+		$resp = (new Autorizaciones)->get_list_permisos();
+		if($resp["resultado"]=="get_list_permisos"){
 
-				
-			}
-			else{
+			$permisos = $resp["permisos"];
 
+		}
+		else{
+			if($resp["mensaje"] === "invalid_token"){
 				$pagina = "out";
 
 				if(!empty($_POST)){
@@ -57,20 +33,27 @@ if( !in_array($pagina, $excepciones_p) ){
 					die("close_sesion_user");
 				}
 			}
+			else {
+				if(empty($_POST)){
+					// echo $e->getTrace()."<br>";
+					// echo $e->getMessage()."at line: ".$e->getLine();
 
-		} catch (Exception $e) {
-			if(empty($_POST)){
-				echo $e->getTrace()."<br>";
-				echo $e->getMessage()."at line: ".$e->getLine();
-			}
-			else{
-				$r['resultado'] = 'error';
-				$r['titulo'] = 'Error';
-				$r['mensaje'] =  $e->getMessage();
-				$r["trace"] = $e->getTrace();
-				echo json_encode($r);
+					$_POST['error'] = $resp["mensaje"];
+					require_once "vista/404.php";
+					die;
+				}
+				else{
+					$r['resultado'] = 'error';
+					$r['titulo'] = 'Error';
+					$r['mensaje'] =  $resp["mensaje"];
+					$r["trace"] = $resp["trace"];
+					echo json_encode($r);
+				}
 			}
 		}
+
+		unset($resp);
+
 		// si hay una sesion abierta pero no es valida
 		#$pagina="principal"
 

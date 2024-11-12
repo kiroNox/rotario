@@ -2,6 +2,10 @@
 <html lang="en">
 <head>
 <?php require_once 'assets/comun/head.php'; ?>
+
+	<script src="assets/select2/js/select2.full.min.js"></script>
+	<link rel="stylesheet" href="assets/select2/css/select2.min.css">
+	<link rel="stylesheet" href="assets/select2/css/select2-bootstrap.min.css">
 	<style type="text/css">
 		#tbody_sueldos td{
 			text-align: center;
@@ -66,6 +70,45 @@
 	</div>
 
 
+	<div class="modal fade" tabindex="-1" role="dialog" id="nuevo_cargo">
+		<div class="modal-dialog modal-md" role="document">
+			<div class="modal-content">
+				<div class="modal-header text-light bg-primary">
+					<h5 class="modal-title">Nuevo Cargo </h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="container">
+					<form action="" method="POST" onsubmit="return false" id="f_cargos">
+						<div class="row">
+							<div class="col">
+								<label for="cargo_codigo">Código</label>
+								<input type="text" class="form-control" id="cargo_codigo" name="cargo_codigo" data-span="invalid-span-cargo_codigo">
+								<span id="invalid-span-cargo_codigo" class="invalid-span text-danger"></span>
+							</div>
+							<div class="col">
+								<label for="new_cargo">Cargo</label>
+								<input type="text" class="form-control" id="new_cargo" name="new_cargo" data-span="invalid-span-new_cargo">
+								<span id="invalid-span-new_cargo" class="invalid-span text-danger"></span>
+							</div>
+						</div>
+						<div class="row py-3">
+							<div class="col text-center"><button type="submit" class="btn btn-primary">Guardar Cargo</button></div>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer bg-light">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+
+
 	<div class="modal fade" tabindex="-1" role="dialog" id="modal_asignar">
 		<div class="modal-dialog modal-xl" role="document">
 			<div class="modal-content">
@@ -86,9 +129,25 @@
 								<span id="invalid-span-sueldo" class="invalid-span text-danger"></span>
 							</div>
 							<div class="col-lg-4 col-12">
-								<label for="cargo">Cargo</label>
-								<input required type="text" class="form-control" id="cargo" name="cargo" data-span="invalid-span-cargo">
-								<span id="invalid-span-cargo" class="invalid-span text-danger"></span>
+								<div class="d-flex">
+									<div class="flex-grow-1">
+										<label for="cargo">Cargo</label>
+										<select name="cargo" id="cargo" class="form-control text-center" data-span="invalid-span-cargo">
+											
+										</select>
+										<span id="invalid-span-cargo" class="invalid-span text-danger"></span>
+
+
+
+										<!-- 
+										<input required type="text" class="form-control" id="cargo" name="cargo" list="lista_cargos" data-span="invalid-span-cargo" autocomplete="off">
+										<datalist id="lista_cargos"></datalist> -->
+									</div>
+									<div class="flex-shrink-1 ml-2">
+										<label class="hidden d-block fade no-select">l</label>
+										<button type="button" class="btn btn-primary" onclick="new_cargos()" >+</button>
+									</div>
+								</div>
 							</div>
 							<div class="col-lg-4 col-12">
 								<label for="tipo_nomina">Tipo de Nomina </label>
@@ -101,14 +160,6 @@
 								</select>
 								<span id="invalid-span-tipo_nomina" class="invalid-span text-danger"></span>
 							</div>
-							<div class="col-lg-4 col-12 d-flex flex-column">
-								<label class="no-select fade d-none d-lg-block">l</label>
-								<div class="d-flex align-items-center flex-row my-3 my-lg-0" style="flex-grow: 1">
-									<input type="checkbox" class="mx-3" id="medico_bool" name="medico_bool" data-span="invalid-span-medico_bool">
-									<label for="medico_bool" class="m-0 cursor-pointer no-select">Ejerce como medico?</label>
-									<span id="invalid-span-medico_bool" class="invalid-span text-danger"></span>
-								</div>
-							</div>
 							<div class="col-lg-4 col-12">
 								<label for="escalafon">Escalafón</label>
 								<select name="escalafon" id="escalafon" class="custom-select" data-span="invalid-span-escalafon" required>
@@ -116,8 +167,20 @@
 								</select>
 								<span id="invalid-span-escalafon" class="invalid-span text-danger"></span>
 							</div>
+							<div class="col-lg-4 col-12 d-flex flex-column">
+								<label class="no-select fade d-none d-lg-block">l</label>
+								<div class="d-flex align-items-center flex-row my-3 my-lg-0" style="flex-grow: 1">
+									
+									<input type="checkbox" class="check-button" id="medico_bool" name="medico_bool" data-span="invalid-span-medico_bool">
+									<label for="medico_bool" class="check-button"></label>
+									<label class="cursor-pointer no-select mb-0 ml-2" for="medico_bool"> Ejerce como medico? </label>
 
-							<div class="col-12 text-center mt-4" >
+
+
+								</div>
+							</div>
+
+							<div class="col-12 text-center my-4" >
 								<button type="submit" class="btn btn-primary">Asignar</button>
 								
 							</div>
@@ -133,8 +196,154 @@
 		</div>
 	</div>
 
+
+
+
+
 	<script src="assets/js/sueldos.js"></script>
 	<script src="assets/js/sb-admin-2.min.js"></script>
+
+	<script>
+		load_cargos_list();
+
+		
+		
+		$('#nuevo_cargo').on('hide.bs.modal', function (e) {
+			
+			document.getElementById('f1').load();
+			$("#modal_asignar").modal("show");
+
+		});
+
+		eventoKeyup("cargo_codigo", /^[0-9]+$/, "El código debe ser un numero y no puede tener espacios");
+		eventoKeyup("new_cargo", /^[a-zA-Z\säÄëËïÏöÖüÜáéíóúáéíóúÁÉÍÓÚÂÊÎÔÛâêîôûàèìòùÀÈÌÒÙñÑ\/]{1,50}$/, "Solo se permiten letras");
+
+		document.getElementById('f_cargos').onsubmit = function (e) {
+			e.preventDefault();
+			new_cargos_submit();
+		};
+
+		function new_cargos_submit(replace=false,dataTemp){
+			let form = document.getElementById('f_cargos');
+
+			if(form.sending){
+				return false;
+			}
+
+			//form.querySelector("button[type='submit']").disabled=true; // TODO agregar esto
+
+			let elem = document.querySelectorAll("#f_cargos input:not(input[type='hidden']):not(input[type='checkbox']), #f_cargos select");
+			for(var el of elem){
+				if(!el.validarme()){
+					return false;
+				}
+			}
+
+			if(dataTemp){
+				datos = dataTemp;
+			}
+			else{
+				var datos = new FormData(form);
+			}
+
+
+			datos.append("accion","new_cargo");
+			datos.append("replace",replace);
+			enviaAjax(datos,function(respuesta, exito, fail){
+			
+				var lee = JSON.parse(respuesta);
+				if(lee.resultado == "new_cargo"){
+
+					$('#nuevo_cargo').modal("hide");
+					load_cargos_list(datos.get("cargo_codigo"));
+					
+				}
+				else if (lee.resultado == "old_cargo_found"){
+					form.sending=undefined;
+					muestraMensaje("Advertencia", "El codigo del cargo ingresado ya existe<ENDL>¿Desea remplazar el cargo?", "w",function(resp){
+						if(resp){
+							new_cargos_submit(true,datos);
+							// load_cargos_list();
+						}
+					});
+				}
+				else if (lee.resultado == 'is-invalid'){
+					muestraMensaje(lee.titulo, lee.mensaje,"error");
+				}
+				else if(lee.resultado == "error"){
+					muestraMensaje(lee.titulo, lee.mensaje,"error");
+					console.error(lee.mensaje);
+				}
+				else if(lee.resultado == "console"){
+					console.log(lee.mensaje);
+				}
+				else{
+					muestraMensaje(lee.titulo, lee.mensaje,"error");
+				}
+				exito();
+			},"loader_body").p.finally((a)=>{
+				form.sending=undefined;
+			});
+
+
+
+		}
+
+		function load_cargos_list(codigo_selected=false){
+			var datos = new FormData();
+			datos.append("accion","load_cargos");
+			enviaAjax(datos,function(respuesta, exito, fail){
+			
+				var lee = JSON.parse(respuesta);
+				if(lee.resultado == "load_cargos"){
+
+					let lista = document.getElementById('cargo');
+
+					let array_lista = [];
+
+					lista.innerHTML ="";
+					lista.appendChild(crearElem("option","value,_","- Seleccione - "));
+					lee.mensaje.forEach((data)=>{
+						array_lista.push({id:data.codigo,text:data.cargo});
+						//lista.appendChild(crearElem("option",`value,${data.codigo}`,data.cargo));
+					});
+
+					 $('#cargo').select2({theme:'bootstrap',data:array_lista});
+
+					 if(codigo_selected!==false){
+						 $('#cargo').val(codigo_selected);
+						 $('#cargo').trigger('change');
+					 }
+
+					
+				}
+				else if (lee.resultado == 'is-invalid'){
+					muestraMensaje(lee.titulo, lee.mensaje,"error");
+				}
+				else if(lee.resultado == "error"){
+					muestraMensaje(lee.titulo, lee.mensaje,"error");
+					console.error(lee.mensaje);
+				}
+				else if(lee.resultado == "console"){
+					console.log(lee.mensaje);
+				}
+				else{
+					muestraMensaje(lee.titulo, lee.mensaje,"error");
+				}
+			});
+		}
+
+		function new_cargos(){
+			document.getElementById('f1').save();
+			$("#modal_asignar").modal("hide");
+			$("#nuevo_cargo").modal("show");
+		}
+
+
+
+
+
+	</script>
 	
 </body>
 </html>

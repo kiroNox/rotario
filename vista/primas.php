@@ -35,7 +35,7 @@
 											<h3 class="mx-md-3 text-capitalize">primas generales</h3>
 										</div>
 										<div class="col-12 col-md-6 d-flex align-items-center justify-content-center justify-content-md-end">
-											<button class="btn btn-primary mx-md-3" data-open_modal_calc = "modal_registrar_prima_general">Registrar Primas</button>
+											<button class="btn btn-primary mx-md-3<?php if(!$permisos["validar_permisos"]("primas","crear",true)){echo " d-none";} ?>" data-open_modal_calc = "modal_registrar_prima_general">Registrar Primas</button>
 										</div>
 									</div>
 
@@ -1024,9 +1024,13 @@
 						var acciones = row.querySelector("td:nth-child(3)");
 						acciones.innerHTML = '';
 						var btn = crearElem("button", "class,btn btn-warning,data-action,modificar", "<span class='bi bi-pencil-square' title='Modificar Prima'></span>")
-						acciones.appendChild(btn);
+						if( checkPermisos("primas","modificar") )	{
+							acciones.appendChild(btn);
+						}
 						btn = crearElem("button", "class,btn btn-danger ml-1,data-action,eliminar", "<span class='bi bi-trash' title='Eliminar Prima'></span>")
-						acciones.appendChild(btn);
+						if( checkPermisos("primas","eliminar") )	{
+							acciones.appendChild(btn);
+						}
 						acciones.classList.add('text-nowrap','cell-action',"text-center");
 					},
 					autoWidth: false,
