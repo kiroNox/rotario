@@ -587,15 +587,17 @@ trait Calculadora{
 
 
 
+
+
 			$this->calc_variables($formula_array,$variables); // remplazo las variables
 
 
 
 
 			
-			
 			$formula_array = $this->calc_groups($formula_array); // asigno los grupos
 
+			//showvar($formula_array);
 
 
 
@@ -893,8 +895,9 @@ trait Calculadora{
 				$formula_array[$i] = $this->resolve_groups($token);
 
 				if(isset($formula_array[($i-1)]) and in_array($formula_array[($i-1)], ['+','-'])){
-					$operador[] = '^[\\/]$';
-					$operador[] = '^[\\*]$';
+					$operador = array();
+					$operador[] = "^[\\/]$";
+					$operador[] = "^[\\*]$";
 					$operador = implode("|", $operador);
 
 					if(!isset($formula_array[($i-2)]) or preg_match("/$operador/", $formula_array[($i-2)])){
@@ -1435,123 +1438,61 @@ trait Calculadora{
 		}
 	}
 
-	PRIVATE function calc_groups($formula_array){
-
-
-
-
-
-
-
-
-
-
+	private function calc_groups(array $formulaArray): array
+	{
 
 
 		$this->counter_loop++;
+		// if($this->counter_loop==2){
+		// 	showvar($formulaArray);
+		// }
 
-		$new_formula_array = [];
+	    $groups = [];
+	    $stack = [];
+	    $currentGroup = [];
 
-		$end = count($formula_array);
-		$i = 0;
-		$ignore = 0;
-		$open[0] = false; // se abre un grupo
-		$close[0] = false; // se cierra un grupo
+	    foreach ($formulaArray as $token) {
+	        if (in_array($token, ['(', '[', '{'])) {
+	        	if(!empty($stack)){
+	        		$currentGroup[] = $token;
+	        	}
+	            $stack[] = $token;
+	        } elseif (in_array($token, [')', ']', '}'])) {
+	            if (empty($stack)) {
+	                throw new Exception("se encontró un '$token' sin abrir", 1);
+	            }
+	            $openingToken = array_pop($stack);
+	            if (!($openingToken === '(' && $token === ')') &&
+	                !($openingToken === '[' && $token === ']') &&
+	                !($openingToken === '{' && $token === '}')) {
+	                throw new Exception("se encontró un '$token' sin abrir", 1);
+	            }
 
-		$group_found = [];
-
-
-		for ($i;$i<$end;$i++){
-
-
-
-			$token_switch = $token = $formula_array[$i];
-
-			$token_switch = strval($token_switch);
-			
-
-
-
-			
-
-			if($open[0] === false ){ // si todavia no ha encontrado un grupo
-				switch ($token_switch) {
-					case '(':
-						$open[0] = '('; // abre el grupo
-						$open[1] = $i; // guarda donde abrio
-						$close[0] = ')'; // guarda como cierra
-						
-						break;
-						case '[':
-						$open[0] = '[';
-						$open[1] = $i;
-						$close[0] = ']';
-						break;
-						case '{':
-						$open[0] = '{';
-						$open[1] = $i;
-						$close[0] = '}';
-						break;
-
-					default: // si no esta abierto ningun grupo y no encuentra apertura
-					$new_formula_array[] = $token;
-				}
-				
-
-			}
-			else{ // si esta abierto un grupo
-				
-
-
-				if($token == $open[0]){ // si por ejemplo esta abierto un grupo con "(" pero encuentra otro "(" abierto
-					$ignore++;
-					$group_found[] = $token; // lo guarda y se prepara para ignorar el cierre del mismo
-				}
-				else if ($token == $close[0]){ // si encuentra el cierre
-					if($ignore>0){ // si hay que ignorar algun cierre
-						$ignore--;
-						$group_found[] = $token;
+	            if (empty($stack)) {
+	            	if(count($currentGroup)<=0){
+							throw new Exception("Las agrupaciones no pueden estar vaciás, existe una agrupación de tipo '".$openingToken.$token."' ", 103);
 					}
-					else{// si no hay nada que ignorar
-						if(count($group_found)<=0){
-							throw new Exception("Las agrupaciones no pueden estar vaciás, existe una agrupación de tipo '".$open[0].$close[0]."' ", 103);
-							
-						}
-						$open[0] = false; // elimina la apertura 
-						$close[0] = false; // elimina el cierre 
-						$close[1] = $i; // guarda donde cerro
-					}
-				}
-				else{
-					$group_found[] = $token;
-				}
-				
+	                $groups[] = $this->calc_groups($currentGroup);
+	                $currentGroup = [];
+	            }
+	            else{
+	            	$currentGroup[] = $token;
+	            }
+	        } else {
+	            if (empty($stack)) {
+	                $groups[] = $token;
+	            } else {
+	                $currentGroup[] = $token;
+	            }
+	        }
+	    }
 
-				if($open[0] === false){ // si se abrio un grupo pero ahora esta cerrado
+	    if (!empty($stack)) {
+	    	$openingToken = array_pop($stack);
+	        throw new Exception("se encontró un '$openingToken' sin cerrar", 1);
+	    }
 
-					$group_found = $this->calc_groups($group_found); // reviso si hay otro grupo entre el grupo abierto antes
-
-
-					if($open[1] == 0 and $close[1] == ($end - 1)){ // si el grupo coincide con todo el array
-						$new_formula_array =  array_merge($new_formula_array,$group_found);
-					}
-					else{
-						$new_formula_array[] = $group_found;
-					}
-					
-				}
-			}
-
-			//echo "<pre>$i < $end and $open[0]</pre>";
-
-
-
-		}
-		if($open[0] !== false){
-			throw new Exception("Se encontro un`'".$open[0]."' sin cerrar", 1);
-		}
-
-		return $new_formula_array;
+	    return $groups;
 	}
 
 
