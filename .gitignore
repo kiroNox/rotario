@@ -1,1 +1,6 @@
 
+vendor/bin/.phpunit.result.cache
+phpunit.xml
+.phpunit.result.cache
+rotario.sublime-project
+rotario.sublime-workspace

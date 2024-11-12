@@ -8,7 +8,7 @@
         "phpunit/phpunit": "^9.6"
     },
     "autoload": {
-           "classmap": ["modelo"]
-    },
-    "phpunit.phpunit" : "${workspaceFolder}/phpunit"
+           "classmap": ["modelo"],
+           "files":["assets/config/config.php"]
+    }
 }
