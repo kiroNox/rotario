@@ -24,7 +24,10 @@
 		</div>
 	</div>
 	<div class="container pt-5">
-		<h1 class="text-center">404 Not Found</h1>
+		<?php $_POST['error'] = $_POST['error'] ?? "404 Not Found"; ?>
+		<h1 class="text-center">Error</h1>
+		<h1 class="text-center"><?=$_POST['error'] ?></h1>
+		<?php unset($_POST['error']); ?>
 	</div>
 
 </body>
