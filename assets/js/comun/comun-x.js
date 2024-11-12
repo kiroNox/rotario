@@ -31,8 +31,9 @@ function muestraMensaje(titulo, mensaje = '', icono = '', customProp = false, fu
 		}
 	}
 	if(typeof customProp === 'function'){
+		let tempprop = func;
 		func = customProp;
-		customProp = false; 
+		customProp = tempprop; 
 	}
 
 
@@ -53,13 +54,38 @@ function muestraMensaje(titulo, mensaje = '', icono = '', customProp = false, fu
 	if(typeof func === 'function'){
 		obj.showConfirmButton = true;
 		obj.confirmButtonText = 'Aceptar';
+		obj.focusConfirm = true;
 	}
+	else{
+		obj.focusCancel = true;
+	}
+
+	// var modal = document.querySelector('.modal.show');
+	// if (modal) {
+
+	// 	obj.target = `#${modal.id}`;
+	// }
 
 	if(customProp){
 		// willClose
 		// didClose
 		// willOpen
 		// didOpen
+		if(customProp.modal){
+
+			let modal = document.querySelector(customProp.modal);
+			if(!modal){
+				modal = document.querySelector(".modal.show");
+			}
+			
+			if (modal) {
+
+				obj.target = `#${modal.id}`;
+			}
+
+
+			delete customProp.modal;
+		}
 		for (var p in customProp){
 			obj[p] = customProp[p];
 		}
@@ -896,6 +922,43 @@ FormData.prototype.removeSpace = function() {
 		this.set(key, removeSpace(value));
 	}
 };
+
+// add a save value an element for a HTMLFormElement of all elements whith name and element in a object
+HTMLFormElement.prototype.save = function() {
+	this.savedata = new FormData(this);
+}
+// now load the object to the form
+HTMLFormElement.prototype.load = function(obj={not:[]}) {
+	if(this.savedata !== undefined && this.savedata instanceof FormData){
+		this.reset();
+		this.savedata.forEach((value, key) => {
+			let control = true;
+			if(Array.isArray(obj.not)){
+				if(obj.not.length > 0){
+					obj.not.forEach((ele)=>{
+						console.log("hola");
+						if(ele===key){
+							control = false;
+							return false;
+						}
+					});
+				}
+
+				if(control) {
+					this[key].value = value;
+				}
+			}
+			else{
+				console.error("debe proporcionar un array en not");
+			}
+		});
+	}
+}
+
+
+
+
+
 
 
 function add_event_to_label_checkbox(){
