@@ -68,6 +68,7 @@ class Conexion{
 	PUBLIC function close_bd(&$con){
 		if($con instanceof PDO){
 			$this->private_con = $con;
+		}
 			$con = null;
 			$con = new Class{
 				PUBLIC $attrexeption = true;
@@ -91,7 +92,6 @@ class Conexion{
 					return false;
 				}
 			};
-		}
 	}
 } 
 

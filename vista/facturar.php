@@ -70,8 +70,8 @@
 									<div class="col d-flex justify-content-end align-items-center">
 										<div>
 											<button class="btn btn-primary" id="btn_calcular_facturas">Calcular Facturas</button>
-											<button class="btn btn-primary" id="btn_txt">Descargar TXT</button>
-											<button class="btn btn-primary" id="btn_concluir_factura">Concluir Factura</button>
+											<button class="btn btn-primary hide-on-disable" id="btn_txt">Descargar TXT</button>
+											<button class="btn btn-primary hide-on-disable" id="btn_concluir_factura">Concluir Factura</button>
 
 											<button id="btn_prueba_bd_calc" class="d-none">probar formula desde la bd</button>
 										</div>

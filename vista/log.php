@@ -163,7 +163,7 @@
 			else{
 				muestraMensaje(lee.titulo, lee.mensaje,"error");
 			}
-		});
+		},"loader_body");
 
 		// automaticamente se envia al controlador si aparece una 
 		//alerta de json syntax error revisas la consola que ahi 

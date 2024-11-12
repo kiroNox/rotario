@@ -154,7 +154,7 @@ class Usuarios extends Conexion
 			$this->validar_conexion($this->con);
 			$this->con->beginTransaction();
 
-			$consulta = $this->con->prepare("SELECT 1 FROM trabajadores as t WHERE cedula = ?;");
+			$consulta = $this->con->prepare("SELECT 1 FROM trabajadores as t WHERE cedula = ? and estado_actividad is true;");
 			$consulta->execute([$this->cedula]);
 
 			if($consulta = $consulta->fetch(PDO::FETCH_ASSOC)){
@@ -319,7 +319,7 @@ class Usuarios extends Conexion
 				throw new Exception("El nivel profesional seleccionado no existe", 1);
 			}
 
-			$consulta = $this->con->prepare("SELECT 1 FROM trabajadores WHERE correo = ?;");
+			$consulta = $this->con->prepare("SELECT 1 FROM trabajadores WHERE correo = ? and estado_actividad is true;");
 			$consulta->execute([$this->correo]);
 
 			if($consulta->fetch()){
@@ -336,7 +336,7 @@ class Usuarios extends Conexion
 				else{
 
 
-					$consulta = $this->con->prepare("UPDATE `trabajadores` SET `id_prima_profesionalismo`=:id_prima_profesionalismo,`id_rol`=:id_rol,`numero_cuenta`=:numero_cuenta,`creado`=:creado,`nombre`=:nombre,`apellido`=:apellido,`telefono`=:telefono,`correo`=:correo,`clave`=:clave,`token`= '',`estado_actividad`= 1 `comision_servicios` = :comision_servicios, `discapacidad` = :discapacidad, `discapacitado` = :discapacitado, `genero` = :genero WHERE cedula = :cedula");
+					$consulta = $this->con->prepare("UPDATE `trabajadores` SET `id_prima_profesionalismo`=:id_prima_profesionalismo,`id_rol`=:id_rol,`numero_cuenta`=:numero_cuenta,`creado`=:creado,`nombre`=:nombre,`apellido`=:apellido,`telefono`=:telefono,`correo`=:correo,`clave`=:clave,`token`= '',`estado_actividad`= 1, `comision_servicios` = :comision_servicios, `discapacidad` = :discapacidad, `discapacitado` = :discapacitado, `genero` = :genero WHERE cedula = :cedula");
 
 					$consulta->bindValue(":id_prima_profesionalismo",$this->nivel_profesional);
 					$consulta->bindValue(":id_rol",$this->id_rol);
@@ -358,32 +358,35 @@ class Usuarios extends Conexion
 
 				}
 			}
-
-			$consulta = $this->con->prepare("INSERT INTO `trabajadores`
-				(`id_prima_profesionalismo`, `id_rol`, `cedula`, `numero_cuenta`, `creado`, `nombre`, `apellido`, `telefono`, `correo`, `clave`, `token`, `estado_actividad`, `comision_servicios`,`discapacidad`,`discapacitado`,`genero`) 
-				VALUES 
-				(:id_prima_profesionalismo, :id_rol, :cedula, :numero_cuenta, :creado, :nombre, :apellido, :telefono, :correo, :clave, :token, :estado_actividad, :comision_servicios, :discapacidad, :discapacitado, :genero);");
-
-
-			$consulta->bindValue(":id_prima_profesionalismo",$this->nivel_profesional);
-			$consulta->bindValue(":id_rol",$this->id_rol);
-			$consulta->bindValue(":cedula",$this->cedula);
-			$consulta->bindValue(":numero_cuenta",$this->numero_cuenta);
-			$consulta->bindValue(":creado",$this->creado);
-			$consulta->bindValue(":nombre",$this->nombre);
-			$consulta->bindValue(":apellido",$this->apellido);
-			$consulta->bindValue(":telefono",$this->telefono);
-			$consulta->bindValue(":correo",$this->correo);
-			$consulta->bindValue(":clave",$this->pass);
-			$consulta->bindValue(":comision_servicios",$this->comision_servicios);
-			$consulta->bindValue(":token",1);
-			$consulta->bindValue(":estado_actividad",1);
-			$consulta->bindValue(":discapacidad",$this->discapacidad);
-			$consulta->bindValue(":discapacitado",$this->discapacitado);
-			$consulta->bindValue(":genero",$this->genero_trabajador);
+			else{
+				
+				$consulta = $this->con->prepare("INSERT INTO `trabajadores`
+					(`id_prima_profesionalismo`, `id_rol`, `cedula`, `numero_cuenta`, `creado`, `nombre`, `apellido`, `telefono`, `correo`, `clave`, `token`, `estado_actividad`, `comision_servicios`,`discapacidad`,`discapacitado`,`genero`) 
+					VALUES 
+					(:id_prima_profesionalismo, :id_rol, :cedula, :numero_cuenta, :creado, :nombre, :apellido, :telefono, :correo, :clave, :token, :estado_actividad, :comision_servicios, :discapacidad, :discapacitado, :genero);");
 
 
-			$consulta->execute();
+				$consulta->bindValue(":id_prima_profesionalismo",$this->nivel_profesional);
+				$consulta->bindValue(":id_rol",$this->id_rol);
+				$consulta->bindValue(":cedula",$this->cedula);
+				$consulta->bindValue(":numero_cuenta",$this->numero_cuenta);
+				$consulta->bindValue(":creado",$this->creado);
+				$consulta->bindValue(":nombre",$this->nombre);
+				$consulta->bindValue(":apellido",$this->apellido);
+				$consulta->bindValue(":telefono",$this->telefono);
+				$consulta->bindValue(":correo",$this->correo);
+				$consulta->bindValue(":clave",$this->pass);
+				$consulta->bindValue(":comision_servicios",$this->comision_servicios);
+				$consulta->bindValue(":token",1);
+				$consulta->bindValue(":estado_actividad",1);
+				$consulta->bindValue(":discapacidad",$this->discapacidad);
+				$consulta->bindValue(":discapacitado",$this->discapacitado);
+				$consulta->bindValue(":genero",$this->genero_trabajador);
+
+
+				$consulta->execute();
+			}
+
 
 
 			

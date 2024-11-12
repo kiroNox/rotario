@@ -83,7 +83,6 @@
                 ["permisos"=>"sueldo", "href"=>"sueldo", "descrip" => "Gestionar Sueldos"],
                 ["permisos"=>"primas", "href"=>"primas", "descrip" => "Gestionar Primas"],
                 ["permisos"=>"deducciones", "href"=>"deducciones", "descrip" => "Gestionar Deducciones"],
-                ["permisos"=>"liquidacion", "href"=>"liquidacion", "descrip" => "Gestionar Liquidación"],
                 ["permisos"=>"formulas", "href"=>"formulas", "descrip" => "Gestionar Formulas"]
             ]
         ];
@@ -91,7 +90,8 @@
             "collapse"=>"Pagos",
             "icono"=>"fas fa-fw fa-folder",
             "lista" => [
-                ["permisos"=>"facturas", "href"=>"facturar", "descrip" => "Gestionar Facturas de Pagos"]
+                ["permisos"=>"facturas", "href"=>"facturar", "descrip" => "Calcular Pagos"],
+                ["permisos"=>"liquidacion", "href"=>"liquidacion", "descrip" => "Gestionar Liquidaciones"]
             ]
         ];
         $obj->items[] = [
@@ -134,15 +134,24 @@
         $lista_separadores[] = $obj;
 
 
-        function print_items($items,$n){
+        function print_items($items,$n,$active=false){
             global $permisos;
+
+            // showvar($items,false);
             if(isset($items["lista"])){
                 $print='';
+                $showControl="";
                 foreach ($items["lista"] as $link) {
                     if($link["permisos"] == 'innecesario' or (isset($permisos[$link["permisos"]]["consultar"]) and $permisos[$link["permisos"]]["consultar"] == "1")){
                         $ref = $link["href"];
                         $descrip = $link["descrip"];
-                        $print .= "<a class=\"collapse-item\" href=\"?p=$ref\">$descrip</a>"; 
+                        $print .= "<a class=\"collapse-item\" href=\"?p=$ref\">$descrip</a>";
+
+                        $_GET['p'] = $_GET['p'] ?? "dashboard";
+
+                        if($showControl=="" and $_GET['p'] === $ref){
+                            $showControl ="show";
+                        }
                     }
                 }
                 if($print!=''){
@@ -152,9 +161,11 @@
                     else{
                         $icono ="fa fa-fw fa-folder";
                     }
+                    
+
 
                     $print = '<div class="bg-white py-2 collapse-inner rounded">'.$print.'</div>';
-                    $print = "<div id=\"collapse-items-$n\" class=\"collapse \" aria-labelledby=\"head-items-$n\" data-parent=\"#accordionSidebar\">".$print."</div>";
+                    $print = "<div id=\"collapse-items-$n\" class=\"collapse $showControl\" aria-labelledby=\"head-items-$n\" data-parent=\"#accordionSidebar\">".$print."</div>";
                     $print = "<a class=\"nav-link\" href=\"#\" data-toggle=\"collapse\" data-target=\"#collapse-items-$n\" aria-expanded=\"true\" aria-controls=\"collapse-items-$n\">".
                     "<i class=\"$icono\"></i>".
                     "<span>".$items["collapse"]."</span> </a>".$print;
@@ -165,22 +176,22 @@
                 return $print;
             }
             else{
-if( $items["permisos"] == 'innecesario' or $permisos[$items["permisos"]]["consultar"] == "1"){
-    $print = <<<EOD
-    <li class="nav-item">
-        <a class="nav-link collapsed" href="?p={$items['href']}">
-            <i class="{$items['icono']}"></i>
-            <span>{$items['collapse']}</span>
-        </a>
-        
-    </li>
-    EOD;
-}
-else{
-    $print = '';
-}
+                if( $items["permisos"] == 'innecesario' or $permisos[$items["permisos"]]["consultar"] == "1"){
+                    $print = <<<EOD
+                    <li class="nav-item">
+                        <a class="nav-link collapsed" href="?p={$items['href']}">
+                            <i class="{$items['icono']}"></i>
+                            <span>{$items['collapse']}</span>
+                        </a>
+                        
+                    </li>
+                    EOD;
+                }
+                else{
+                    $print = '';
+                }
 
-return $print;
+                return $print;
 
 
 

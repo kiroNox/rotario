@@ -2,7 +2,7 @@
 
 class generar extends Conexion
 {
-    private $id,$fecha_desde,$fecha_hasta,$tipo;
+    private $id,$fecha_desde,$fecha_hasta,$tipo,$con;
 
     function __construct($con = '')
     {
