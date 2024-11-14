@@ -1212,7 +1212,6 @@
             "install-path": "../sabberworm/php-css-parser"
         },
         {
-<<<<<<< Updated upstream
             "name": "sebastian/cli-parser",
             "version": "1.0.2",
             "version_normalized": "1.0.2.0",
@@ -2275,7 +2274,8 @@
                 }
             ],
             "install-path": "../theseer/tokenizer"
-=======
+        },
+        {
             "name": "spipu/html2pdf",
             "version": "v5.2.8",
             "version_normalized": "5.2.8.0",
@@ -2409,7 +2409,7 @@
                 }
             ],
             "install-path": "../tecnickcom/tcpdf"
->>>>>>> Stashed changes
+
         }
     ],
     "dev": true,

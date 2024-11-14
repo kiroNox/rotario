@@ -4,11 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-<<<<<<< Updated upstream
     "content-hash": "1de04ec85296bf1464a1fb67262bfeb3",
-=======
-    "content-hash": "51475d6a042cac747ac0d60b26a9f178",
->>>>>>> Stashed changes
     "packages": [
         {
             "name": "dompdf/dompdf",
