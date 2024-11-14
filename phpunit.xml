@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<phpunit bootstrap="vendor/autoload.php" stopOnFailure="true"  backupGlobals="false" colors="true" convertErrorsToExceptions="true" convertNoticesToExceptions="true" convertWarningsToExceptions="true">
+	<testsuites>
+		<testsuite name="Hijo">
+			<directory suffix=".php">
+				tests/Hijos
+			</directory>
+		</testsuite>
+		<testsuite name="Trabajador">
+			<directory>
+				tests/Trabajador
+			</directory>
+		</testsuite>
+		<testsuite name="Calendario">
+			<directory>
+				tests/Calendario
+			</directory>
+		</testsuite>
+		<testsuite name="Ausencias">
+			<directory>
+				tests/Ausencias
+			</directory>
+		</testsuite>
+	</testsuites>
+</phpunit>
