@@ -68,6 +68,7 @@ $.ajax({
     type: 'POST',
     data: { accion: 'obtener_niveles_educativos' },
     success: function(response) {
+        console.log(response);
         var data = JSON.parse(response);
         var labels = data.map(function(item) { return item.nivel_educativo; });
         var dataset = data.map(function(item) { return item.total_empleados; });
