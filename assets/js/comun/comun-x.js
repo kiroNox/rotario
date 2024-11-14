@@ -490,7 +490,7 @@ class Validaciones{
 	fecha(dateV, mensaje=false){
 		if(typeof dateV==='string')
 		{
-			if(!/^[\d][\d][\d][\d][\D][\d]?[\d][\D][\d]?[\d]$/.test(dateV)) {return false;}
+			if(!/^[\d][\d][\d][\d][\/-][\d]?[\d][\/-][\d]?[\d]$/.test(dateV)) {return false;}
 			dateV=dateV.split(/\D/);
 		}
 		else {return false;}
