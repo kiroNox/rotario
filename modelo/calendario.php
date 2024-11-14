@@ -43,7 +43,7 @@ class calendario extends Conexion
             // Validaciones de los datos del evento
             Validaciones::alfanumerico($this->descripcion, "1,200", "La descripción no es válida");
             Validaciones::fecha($this->fecha, "Fecha del evento no válida");
-            Validaciones::numero($this->recurrente, "1", "El valor de recurrencia no es válido");
+            Validaciones::validar($this->recurrente,"/^(?:0|1)$/","El valor de recurrencia no es valido");
     
             // Verificar si ya existe un evento con la misma fecha
             $consultaDuplicado = $this->con->prepare("SELECT 1 FROM `calendario` WHERE `fecha` = :fecha");
@@ -51,7 +51,9 @@ class calendario extends Conexion
             $consultaDuplicado->execute();
             
             if ($consultaDuplicado->fetchColumn() > 0) {
-                throw new Validaciones("Ya existe un evento en la fecha especificada", 1);
+                $r['resultado'] = 'error';
+                $r['mensaje'] = "Ya existe un evento en la fecha especificada";
+                return $r;
             }
     
             $this->con->beginTransaction();
@@ -87,7 +89,7 @@ class calendario extends Conexion
             $this->validar_conexion($this->con);
             Validaciones::alfanumerico($this->descripcion, "1,200", "La descripción no es válida");
             Validaciones::fecha($this->fecha, "Fecha del evento no válida");
-            Validaciones::numero($this->recurrente, "1", "El valor de recurrencia no es válido");
+            Validaciones::validar($this->recurrente,"/^(?:0|1)$/","El valor de recurrencia no es valido");
     
             // Verificar si ya existe un evento con la misma fecha
             $consultaDuplicado = $this->con->prepare("SELECT 1 FROM `calendario` WHERE `fecha` = :fecha AND `fecha` != :fecha_actual");
@@ -96,7 +98,10 @@ class calendario extends Conexion
             $consultaDuplicado->execute();
             
             if ($consultaDuplicado->fetchColumn() > 0) {
-                throw new Validaciones("Ya existe un evento en la fecha especificada", 1);
+                
+                $r['resultado'] = 'error';
+                $r['mensaje'] = "Ya existe un evento en la fecha especificada";
+                return $r;
             }
     
             $this->con->beginTransaction();
