@@ -39,10 +39,24 @@ class calendario extends Conexion
 
     PRIVATE function agregar_d() {
         try {
-            $this->validar_conexion($this->con);
+            $this->validar_conexion($this->con);    
+            // Validaciones de los datos del evento
+            Validaciones::alfanumerico($this->descripcion, "1,200", "La descripción no es válida");
+            Validaciones::fecha($this->fecha, "Fecha del evento no válida");
+            Validaciones::numero($this->recurrente, "1", "El valor de recurrencia no es válido");
+    
+            // Verificar si ya existe un evento con la misma fecha
+            $consultaDuplicado = $this->con->prepare("SELECT 1 FROM `calendario` WHERE `fecha` = :fecha");
+            $consultaDuplicado->bindValue(":fecha", $this->fecha);
+            $consultaDuplicado->execute();
+            
+            if ($consultaDuplicado->fetchColumn() > 0) {
+                throw new Validaciones("Ya existe un evento en la fecha especificada", 1);
+            }
+    
             $this->con->beginTransaction();
     
-            $consulta = $this->con->prepare("INSERT INTO `calendario`( `descripcion`, `fecha`, `recurrente`) VALUES (:descripcion, :fecha, :recurrente)");
+            $consulta = $this->con->prepare("INSERT INTO `calendario`(`descripcion`, `fecha`, `recurrente`) VALUES (:descripcion, :fecha, :recurrente)");
             $consulta->bindValue(":descripcion", $this->descripcion);
             $consulta->bindValue(":fecha", $this->fecha);
             $consulta->bindValue(":recurrente", $this->recurrente);
@@ -50,23 +64,41 @@ class calendario extends Conexion
     
             $r['resultado'] = 'exito';
             $r['mensaje'] = 'Evento agregado';
-            // $this->con->commit();
-            $this->con->rollback(); // WARNING Calendario agregar dias
+            $this->con->commit();
+            $this->close_bd($this->con);
         
         } catch (Exception $e) {
-            if($this->con->inTransaction()) {
-                $this->con->rollBack();
+
+            if ($this->con instanceof PDO) {
+                if ($this->con->inTransaction()) {
+                    $this->con->rollBack();
+                    $this->close_bd($this->con);
+                }
             }
             $r['resultado'] = 'error';
             $r['mensaje'] = $e->getMessage();
         }
         return $r;
     }
-
-
+    
     PRIVATE function modificar_d() {
         try {
+            // Validaciones para los datos del evento
             $this->validar_conexion($this->con);
+            Validaciones::alfanumerico($this->descripcion, "1,200", "La descripción no es válida");
+            Validaciones::fecha($this->fecha, "Fecha del evento no válida");
+            Validaciones::numero($this->recurrente, "1", "El valor de recurrencia no es válido");
+    
+            // Verificar si ya existe un evento con la misma fecha
+            $consultaDuplicado = $this->con->prepare("SELECT 1 FROM `calendario` WHERE `fecha` = :fecha AND `fecha` != :fecha_actual");
+            $consultaDuplicado->bindValue(":fecha", $this->fecha);
+            $consultaDuplicado->bindValue(":fecha_actual", $this->fecha); // Actual fecha del evento
+            $consultaDuplicado->execute();
+            
+            if ($consultaDuplicado->fetchColumn() > 0) {
+                throw new Validaciones("Ya existe un evento en la fecha especificada", 1);
+            }
+    
             $this->con->beginTransaction();
     
             $consulta = $this->con->prepare("UPDATE calendario SET descripcion = :descripcion, recurrente = :recurrente WHERE fecha = :fecha");
@@ -77,45 +109,60 @@ class calendario extends Conexion
     
             $r['resultado'] = 'exito';
             $r['mensaje'] = 'Evento modificado';
-            //$this->con->commit();
-            $this->con->rollBack(); // WARNING modificar dia para pruebas
+            $this->con->commit();
+            $this->close_bd($this->con);
         
         } catch (Exception $e) {
-            if($this->con->inTransaction()) {
-                $this->con->rollBack();
+            if ($this->con instanceof PDO) {
+                if ($this->con->inTransaction()) {
+                    $this->con->rollBack();
+                    $this->close_bd($this->con);
+                }
             }
             $r['resultado'] = 'error';
             $r['mensaje'] = $e->getMessage();
         }
         return $r;
     }
-
-    PRIVATE function eliminar_d(){
+    
+    
+    PRIVATE function eliminar_d() {
         try {
+            // Validación para eliminar evento
+            Validaciones::fecha($this->fecha, "Fecha del evento no válida");
+    
             $this->validar_conexion($this->con);
             $this->con->beginTransaction();
-
+    
             $consulta = $this->con->prepare("DELETE FROM `calendario` WHERE `fecha` = :fecha");
             $consulta->bindValue(":fecha", $this->fecha);
             $consulta->execute();
-
+    
             $r['resultado'] = 'exito';
             $r['mensaje'] = 'Evento eliminado';
-            //$this->con->commit();
-            $this->con->rollBack(); // WARNING eliminar dia pruebas
+            $this->con->commit();
+            $this->close_bd($this->con);
         
         } catch (Exception $e) {
-            if($this->con->inTransaction()){
-                $this->con->rollBack();
+            if ($this->con instanceof PDO) {
+                if ($this->con->inTransaction()) {
+                    $this->con->rollBack();
+                    $this->close_bd($this->con);
+                }
             }
             $r['resultado'] = 'error';
             $r['mensaje'] = $e->getMessage();
+            
         }
         return $r;
     }
-
+    
     PRIVATE function obtener_d($year, $month) {
         try {
+            // Validaciones para obtener eventos
+            Validaciones::numero($year, "4", "El año no es válido");
+            Validaciones::numero($month, "1,2", "El mes no es válido");
+    
             $this->validar_conexion($this->con);
             $this->con->beginTransaction();
     
@@ -136,16 +183,22 @@ class calendario extends Conexion
             $r['resultado'] = 'exito';
             $r['evento'] = $resultados;
             $this->con->commit();
+
+            $this->close_bd($this->con);
         
         } catch (Exception $e) {
-            if($this->con->inTransaction()) {
-                $this->con->rollBack();
+            if ($this->con instanceof PDO) {
+                if ($this->con->inTransaction()) {
+                    $this->con->rollBack();
+                    $this->close_bd($this->con);
+                }
             }
             $r['resultado'] = 'error';
             $r['mensaje'] = $e->getMessage();
         }
         return $r;
     }
+    
 
     PUBLIC function get_descripcion(){
         return $this->descripcion;

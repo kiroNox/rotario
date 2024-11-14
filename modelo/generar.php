@@ -19,6 +19,14 @@ class generar extends Conexion
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+	public function obtenerDatosJefe() {
+
+        $sql = "SELECT nombre, apellido, cedula, creado FROM trabajadores WHERE id_trabajador = :id_trabajador";
+        $stmt = $this->con->prepare($sql);
+        $stmt->bindParam(':id_trabajador', $id_trabajador, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 
     PUBLIC function listar_usuarios(){
 		try {
