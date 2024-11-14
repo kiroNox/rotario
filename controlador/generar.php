@@ -25,7 +25,7 @@ define("DOMPDF_ENABLE_REMOTE", false);
                 $fecha_ingreso = date('d-m-Y', strtotime($datos['creado']));
                 $fecha_actual = date('d-m-Y');
 
-                $path='rotario_logo.jpg';
+                $path='assets/img/comun/rotario_logo.jpg';
                 $logo ='data:image/jpg;base64,'.base64_encode(file_get_contents($path));
                
                

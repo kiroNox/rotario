@@ -64,7 +64,7 @@ class CalendarioAgregarDiaTest extends TestCase
         // test caso 14 registro invalido (descripcion nula y fecha nula)
         [null,null,"0", "error", 14],
         // test caso 15 registro invalido (fecha repetida)
-        ["dia feriado","2026-10-02","0", "error", 15],
+        ["dia feriado","2024-11-04","0", "error", 15],
     ];
 }
 }

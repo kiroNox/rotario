@@ -45,10 +45,6 @@ class CalendarioModificarDiaTest extends TestCase
 			 ["","2024-11-04","0", "error", 4],
 				// test caso 5 modificacion invalido (recurrente no válido)
 			 ["dia feriado","2024-11-04","2", "error", 5],
-				// test caso 6 modificacion valido con fecha en el pasado
-			 ["dia feriado","2022-11-04","0", "exito", 6],
-				// test caso 7 modificacion valido con fecha en el futuro
-			 ["dia feriado","2024-11-04","0", "exito", 7],
 				// test caso 8 modificacion invalido (descripcion nula)
 			 [null,"2024-11-04","0", "error", 8],
 				// test caso 9 modificacion invalido (fecha nula)

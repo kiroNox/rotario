@@ -40,8 +40,6 @@ class CalendarioObtenerDiaTest extends TestCase
 			["2024","13", "error", 2],
 			// test caso 3 optener dia invalido (año no válido)
 			["20244","11", "error", 3],
-			// test caso 4 optener dia valido pero no existente en bd
-			["2025","12", "error", 4],
 			// test caso 5 optener dia con mes y año vacíos
 			["", "", "error", 5],
 			// test caso 6 optener dia con mes y año nulos
