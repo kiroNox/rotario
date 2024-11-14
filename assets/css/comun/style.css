@@ -479,6 +479,13 @@ input[type='checkbox'].check-button:disabled + .check-button::before{
 		content: "\f33f";
 	}
 
+	.hover-scale{
+		transition: 0.2s transform;
+	}
+	.hover-scale:hover{
+		transform: scale(1.03);
+	} 
+
 
 
 /* dark-mode a eliminar*/
