@@ -3,7 +3,11 @@
         'name' => '__root__',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
+<<<<<<< Updated upstream
         'reference' => '93816c18ebd6a92808a26d772961768d2e358ad6',
+=======
+        'reference' => 'c08a32fac2c9516c4484e0dd24db47f8e9734f88',
+>>>>>>> Stashed changes
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -13,7 +17,11 @@
         '__root__' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
+<<<<<<< Updated upstream
             'reference' => '93816c18ebd6a92808a26d772961768d2e358ad6',
+=======
+            'reference' => 'c08a32fac2c9516c4484e0dd24db47f8e9734f88',
+>>>>>>> Stashed changes
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -173,14 +181,15 @@
             'dev_requirement' => true,
         ),
         'sabberworm/php-css-parser' => array(
-            'pretty_version' => 'v8.5.1',
-            'version' => '8.5.1.0',
-            'reference' => '4a3d572b0f8b28bb6fd016ae8bbfc445facef152',
+            'pretty_version' => 'v8.6.0',
+            'version' => '8.6.0.0',
+            'reference' => 'd2fb94a9641be84d79c7548c6d39bbebba6e9a70',
             'type' => 'library',
             'install_path' => __DIR__ . '/../sabberworm/php-css-parser',
             'aliases' => array(),
             'dev_requirement' => false,
         ),
+<<<<<<< Updated upstream
         'sebastian/cli-parser' => array(
             'pretty_version' => '1.0.2',
             'version' => '1.0.2.0',
@@ -333,6 +342,25 @@
             'install_path' => __DIR__ . '/../theseer/tokenizer',
             'aliases' => array(),
             'dev_requirement' => true,
+=======
+        'spipu/html2pdf' => array(
+            'pretty_version' => 'v5.2.8',
+            'version' => '5.2.8.0',
+            'reference' => '6c94dcd48c94c6c73f206629839c1ebd81e8c726',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../spipu/html2pdf',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'tecnickcom/tcpdf' => array(
+            'pretty_version' => '6.7.5',
+            'version' => '6.7.5.0',
+            'reference' => '951eabf0338ec2522bd0d5d9c79b08a3a3d36b36',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../tecnickcom/tcpdf',
+            'aliases' => array(),
+            'dev_requirement' => false,
+>>>>>>> Stashed changes
         ),
     ),
 );
