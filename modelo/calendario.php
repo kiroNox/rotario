@@ -50,7 +50,8 @@ class calendario extends Conexion
     
             $r['resultado'] = 'exito';
             $r['mensaje'] = 'Evento agregado';
-            $this->con->commit();
+            // $this->con->commit();
+            $this->con->rollback(); // WARNING Calendario agregar dias
         
         } catch (Exception $e) {
             if($this->con->inTransaction()) {
@@ -76,7 +77,8 @@ class calendario extends Conexion
     
             $r['resultado'] = 'exito';
             $r['mensaje'] = 'Evento modificado';
-            $this->con->commit();
+            //$this->con->commit();
+            $this->con->rollBack(); // WARNING modificar dia para pruebas
         
         } catch (Exception $e) {
             if($this->con->inTransaction()) {
@@ -99,7 +101,8 @@ class calendario extends Conexion
 
             $r['resultado'] = 'exito';
             $r['mensaje'] = 'Evento eliminado';
-            $this->con->commit();
+            //$this->con->commit();
+            $this->con->rollBack(); // WARNING eliminar dia pruebas
         
         } catch (Exception $e) {
             if($this->con->inTransaction()){
