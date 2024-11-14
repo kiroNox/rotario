@@ -7,17 +7,21 @@
 			</directory>
 		</testsuite>
 		<testsuite name="Trabajador">
-			<directory>
+			<directory suffix=".php">
 				tests/Trabajador
 			</directory>
 		</testsuite>
 		<testsuite name="Calendario">
-			<directory>
+			<directory suffix=".php">
 				tests/Calendario
 			</directory>
+			<!--las excluyo por que no hay rollback-->
+			<exclude>
+				tests/Calendario
+			</exclude>
 		</testsuite>
 		<testsuite name="Ausencias">
-			<directory>
+			<directory suffix=".php">
 				tests/Ausencias
 			</directory>
 		</testsuite>

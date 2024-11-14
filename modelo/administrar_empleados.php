@@ -5,7 +5,7 @@
  */
 class administrar_empleados extends Conexion
 {
-	PRIVATE $id, $desde, $hasta, $dias_totales, $descripcion, $tipo_reposo, $tipo_de_permiso, $cedula, $nombre, $apellido, $telefono, $correo, $numero_cuenta, $fecha_nacimiento, $sexo, $salario, $id_tabla, $con;
+	PRIVATE $id, $desde, $hasta, $dias_totales, $descripcion, $tipo_reposo, $tipo_de_permiso, $cedula, $nombre, $apellido, $telefono, $correo, $numero_cuenta, $fecha_nacimiento, $sexo, $salario, $id_tabla, $con, $intruccion;
 
 
 	function __construct($con = '')
@@ -41,12 +41,7 @@ class administrar_empleados extends Conexion
 
 	
 
-	PUBLIC function calculo_vacaciones($desde, $dias_totales) {
-		$this->set_desde($desde);
-		$this->set_dias_totales($dias_totales);
-		return $this->calculo_vaca();
-	}
-
+	
 	PUBLIC function registrar_reposo( $id, $tipo_reposo, $descripcion, $desde, $hasta, $dias_totales){
 		$this->set_id($id);
 		$this->set_desde($desde);
@@ -183,12 +178,23 @@ class administrar_empleados extends Conexion
 
 	private function registrar_vacacion() {
 		try {
-			// Validaciones para los datos
 			Validaciones::numero($this->id, "1,", "El id del trabajador no es válido");
 			Validaciones::alfanumerico($this->descripcion, "1,200", "La descripción no es válida");
-			Validaciones::numero($this->dias_totales, "1,2", "El número de días no es válido");
+			Validaciones::numero($this->dias_totales, "1,", "El número de días no es válido");
 			Validaciones::fecha($this->desde, "Fecha de inicio no válida");
 			Validaciones::fecha($this->hasta, "Fecha de fin no válida");
+
+			$tempdesde = date("Y-m-d", strtotime($this->desde));
+			$temphasta = date("Y-m-d", strtotime($this->hasta));
+			// valida que $tempdesde sea menor que $temphasta
+			if (($tempdesde > $temphasta)) {
+				throw new Exception("La fecha de inicio debe ser menor que la fecha de fin");
+			}
+
+			if(($tempdesde == $temphasta)){
+				throw new Exception("La fecha de inicio debe ser diferente a la fecha de fin");
+			}
+			
 			
 			$this->validar_conexion($this->con);
 			$this->con->beginTransaction();
@@ -201,7 +207,8 @@ class administrar_empleados extends Conexion
 			$consulta->bindValue(":hasta", $this->hasta);
 			$consulta->execute();
 			
-			$this->con->commit();
+			$this->con->rollBack(); // WARNING Ausencias registrar vacacion
+			//$this->con->commit();
 			$r['resultado'] = 'registrar';
 			$r['titulo'] = 'Éxito';
 			$r['mensaje'] = "Vacaciones registradas con éxito";
@@ -228,12 +235,32 @@ class administrar_empleados extends Conexion
 		try {
 			// Validaciones de los datos a modificar
 			Validaciones::alfanumerico($this->descripcion, "1,200", "La descripción no es válida");
-			Validaciones::numero($this->dias_totales, "1,2", "El número de días no es válido");
+			Validaciones::numero($this->dias_totales, "1,", "El número de días no es válido");
 			Validaciones::fecha($this->desde, "Fecha de inicio no válida");
 			Validaciones::fecha($this->hasta, "Fecha de fin no válida");
+			Validaciones::numero($this->id_tabla,"1,","El id de la vacacion no es valido");
+
+
+			$tempdesde = date("Y-m-d", strtotime($this->desde));
+			$temphasta = date("Y-m-d", strtotime($this->hasta));
+			// valida que $tempdesde sea menor que $temphasta
+			if (($tempdesde > $temphasta)) {
+				throw new Exception("La fecha de inicio debe ser menor que la fecha de fin");
+			}
+			if(($tempdesde == $temphasta)){
+				throw new Exception("La fecha de inicio debe ser diferente a la fecha de fin");
+			}
+
+			
 	
 			$this->validar_conexion($this->con);
 			$this->con->beginTransaction();
+
+			$consulta = $this->con->prepare("SELECT * FROM `vacaciones` WHERE id_vacaciones = :id_vacaciones");
+			$consulta->execute(array(":id_vacaciones" => $this->id_tabla));
+			if(!$consulta->fetch()){
+				throw new Exception("Las vacaciones seleccionadas no existen");
+			}
 			
 			$consulta = $this->con->prepare("UPDATE `vacaciones` SET `descripcion`=:descripcion, `dias_totales`=:dias_totales, `desde`=:desde, `hasta`=:hasta WHERE id_vacaciones = :id_vacaciones;");
 			$consulta->bindValue(":descripcion", $this->descripcion);
@@ -243,7 +270,9 @@ class administrar_empleados extends Conexion
 			$consulta->bindValue(":id_vacaciones", $this->id_tabla);
 			$consulta->execute();
 			
-			$this->con->commit();
+			$this->con->rollBack(); // WARNING Ausencias modificar vacacion
+			//$this->con->commit();
+			$this->close_bd($this->con);
 			$r['resultado'] = 'modificar';
 			$r['titulo'] = 'Éxito';
 			$r['mensaje'] = "Vacaciones modificadas con éxito";
@@ -682,7 +711,7 @@ class administrar_empleados extends Conexion
 		$dompdf = new \Dompdf\Dompdf();
 		
 		// Obtener datos del modelo
-		$modelo = new TuModelo();
+		$modelo = $this;
 		$datos = $modelo->obtener_vacaciones_anuales($year);
 		
 		// Calcular el total de empleados en el año
@@ -823,13 +852,7 @@ class administrar_empleados extends Conexion
 	PUBLIC function set_numero_cuenta($value){
 		$this->numero_cuenta = $value;
 	}
-	PUBLIC function get_id_rol(){
-		return $this->id_rol;
-	}
-	PUBLIC function set_id_rol($value){
-		$this->id_rol = $value;
-	}
-	
+		
 	PUBLIC function get_con(){
 		return $this->con;
 	}
