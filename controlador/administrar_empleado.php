@@ -68,8 +68,8 @@ use Dompdf\Dompdf;
 						$_POST["desde"],
 						$_POST["hasta"],
 						$_POST["dias_totales"],
-						$_POST["descripcion"],
-						$_POST["id"]
+						descripcion: $_POST["descripcion"],
+						id: $_POST["id"]
 						
 					);
 					echo json_encode($resp);

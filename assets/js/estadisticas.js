@@ -1,14 +1,74 @@
 $(document).ready(function() { 
+    
+
+    //resumen 
+
+    $(document).on('click', '.estadistica-btn', function() {
+        var cedula = $(this).data('cedula');
+        console.log(cedula);
+        limpiarEstadisticas();
+        // Lógica para mostrar el modal de estadísticas
+        $('#exampleModal1').modal('show');
+        $('#cedula1').val(cedula);
+    });
+    
+    $(document).on('click', '#estadistica1', function() {
+        cedulaN=$('#cedula1').val();
+        console.log("sakld");
+        limpiarEstadisticas();
+        mostrarResumenTrabajador(cedulaN);
+        
+    });
+    
+
+$('#tablaEmpleados').DataTable({
+    language: {
+        lengthMenu: "Mostrar _MENU_ por página",
+        zeroRecords: "No se encontraron registros de hijos",
+        info: "Mostrando página _PAGE_ de _PAGES_",
+        infoEmpty: "No hay registros disponibles",
+        infoFiltered: "(filtrado de _MAX_ registros totales)",
+        search: "Buscar:",
+        paginate: {
+            first: "Primera",
+            last: "Última",
+            next: "Siguiente",
+            previous: "Anterior",
+        },
+    },
+    "processing": true,
+    "serverSide": true,
+    "ajax": {
+        "url": "", // URL de tu servidor o controlador
+        "type": "POST",
+        "data": {
+            "accion": "listarEmpleados"
+        }
+    },
+    "columns": [
+        { "data": "cedula" },
+        { "data": "nombre" },
+        { "data": "apellido" },
+        { "data": null, "orderable": false, "searchable": false } // Columna para los botones
+    ],
+    "createdRow": function(row, data) {
+        // Almacenar la cédula directamente en el botón
+        $(row).find('td:last').html(`
+            <button class="btn btn-success estadistica-btn" data-cedula="${data.cedula}" data-action="estadisticas">Ver estadísticas</button>
+        `);
+    }
+});
 
 
 //--------______---__---_--_--_---__--__--_---__--
 
 // Para el gráfico de niveles educativos
 $.ajax({
-    url: '', // Ruta a tu controlador PHP
+    url: '', 
     type: 'POST',
     data: { accion: 'obtener_niveles_educativos' },
     success: function(response) {
+        console.log(response);
         var data = JSON.parse(response);
         var labels = data.map(function(item) { return item.nivel_educativo; });
         var dataset = data.map(function(item) { return item.total_empleados; });
@@ -51,6 +111,121 @@ $.ajax({
 
 
 
+
+function mostrarDetalle(selector, items, tipo) {
+    var container = $(selector);
+    container.empty(); // Limpiar contenido previo
+
+    items.forEach(function(item) {
+        var itemHtml = "<div><strong>" + item.desde + " - " + item.hasta + ":</strong> " + item.descripcion;
+        if (tipo === 'reposo' && item.tipo_reposo) {
+            itemHtml += " (" + item.tipo_reposo + ")";
+        }
+        itemHtml += "</div>";
+        container.append(itemHtml);
+    });
+}
+
+
+function mostrarResumenTrabajador(id_trabajador) {
+    console.log("asssss");
+    $.ajax({
+        url: '', 
+        type: 'POST',
+        data: { accion: 'obtener_resumen_trabajador', id_trabajador: id_trabajador },
+        success: function(response) {
+            console.log(response);
+            var data = JSON.parse(response);
+            console.log(data);
+
+            // Datos generales
+            $('#fechaIngreso').text("Fecha de Ingreso: " + data.fecha_ingreso);
+            $('#tiempoTrabajo').text("Años de Trabajo: " + data.tiempo_trabajo);
+
+            // Vacaciones
+            mostrarDetalle('#detalleVacaciones', data.vacaciones, 'vacaciones');
+
+            // Reposos
+            mostrarDetalle('#detalleReposos', data.reposos, 'reposo');
+
+            // Permisos
+            mostrarDetalle('#detallePermisos', data.permisos, 'permiso');
+        }
+    });
+}
+
+$("#formulario1").on('submit', function(e) {
+    e.preventDefault();
+
+    if (validarFormulario("#formulario1")) {
+        var datos = new FormData($('#formulario1')[0]);
+        datos.append("accion", "obtener_resumen_trabajador");
+      
+        enviaAjax(datos, function(respuesta, exito, fail) {
+            try {
+                var lee = JSON.parse(respuesta);
+        
+                // Asignar valores principales
+                $("#fechaIngreso").text(lee.fecha_ingreso);
+                $("#tiempoServicio").text(lee.tiempo_trabajo);
+                $("#porcVacaciones").text(calcularPorcentaje(lee.vacaciones));
+                $("#porcReposos").text(calcularPorcentaje(lee.reposos));
+                $("#porcPermisos").text(calcularPorcentaje(lee.permisos));
+        
+                // Limpiar tablas
+                $("#vacacionesTable").empty();
+                $("#repososTable").empty();
+                $("#permisosTable").empty();
+        
+                // Llenar tabla de vacaciones
+                lee.vacaciones.forEach(vacacion => {
+                    $("#vacacionesTable").append(`
+                        <tr>
+                            <td>${vacacion.desde}</td>
+                            <td>${vacacion.hasta}</td>
+                            <td>${vacacion.descripcion}</td>
+                            <td>${vacacion.dias}</td>
+                        </tr>
+                    `);
+                });
+        
+                // Llenar tabla de reposos
+                lee.reposos.forEach(reposo => {
+                    $("#repososTable").append(`
+                        <tr>
+                            <td>${reposo.desde}</td>
+                            <td>${reposo.hasta}</td>
+                            <td>${reposo.descripcion}</td>
+                            <td>${reposo.tipo_reposo}</td>
+                            <td>${reposo.dias}</td>
+                        </tr>
+                    `);
+                });
+        
+                // Llenar tabla de permisos
+                lee.permisos.forEach(permiso => {
+                    $("#permisosTable").append(`
+                        <tr>
+                            <td>${permiso.desde}</td>
+                            <td>${permiso.descripcion}</td>
+                        </tr>
+                    `);
+                });
+                $("#resumenContenedor").fadeIn(500);
+        
+            } catch (error) {
+                console.error("Error al parsear la respuesta JSON:", error);
+                console.error("Respuesta recibida:", respuesta);
+            }
+        });
+        
+    }
+});
+
+function calcularPorcentaje(items) {
+    const totalMeses = 12; // Suponiendo 12 meses en total
+    return ((items.length / totalMeses) * 100).toFixed(1);
+}
 
     
 function setDateLimits() {
@@ -159,5 +334,42 @@ setDateLimits();
 
 // Cargar gráfico inicial sin filtro
 cargarGrafico('2023-01-01', '2023-12-31');
+
+function validarFormulario(formulario) {
+    var valido = true;
+    $(formulario).find('input').each(function() {
+        if ($(this).hasClass('no-validar')) {
+            return true; // Skip this input
+        }
+        if ($(this).attr('type') === 'text') {
+            valido &= validarCampoTexto(this, /^[\w\s-]+$/, "El campo debe contener solo letras y números.");
+        }
+    });
+    return !!valido; // Convertir a booleano
+}
+
+function validarCampoTexto(input, regex, mensajeError) {
+    var valor = $(input).val();
+    if (!regex.test(valor.trim())) {  // trim to remove leading/trailing spaces
+        $(input).addClass('is-invalid');
+        muestraMensaje("Error", mensajeError, "error");
+        return false;
+    } else {
+        $(input).removeClass('is-invalid');
+        return true;
+    }
+}
+
+function limpiarEstadisticas() {
+    $("#fechaIngreso").text("");
+    $("#tiempoServicio").text("");
+    $("#vacacionesTable").empty();
+    $("#repososTable").empty();
+    $("#permisosTable").empty();
+    $("#resumenContenedor").hide();
+    $("#fecha_inicio1").val('');
+    $("#fecha_fin1").val('');
+
+}
 
 });

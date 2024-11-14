@@ -182,262 +182,255 @@ class administrar_empleados extends Conexion
 	}
 
 	private function registrar_vacacion() {
-        try {
-            $this->validar_conexion($this->con);
-            $this->con->beginTransaction();
-            
-            $consulta = $this->con->prepare("INSERT INTO `vacaciones` (`id_trabajador`, `descripcion`, `dias_totales`, `desde`, `hasta`) VALUES (:id_trabajador, :descripcion, :dias_totales, :desde, :hasta)");
-            $consulta->bindValue(":id_trabajador", $this->id);
-            $consulta->bindValue(":descripcion", $this->descripcion);
-            $consulta->bindValue(":dias_totales", $this->dias_totales);
-            $consulta->bindValue(":desde", $this->desde);
-            $consulta->bindValue(":hasta", $this->hasta);
-            $consulta->execute();
-            
-            $this->con->commit();
-            $r['resultado'] = 'registrar';
-            $r['titulo'] = 'Éxito';
-            $r['mensaje'] = "Vacaciones registradas con éxito";
-        } catch (Validaciones $e) {
-            if ($this->con instanceof PDO) {
-                if ($this->con->inTransaction()) {
-                    $this->con->rollBack();
-                }
-            }
-            $r['resultado'] = 'is-invalid';
-            $r['titulo'] = 'Error';
-            $r['mensaje'] = $e->getMessage();
-            $r['console'] = $e->getMessage() . ": Code : " . $e->getLine();
-        } catch (Exception $e) {
-            if ($this->con instanceof PDO) {
-                if ($this->con->inTransaction()) {
-                    $this->con->rollBack();
-                }
-            }
-            $r['resultado'] = 'error';
-            $r['titulo'] = 'Error';
-            $r['mensaje'] = $e->getMessage();
-        }
-        return $r;
-    }
-
+		try {
+			// Validaciones para los datos
+			Validaciones::numero($this->id, "1,", "El id del trabajador no es válido");
+			Validaciones::alfanumerico($this->descripcion, "1,200", "La descripción no es válida");
+			Validaciones::numero($this->dias_totales, "1,2", "El número de días no es válido");
+			Validaciones::fecha($this->desde, "Fecha de inicio no válida");
+			Validaciones::fecha($this->hasta, "Fecha de fin no válida");
+			
+			$this->validar_conexion($this->con);
+			$this->con->beginTransaction();
+			
+			$consulta = $this->con->prepare("INSERT INTO `vacaciones` (`id_trabajador`, `descripcion`, `dias_totales`, `desde`, `hasta`) VALUES (:id_trabajador, :descripcion, :dias_totales, :desde, :hasta)");
+			$consulta->bindValue(":id_trabajador", $this->id);
+			$consulta->bindValue(":descripcion", $this->descripcion);
+			$consulta->bindValue(":dias_totales", $this->dias_totales);
+			$consulta->bindValue(":desde", $this->desde);
+			$consulta->bindValue(":hasta", $this->hasta);
+			$consulta->execute();
+			
+			$this->con->commit();
+			$r['resultado'] = 'registrar';
+			$r['titulo'] = 'Éxito';
+			$r['mensaje'] = "Vacaciones registradas con éxito";
+		} catch (Validaciones $e) {
+			// Manejo de errores
+			if ($this->con instanceof PDO && $this->con->inTransaction()) {
+				$this->con->rollBack();
+			}
+			$r['resultado'] = 'is-invalid';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] = $e->getMessage();
+		} catch (Exception $e) {
+			if ($this->con instanceof PDO && $this->con->inTransaction()) {
+				$this->con->rollBack();
+			}
+			$r['resultado'] = 'error';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] = $e->getMessage();
+		}
+		return $r;
+	}
+	
 	private function modificar_vacacion() {
-        try {
-            $this->validar_conexion($this->con);
-            $this->con->beginTransaction();
-            
-            $consulta = $this->con->prepare("UPDATE `vacaciones` 
-				SET 
-				`descripcion`=:descripcion,`dias_totales`=:dias_totales,`desde`=:desde,`hasta`=:hasta WHERE id_vacaciones  = :id_vacaciones ;");
-
-			$consulta->bindValue(":descripcion",$this->descripcion);
-			$consulta->bindValue(":dias_totales",$this->dias_totales);
-			$consulta->bindValue(":desde",$this->desde);
-			$consulta->bindValue(":hasta",$this->hasta);
-			$consulta->bindValue(":id_vacaciones",$this->id_tabla);
+		try {
+			// Validaciones de los datos a modificar
+			Validaciones::alfanumerico($this->descripcion, "1,200", "La descripción no es válida");
+			Validaciones::numero($this->dias_totales, "1,2", "El número de días no es válido");
+			Validaciones::fecha($this->desde, "Fecha de inicio no válida");
+			Validaciones::fecha($this->hasta, "Fecha de fin no válida");
+	
+			$this->validar_conexion($this->con);
+			$this->con->beginTransaction();
+			
+			$consulta = $this->con->prepare("UPDATE `vacaciones` SET `descripcion`=:descripcion, `dias_totales`=:dias_totales, `desde`=:desde, `hasta`=:hasta WHERE id_vacaciones = :id_vacaciones;");
+			$consulta->bindValue(":descripcion", $this->descripcion);
+			$consulta->bindValue(":dias_totales", $this->dias_totales);
+			$consulta->bindValue(":desde", $this->desde);
+			$consulta->bindValue(":hasta", $this->hasta);
+			$consulta->bindValue(":id_vacaciones", $this->id_tabla);
 			$consulta->execute();
-            
-            $this->con->commit();
-            $r['resultado1'] = $this->descripcion;
-            $r['resultado2'] = $this->dias_totales;
-            $r['resultado3'] = $this->desde;
-            $r['resultado4'] = $this->hasta;
-            $r['resultado5'] = $this->id_tabla;
-            $r['resultado'] = 'modificar';
-            $r['titulo'] = 'Éxito';
-            $r['mensaje'] = "Vacaciones modificadas con éxito";
-        } catch (Validaciones $e) {
-            if ($this->con instanceof PDO) {
-                if ($this->con->inTransaction()) {
-                    $this->con->rollBack();
-                }
-            }
-            $r['resultado'] = 'is-invalid';
-            $r['titulo'] = 'Error';
-            $r['mensaje'] = $e->getMessage();
-            $r['console'] = $e->getMessage() . ": Code : " . $e->getLine();
-        } catch (Exception $e) {
-            if ($this->con instanceof PDO) {
-                if ($this->con->inTransaction()) {
-                    $this->con->rollBack();
-                }
-            }
-            $r['resultado'] = 'error';
-            $r['titulo'] = 'Error';
-            $r['mensaje'] = $e->getMessage();
-        }
-        return $r;
-    }
-
+			
+			$this->con->commit();
+			$r['resultado'] = 'modificar';
+			$r['titulo'] = 'Éxito';
+			$r['mensaje'] = "Vacaciones modificadas con éxito";
+		} catch (Validaciones $e) {
+			if ($this->con instanceof PDO && $this->con->inTransaction()) {
+				$this->con->rollBack();
+			}
+			$r['resultado'] = 'is-invalid';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] = $e->getMessage();
+		} catch (Exception $e) {
+			if ($this->con instanceof PDO && $this->con->inTransaction()) {
+				$this->con->rollBack();
+			}
+			$r['resultado'] = 'error';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] = $e->getMessage();
+		}
+		return $r;
+	}
+	
 	private function registrar_repo() {
-        try {
-            $this->validar_conexion($this->con);
-            $this->con->beginTransaction();
-            
-            $consulta = $this->con->prepare("INSERT INTO `reposo` (`id_trabajador`, `tipo_reposo`, `descripcion`, `desde`, `hasta`) VALUES (:id_trabajador, :tipo_reposo, :descripcion, :desde, :hasta)");
-            $consulta->bindValue(":id_trabajador", $this->id);
+		try {
+			// Validaciones de los datos del reposo
+			Validaciones::numero($this->id, "1,", "El id del trabajador no es válido");
+			Validaciones::alfanumerico($this->tipo_reposo, "1,100", "El tipo de reposo no es válido");
+			Validaciones::alfanumerico($this->descripcion, "1,200", "La descripción no es válida");
+			Validaciones::fecha($this->desde, "Fecha de inicio no válida");
+			Validaciones::fecha($this->hasta, "Fecha de fin no válida");
+			
+			$this->validar_conexion($this->con);
+			$this->con->beginTransaction();
+			
+			$consulta = $this->con->prepare("INSERT INTO `reposo` (`id_trabajador`, `tipo_reposo`, `descripcion`, `desde`, `hasta`) VALUES (:id_trabajador, :tipo_reposo, :descripcion, :desde, :hasta)");
+			$consulta->bindValue(":id_trabajador", $this->id);
 			$consulta->bindValue(":tipo_reposo", $this->tipo_reposo);
-            $consulta->bindValue(":descripcion", $this->descripcion);
-            $consulta->bindValue(":desde", $this->desde);
-            $consulta->bindValue(":hasta", $this->hasta);
-            $consulta->execute();
-            
-            $this->con->commit();
-            $r['resultado'] = 'registrar';
-            $r['titulo'] = 'Éxito';
-            $r['mensaje'] = "Vacaciones registradas con éxito";
-        } catch (Validaciones $e) {
-            if ($this->con instanceof PDO) {
-                if ($this->con->inTransaction()) {
-                    $this->con->rollBack();
-                }
-            }
-            $r['resultado'] = 'is-invalid';
-            $r['titulo'] = 'Error';
-            $r['mensaje'] = $e->getMessage();
-            $r['console'] = $e->getMessage() . ": Code : " . $e->getLine();
-        } catch (Exception $e) {
-            if ($this->con instanceof PDO) {
-                if ($this->con->inTransaction()) {
-                    $this->con->rollBack();
-                }
-            }
-            $r['resultado'] = 'error';
-            $r['titulo'] = 'Error';
-            $r['mensaje'] = $e->getMessage();
-        }
-        return $r;
-    }
-
+			$consulta->bindValue(":descripcion", $this->descripcion);
+			$consulta->bindValue(":desde", $this->desde);
+			$consulta->bindValue(":hasta", $this->hasta);
+			$consulta->execute();
+			
+			$this->con->commit();
+			$r['resultado'] = 'registrar';
+			$r['titulo'] = 'Éxito';
+			$r['mensaje'] = "Reposo registrado con éxito";
+		} catch (Validaciones $e) {
+			if ($this->con instanceof PDO && $this->con->inTransaction()) {
+				$this->con->rollBack();
+			}
+			$r['resultado'] = 'is-invalid';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] = $e->getMessage();
+		} catch (Exception $e) {
+			if ($this->con instanceof PDO && $this->con->inTransaction()) {
+				$this->con->rollBack();
+			}
+			$r['resultado'] = 'error';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] = $e->getMessage();
+		}
+		return $r;
+	}
+	
+	// Agrega validaciones similares para `modificar_repo`, `registrar_perm` y `modificar_perm` usando los métodos de la clase `Validaciones` según los requisitos de cada campo.
+	
 	private function modificar_repo() {
-        try {
-            $this->validar_conexion($this->con);
-            $this->con->beginTransaction();
-            
-            $consulta = $this->con->prepare("UPDATE `reposo` 
-				SET 
-				`tipo_reposo`=:tipo_reposo,`descripcion`=:descripcion,`dias_totales`=:dias_totales,`desde`=:desde,`hasta`=:hasta WHERE id_reposo  = :id_reposo ;");
-
-			$consulta->bindValue(":tipo_reposo",$this->tipo_reposo);
-			$consulta->bindValue(":descripcion",$this->descripcion);
-			$consulta->bindValue(":dias_totales",$this->dias_totales);
-			$consulta->bindValue(":desde",$this->desde);
-			$consulta->bindValue(":hasta",$this->hasta);
-			$consulta->bindValue(":id_reposo",$this->id_tabla);
+		try {
+			// Validaciones de los datos a modificar en reposo
+			Validaciones::alfanumerico($this->tipo_reposo, "1,100", "El tipo de reposo no es válido");
+			Validaciones::alfanumerico($this->descripcion, "1,200", "La descripción no es válida");
+			Validaciones::numero($this->dias_totales, "1,2", "El número de días no es válido");
+			Validaciones::fecha($this->desde, "Fecha de inicio no válida");
+			Validaciones::fecha($this->hasta, "Fecha de fin no válida");
+			
+			$this->validar_conexion($this->con);
+			$this->con->beginTransaction();
+			
+			$consulta = $this->con->prepare("UPDATE `reposo` SET `tipo_reposo`=:tipo_reposo, `descripcion`=:descripcion, `dias_totales`=:dias_totales, `desde`=:desde, `hasta`=:hasta WHERE id_reposo = :id_reposo;");
+			$consulta->bindValue(":tipo_reposo", $this->tipo_reposo);
+			$consulta->bindValue(":descripcion", $this->descripcion);
+			$consulta->bindValue(":dias_totales", $this->dias_totales);
+			$consulta->bindValue(":desde", $this->desde);
+			$consulta->bindValue(":hasta", $this->hasta);
+			$consulta->bindValue(":id_reposo", $this->id_tabla);
 			$consulta->execute();
-            
-            $this->con->commit();
-            $r['resultado1'] = $this->descripcion;
-            $r['resultado2'] = $this->dias_totales;
-            $r['resultado3'] = $this->desde;
-            $r['resultado4'] = $this->hasta;
-            $r['resultado5'] = $this->id_tabla;
-            $r['resultado'] = 'modificar';
-            $r['titulo'] = 'Éxito';
-            $r['mensaje'] = "Reposo modificado con éxito";
-        } catch (Validaciones $e) {
-            if ($this->con instanceof PDO) {
-                if ($this->con->inTransaction()) {
-                    $this->con->rollBack();
-                }
-            }
-            $r['resultado'] = 'is-invalid';
-            $r['titulo'] = 'Error';
-            $r['mensaje'] = $e->getMessage();
-            $r['console'] = $e->getMessage() . ": Code : " . $e->getLine();
-        } catch (Exception $e) {
-            if ($this->con instanceof PDO) {
-                if ($this->con->inTransaction()) {
-                    $this->con->rollBack();
-                }
-            }
-            $r['resultado'] = 'error';
-            $r['titulo'] = 'Error';
-            $r['mensaje'] = $e->getMessage();
-        }
-        return $r;
-    }
-
+			
+			$this->con->commit();
+			$r['resultado'] = 'modificar';
+			$r['titulo'] = 'Éxito';
+			$r['mensaje'] = "Reposo modificado con éxito";
+		} catch (Validaciones $e) {
+			if ($this->con instanceof PDO && $this->con->inTransaction()) {
+				$this->con->rollBack();
+			}
+			$r['resultado'] = 'is-invalid';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] = $e->getMessage();
+		} catch (Exception $e) {
+			if ($this->con instanceof PDO && $this->con->inTransaction()) {
+				$this->con->rollBack();
+			}
+			$r['resultado'] = 'error';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] = $e->getMessage();
+		}
+		return $r;
+	}
+	
 	private function registrar_perm() {
-        try {
-            $this->validar_conexion($this->con);
-            $this->con->beginTransaction();
-            
-            $consulta = $this->con->prepare("INSERT INTO `permisos_trabajador` (`id_trabajador`, `tipo_de_permiso`, `descripcion`, `desde`) VALUES (:id_trabajador, :tipo_de_permiso, :descripcion, :desde)");
-            $consulta->bindValue(":id_trabajador", $this->id);
+		try {
+			// Validaciones de los datos del permiso
+			Validaciones::numero($this->id, "1,", "El id del trabajador no es válido");
+			Validaciones::alfanumerico($this->tipo_de_permiso, "1,100", "El tipo de permiso no es válido");
+			Validaciones::alfanumerico($this->descripcion, "1,200", "La descripción no es válida");
+			Validaciones::fecha($this->desde, "Fecha de inicio no válida");
+			
+			$this->validar_conexion($this->con);
+			$this->con->beginTransaction();
+			
+			$consulta = $this->con->prepare("INSERT INTO `permisos_trabajador` (`id_trabajador`, `tipo_de_permiso`, `descripcion`, `desde`) VALUES (:id_trabajador, :tipo_de_permiso, :descripcion, :desde)");
+			$consulta->bindValue(":id_trabajador", $this->id);
 			$consulta->bindValue(":tipo_de_permiso", $this->tipo_de_permiso);
-            $consulta->bindValue(":descripcion", $this->descripcion);
-            $consulta->bindValue(":desde", $this->desde);
-            $consulta->execute();
-            
-            $this->con->commit();
-            $r['resultado'] = 'registrar';
-            $r['titulo'] = 'Éxito';
-            $r['mensaje'] = "Vacaciones registradas con éxito";
-        } catch (Validaciones $e) {
-            if ($this->con instanceof PDO) {
-                if ($this->con->inTransaction()) {
-                    $this->con->rollBack();
-                }
-            }
-            $r['resultado'] = 'is-invalid';
-            $r['titulo'] = 'Error';
-            $r['mensaje'] = $e->getMessage();
-            $r['console'] = $e->getMessage() . ": Code : " . $e->getLine();
-        } catch (Exception $e) {
-            if ($this->con instanceof PDO) {
-                if ($this->con->inTransaction()) {
-                    $this->con->rollBack();
-                }
-            }
-            $r['resultado'] = 'error';
-            $r['titulo'] = 'Error';
-            $r['mensaje'] = $e->getMessage();
-        }
-        return $r;
-    }
-
-	private function modificar_perm() {
-        try {
-            $this->validar_conexion($this->con);
-            $this->con->beginTransaction();
-            
-            $consulta = $this->con->prepare("UPDATE `permisos_trabajador` 
-				SET 
-				`tipo_de_permiso`=:tipo_permiso,`descripcion`=:descripcion,`desde`=:desde,`desde`=:desde WHERE id_permisos  = :id_permisos ;");
-
-			$consulta->bindValue(":tipo_permiso",$this->tipo_de_permiso);
-			$consulta->bindValue(":descripcion",$this->descripcion);
-			$consulta->bindValue(":desde",$this->desde);
-			$consulta->bindValue(":id_permisos",$this->id_tabla);
+			$consulta->bindValue(":descripcion", $this->descripcion);
+			$consulta->bindValue(":desde", $this->desde);
 			$consulta->execute();
-            
-            $this->con->commit();
-            $r['resultado'] = 'modificar';
-            $r['titulo'] = 'Éxito';
-            $r['mensaje'] = "Reposo modificado con éxito";
-        } catch (Validaciones $e) {
-            if ($this->con instanceof PDO) {
-                if ($this->con->inTransaction()) {
-                    $this->con->rollBack();
-                }
-            }
-            $r['resultado'] = 'is-invalid';
-            $r['titulo'] = 'Error';
-            $r['mensaje'] = $e->getMessage();
-            $r['console'] = $e->getMessage() . ": Code : " . $e->getLine();
-        } catch (Exception $e) {
-            if ($this->con instanceof PDO) {
-                if ($this->con->inTransaction()) {
-                    $this->con->rollBack();
-                }
-            }
-            $r['resultado'] = 'error';
-            $r['titulo'] = 'Error';
-            $r['mensaje'] = $e->getMessage();
-        }
-        return $r;
-    }
+			
+			$this->con->commit();
+			$r['resultado'] = 'registrar';
+			$r['titulo'] = 'Éxito';
+			$r['mensaje'] = "Permiso registrado con éxito";
+		} catch (Validaciones $e) {
+			if ($this->con instanceof PDO && $this->con->inTransaction()) {
+				$this->con->rollBack();
+			}
+			$r['resultado'] = 'is-invalid';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] = $e->getMessage();
+		} catch (Exception $e) {
+			if ($this->con instanceof PDO && $this->con->inTransaction()) {
+				$this->con->rollBack();
+			}
+			$r['resultado'] = 'error';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] = $e->getMessage();
+		}
+		return $r;
+	}
+	
+	private function modificar_perm() {
+		try {
+			// Validaciones de los datos a modificar en permiso
+			Validaciones::alfanumerico($this->tipo_de_permiso, "1,100", "El tipo de permiso no es válido");
+			Validaciones::alfanumerico($this->descripcion, "1,200", "La descripción no es válida");
+			Validaciones::fecha($this->desde, "Fecha de inicio no válida");
+	
+			$this->validar_conexion($this->con);
+			$this->con->beginTransaction();
+			
+			$consulta = $this->con->prepare("UPDATE `permisos_trabajador` SET `tipo_de_permiso`=:tipo_permiso, `descripcion`=:descripcion, `desde`=:desde WHERE id_permisos = :id_permisos;");
+			$consulta->bindValue(":tipo_permiso", $this->tipo_de_permiso);
+			$consulta->bindValue(":descripcion", $this->descripcion);
+			$consulta->bindValue(":desde", $this->desde);
+			$consulta->bindValue(":id_permisos", $this->id_tabla);
+			$consulta->execute();
+			
+			$this->con->commit();
+			$r['resultado'] = 'modificar';
+			$r['titulo'] = 'Éxito';
+			$r['mensaje'] = "Permiso modificado con éxito";
+		} catch (Validaciones $e) {
+			if ($this->con instanceof PDO && $this->con->inTransaction()) {
+				$this->con->rollBack();
+			}
+			$r['resultado'] = 'is-invalid';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] = $e->getMessage();
+		} catch (Exception $e) {
+			if ($this->con instanceof PDO && $this->con->inTransaction()) {
+				$this->con->rollBack();
+			}
+			$r['resultado'] = 'error';
+			$r['titulo'] = 'Error';
+			$r['mensaje'] = $e->getMessage();
+		}
+		return $r;
+	}
+		
 
 	public function listar_vacaciones() {
 		try {
