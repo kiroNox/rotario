@@ -31,10 +31,10 @@
 						<table class="table table-bordered table-hover table-middle" id="table_nivel_profesional">
 							<thead class="bg-primary text-light">
 								<th>Nivel</th>
-								<th>Monto</th>
+								<!-- <th>Monto</th> -->
 								<th>Acción</th>
 							</thead>
-							<tbody id="tbody_nivel_profesional">
+							<tbody id="tbody_nivel_profesional" class="text-center">
 								
 							</tbody>
 							
@@ -69,18 +69,8 @@
 								<input required type="text" class="form-control" id="nivel_descripcion" name="nivel_descripcion" data-span="invalid-span-nivel_descripcion">
 								<span id="invalid-span-nivel_descripcion" class="invalid-span text-danger"></span>
 							</div>
-							<div class="col-12">
-								<label for="nivel_monto">Monto (%)</label>
-								<input type="text" class="form-control" id="nivel_monto" name="nivel_monto" data-span="invalid-span-nivel_monto">
-								<span id="invalid-span-nivel_monto" class="invalid-span text-danger"></span>
-							</div>
-							<div class="col-12">
-								<p class="p-3">
-									Dejar el monto en cero (0) o vacío indica que no se le aplicara la Prima de Profesionalización
-								</p>
-							</div>
 						</div>
-						<div class="row mt-3">
+						<div class="row my-3">
 							<div class="col text-center">
 								<button class="btn btn-primary" type="submit">Registrar</button>
 							</div>
@@ -98,7 +88,11 @@
 	<script>
 		load_niveles();
 
-		eventoMonto("nivel_monto");
+
+
+
+		eventoKeyup("nivel_descripcion",/^[a-zA-Z\säÄëËïÏöÖüÜáéíóúáéíóúÁÉÍÓÚÂÊÎÔÛâêîôûàèìòùÀÈÌÒÙñÑ]{1,45}$/,"La descripción tiene caracteres inválidos solo se permiten letras");
+		document.getElementById('nivel_descripcion').maxLength = 45;
 
 
 		rowsEventActions("tbody_nivel_profesional" ,function(action,rowId,btn){
@@ -116,7 +110,7 @@
 
 								document.getElementById('nivel_id').value = lee.mensaje.id_prima_profesionalismo;
 								document.getElementById('nivel_descripcion').value = lee.mensaje.descripcion;
-								document.getElementById('nivel_monto').value = sepMilesMonto(lee.mensaje.incremento);
+								//document.getElementById('nivel_monto').value = sepMilesMonto(lee.mensaje.incremento);
 
 								document.querySelector("#f1 button[type='submit']").innerHTML='Modificar';
 
@@ -183,7 +177,6 @@
 		$('#modal_registrar_nivel_educativo').on('hidden.bs.modal', function (e) {
 			document.getElementById('nivel_id').value = '';
 			document.getElementById('nivel_descripcion').value = '';
-			document.getElementById('nivel_monto').value = '';
 
 			document.querySelector("#f1 button[type='submit']").innerHTML='Registrar';
 		})
@@ -191,16 +184,13 @@
 
 		document.getElementById('f1').onsubmit=function(e){
 			e.preventDefault();
-			var monto = parseFloat(sepMilesMonto(document.getElementById('nivel_monto').value,true));
-			if(monto > 100 || monto < 0){
-				muestraMensaje("Error", "El porcentaje no es valido", "w");
+
+			if(document.getElementById('nivel_descripcion').classList.contains('is-invalid')){
 				return false;
 			}
 
 			document.querySelector("#f1 button[type='submit']").focus();
 			document.querySelector("#f1 button[type='submit']").blur();
-
-			// TODO Validaciones
 
 			var datos = new FormData($("#f1")[0]);
 			if(document.getElementById('nivel_id').value==''){
@@ -295,7 +285,7 @@
 					},
 					columns:[
 						{data:"descripcion"}
-						,{data:"incremento"}
+						//,{data:"incremento"}
 						,{data:"extra"}
 					],
 					data:jsonObj,
@@ -303,7 +293,7 @@
 
 						row.dataset.id = data.id_prima_profesionalismo;
 						
-						var acciones = row.querySelector("td:nth-child(3)");
+						var acciones = row.querySelector("td:nth-child(2)");
 						acciones.innerHTML = '';
 						var btn = crearElem("button", "class,btn btn-warning,data-action,modificar", "<span class='bi bi-pencil-square' title='Modificar Nivel Educativo'></span>")
 						acciones.appendChild(btn);

@@ -18,7 +18,7 @@
 				if(isset($permisos["educacion"]["crear"]) and $permisos["educacion"]["crear"] == "1"){
 					echo json_encode( $cl->registrar_nivel_educativo_s(
 						$_POST["nivel_descripcion"]
-						,$_POST["nivel_monto"]
+						// ,$_POST["nivel_monto"]
 					) );
 				}
 				else{
@@ -32,7 +32,7 @@
 					echo json_encode( $cl->modificar_nivel_educativo_s(
 						$_POST["id"]
 						,$_POST["nivel_descripcion"]
-						,$_POST["nivel_monto"]
+						// ,$_POST["nivel_monto"]
 					) );
 				}
 				else{
