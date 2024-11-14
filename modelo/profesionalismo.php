@@ -3,7 +3,7 @@
 class Profesionalismo extends Conexion
 {
 
-	PRIVATE $con, $id, $descripcion, $monto;
+	PRIVATE $con, $id, $descripcion;
 	// TODO quitar los motnos
 
 
@@ -43,17 +43,17 @@ class Profesionalismo extends Conexion
 		return $r;
 	}
 
-	PUBLIC function registrar_nivel_educativo_s($descripcion, $monto){
+	PUBLIC function registrar_nivel_educativo_s($descripcion){
 		$this->set_descripcion($descripcion);
-		$this->set_monto($monto);
+		//$this->set_monto($monto);
 
 		return $this->registrar_nivel_educativo();
 	}
-	PUBLIC function modificar_nivel_educativo_s($id, $descripcion, $monto){
+	PUBLIC function modificar_nivel_educativo_s($id, $descripcion){
 
 		$this->set_id($id);
 		$this->set_descripcion($descripcion);
-		$this->set_monto($monto);
+		//$this->set_monto($monto);
 
 		return $this->modificar_nivel_educativo();
 	}
@@ -78,9 +78,14 @@ class Profesionalismo extends Conexion
 			
 			// TODO validaciones
 
+			Validaciones::removeWhiteSpace($this->descripcion);
+
+			Validaciones::validarNombre($this->descripcion,"1,45","La descripción contiene caracteres inválidos, solo se permiten letras");
+
 			$consulta = $this->con->prepare("SELECT 1 FROM prima_profesionalismo WHERE descripcion = ?;");
 
 			$consulta->execute([$this->descripcion]);
+
 
 			if($consulta->fetch(PDO::FETCH_ASSOC)){
 				throw new Exception("El nivel educativo ya esta registrado", 1);
@@ -90,8 +95,8 @@ class Profesionalismo extends Conexion
 
 
 
-			$consulta = $this->con->prepare("INSERT INTO prima_profesionalismo (descripcion, incremento) VALUES (?,?) ");
-			$consulta->execute([$this->descripcion, $this->monto]);
+			$consulta = $this->con->prepare("INSERT INTO prima_profesionalismo (descripcion) VALUES (?) ");
+			$consulta->execute([$this->descripcion]);
 
 			$niveles = $this->load_niveles();
 
@@ -152,9 +157,9 @@ class Profesionalismo extends Conexion
 
 			$consulta = null;
 
-			$consulta = $this->con->prepare("UPDATE prima_profesionalismo set descripcion = ?, incremento = ? WHERE id_prima_profesionalismo = ? ");
+			$consulta = $this->con->prepare("UPDATE prima_profesionalismo set descripcion = ? WHERE id_prima_profesionalismo = ? ");
 
-			$consulta->execute([ $this->descripcion, $this->monto, $this->id ]);
+			$consulta->execute([ $this->descripcion, $this->id ]);
 
 			$consulta = null;
 
@@ -183,6 +188,7 @@ class Profesionalismo extends Conexion
 			$r['titulo'] = 'Error';
 			$r['mensaje'] =  $e->getMessage();
 			$r['console'] =  $e->getMessage().": Code : ".$e->getLine();
+			$r["line"] = $e->getFile()." line:".$e->getLine();
 		} catch (Exception $e) {
 			if($this->con instanceof PDO){
 				if($this->con->inTransaction()){
@@ -193,6 +199,7 @@ class Profesionalismo extends Conexion
 			$r['resultado'] = 'error';
 			$r['titulo'] = 'Error';
 			$r['mensaje'] =  $e->getMessage();
+			$r["line"] = $e->getFile()." line:".$e->getLine();
 			//$r['mensaje'] =  $e->getMessage().": LINE : ".$e->getLine();
 		}
 		finally{
@@ -328,12 +335,6 @@ class Profesionalismo extends Conexion
 	}
 	PUBLIC function set_descripcion($value){
 		$this->descripcion = $value;
-	}
-	PUBLIC function get_monto(){
-		return $this->monto;
-	}
-	PUBLIC function set_monto($value){
-		$this->monto = $value;
 	}
 
 }

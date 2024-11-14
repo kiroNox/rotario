@@ -6,10 +6,12 @@
 		if(!empty($_POST)){// si hay alguna consulta tipo POST
 			$accion = $_POST["accion"];// siempre se pasa un parametro con la accion que se va a realizar
 			if($accion == "valid_cedula"){
-				echo json_encode( $cl->valid_cedula($_POST["cedula"]) );
+				echo json_encode( $cl->valid_cedula_s($_POST["cedula"]) );
 			}
 			else if($accion == "registrar"){
 				if(isset($permisos["usuarios"]["crear"]) and $permisos["usuarios"]["crear"] == "1"){
+
+					$_POST['comision_servicios'] = ($_POST['comision_servicios']=="true")?true:false;
 
 					$resp = $cl->registrar_usuario_s(
 						$_POST["cedula"],
@@ -72,6 +74,8 @@
 						$_POST["discapacidad"] = false;
 						$_POST["discapacidad_info"] = null;
 					}
+					$_POST['comision_servicios'] = ($_POST['comision_servicios']=="true")?true:false;
+					
 					echo json_encode( $cl->modificar_usuario_s(
 						$_POST["id"],
 						$_POST["cedula"],
@@ -104,7 +108,7 @@
 			}
 
 			else if($accion == "get_user"){
-				echo json_encode( $cl->get_user($_POST["id"]));
+				echo json_encode( $cl->get_user_s($_POST["id"]));
 			}
 
 			$cl->set_con(null);

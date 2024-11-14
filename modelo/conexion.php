@@ -14,31 +14,9 @@ class Conexion{
 			$pdo = new PDO("mysql:host=".$this->ip.";dbname=".$this->bd."",$this->usuario,$this->contrasena);
 			$pdo->exec("set names utf8");
 			$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-			$this->private_con = $pdo;
-			
-			return new Class{
-				PUBLIC $attrexeption = true;
-				PRIVATE function exception(){
-					throw new Exception("Base de datos cerrada", 1);
-				}
-				PUBLIC function commit($string ='' ){
-					$this->exception();
-					return false;
-				}
-				PUBLIC function rollBack($string ='' ){
-					$this->exception();
-					return false;
-				}
-				PUBLIC function query($string ='' ){
-					$this->exception();
-					return false;
-				}
-				PUBLIC function prepare($string ='' ){
-					$this->exception();
-					return false;
-				}
-			};
 
+			$this->close_bd($pdo);
+			return $pdo;
 
 			} catch (Exception $e) {
 				return $e->getMessage();
@@ -75,21 +53,15 @@ class Conexion{
 				PRIVATE function exception(){
 					throw new Exception("Base de datos cerrada", 1);
 				}
-				PUBLIC function commit($string ='' ){
-					$this->exception();
-					return false;
-				}
-				PUBLIC function rollBack($string ='' ){
-					$this->exception();
-					return false;
-				}
-				PUBLIC function query($string ='' ){
-					$this->exception();
-					return false;
-				}
-				PUBLIC function prepare($string ='' ){
-					$this->exception();
-					return false;
+
+				PUBLIC function __call($name,$arguments){
+					if($name != 'inTransaction'){
+						$this->exception();
+						return $this;
+					}
+					else{
+						return false;
+					}
 				}
 			};
 	}

@@ -16,6 +16,9 @@ class Usuarios extends Conexion
 		if(!($con instanceof PDO)){// si "con" no es una instancia de PDO
 			$this->con = $this->conecta();// crea la conexion 
 		}
+		else {
+			$this->con = $con;
+		}
 
 	}
 
@@ -62,13 +65,11 @@ class Usuarios extends Conexion
 	PUBLIC function get_niveles_educativos(){
 		try {
 			$this->validar_conexion($this->con);
-			$this->con->beginTransaction();
 			$consulta = $this->con->prepare("SELECT descripcion as prof,id_prima_profesionalismo as id FROM prima_profesionalismo WHERE 1;");
 			$consulta->execute();
 			
 			$r['resultado'] = 'nivel_profesional';
 			$r['mensaje'] =  $consulta->fetchall(PDO::FETCH_ASSOC);
-			$this->con->commit();
 		
 		} catch (Validaciones $e){
 			if($this->con instanceof PDO){
@@ -145,10 +146,15 @@ class Usuarios extends Conexion
 		return $this->eliminar_usuario();
 	}
 
-
-
-	PUBLIC function valid_cedula ($cedula){
+	PUBLIC  function valid_cedula_s($cedula)
+	{
 		$this->set_cedula($cedula);
+		return $this->valid_cedula();
+	}
+
+
+
+	PRIVATE function valid_cedula (){
 		try {
 			Validaciones::validarCedula($this->cedula);
 			$this->validar_conexion($this->con);
@@ -239,17 +245,29 @@ class Usuarios extends Conexion
 		return $r;
 	}
 
-	PUBLIC function get_user($id){
+	PUBLIC function get_user_s($id){
+		$this->set_id($id);
+		return $this->get_user();
+	}
+
+	PRIVATE function get_user(){
 		try {
+			$id = $this->id;
 			$this->validar_conexion($this->con);
 			$this->con->beginTransaction();
+
+			Validaciones::numero($id,"1,","El id del trabajador no es valido");
+
 			$consulta = $this->con->prepare("SELECT p.*,r.id_rol as rol FROM trabajadores as p left join rol as r on r.id_rol = p.id_rol WHERE p.id_trabajador = ?;");
 			$consulta->execute([$id]);
 
-			$resp = $consulta->fetch(PDO::FETCH_ASSOC);
-
-			unset($resp["token"]);
-			unset($resp["clave"]);
+			if($resp = $consulta->fetch(PDO::FETCH_ASSOC)){
+				unset($resp["token"]);
+				unset($resp["clave"]);
+			}
+			else{
+				throw new Exception("El trabajador seleccionado no existe o fue eliminado", 1);
+			}
 			
 			$r['resultado'] = 'get_user';
 			$r['titulo'] = 'Éxito';
@@ -265,6 +283,7 @@ class Usuarios extends Conexion
 			$r['resultado'] = 'is-invalid';
 			$r['titulo'] = 'Error';
 			$r['mensaje'] =  $e->getMessage();
+			$r["line"] = $e->getFile()." line:".$e->getLine();
 			$r['console'] =  $e->getMessage().": Code : ".$e->getLine();
 		} catch (Exception $e) {
 			if($this->con instanceof PDO){
@@ -275,6 +294,7 @@ class Usuarios extends Conexion
 		
 			$r['resultado'] = 'error';
 			$r['titulo'] = 'Error';
+			$r["line"] = $e->getFile()." line:".$e->getLine();
 			$r['mensaje'] =  $e->getMessage();
 			//$r['mensaje'] =  $e->getMessage().": LINE : ".$e->getLine();
 		}
@@ -299,11 +319,16 @@ class Usuarios extends Conexion
 			Validaciones::validarContrasena($this->pass);
 			Validaciones::numero($this->numero_cuenta,"20","El numero de cuenta no es valido");
 			Validaciones::fecha($this->creado,"Fecha de Ingreso");
-			Validaciones::alfanumerico($this->discapacidad,"0,50");
+			Validaciones::alfanumerico($this->discapacidad,"1,50","Caracteres no permitidos en 'Discapacidad'",true);
 			Validaciones::validar($this->genero_trabajador,"/^(?:F|M)$/","El genero seleccionado no es valido");
 
-			if(!preg_match("/true|false/", $this->comision_servicios)){throw new Exception("La comision servicios seleccionada no es valida", 1);}
-			else{$this->comision_servicios = (preg_match("/true/", $this->comision_servicios)?true:false);}
+			if(!($this->comision_servicios === true) && !($this->comision_servicios === false)){
+				throw new Exception("La comision servicios seleccionada no es valida", 1);
+			}
+			if(!($this->discapacitado === true) && !($this->discapacitado === false)){
+				throw new Exception("El valor para discapacitado no es valido", 1);
+			}
+
 
 			$this->pass = password_hash($this->pass, PASSWORD_DEFAULT);
 
@@ -395,7 +420,9 @@ class Usuarios extends Conexion
 
 			Bitacora::registro($this->con, 2, "Registro al usuarios ($this->cedula)");
 			
-			$this->con->commit();
+			//$this->con->commit();
+			$this->con->rollback(); // WARNING registrar trabajador
+			$this->close_bd($this->con);
 		
 		} catch (Validaciones $e){
 			if($this->con instanceof PDO){
@@ -405,6 +432,7 @@ class Usuarios extends Conexion
 			}
 			$r['resultado'] = 'is-invalid';
 			$r['titulo'] = 'Error';
+			$r["line"] = __METHOD__." line:".$e->getLine();
 			$r['mensaje'] =  $e->getMessage();
 			$r['console'] =  $e->getMessage().": Code : ".$e->getLine();
 		} catch (Exception $e) {
@@ -417,8 +445,8 @@ class Usuarios extends Conexion
 			$r['resultado'] = 'error';
 			$r['titulo'] = 'Error';
 			$r['mensaje'] =  $e->getMessage();
+			$r["line"] = __METHOD__." line:".$e->getLine();
 			$r["temp"] = $e->getTrace();
-			$r["line"] = $e->getLine().__METHOD__;
 			//$r['mensaje'] =  $e->getMessage().": LINE : ".$e->getLine();
 		}
 		return $r;
@@ -435,7 +463,7 @@ class Usuarios extends Conexion
 			Validaciones::validarEmail($this->correo);
 			Validaciones::numero($this->id_rol,"1,","El rol seleccionado no es valido");
 			Validaciones::numero($this->nivel_profesional,"1,","El nivel profesional no es valido");
-			
+			Validaciones::validar($this->genero_trabajador,"/^(?:F|M)$/","El genero seleccionado no es valido");
 			Validaciones::numero($this->numero_cuenta,"20","El numero de cuenta no es valido");
 			Validaciones::fecha($this->creado,"Fecha de Ingreso");
 
@@ -446,8 +474,12 @@ class Usuarios extends Conexion
 				$this->pass = password_hash($this->pass, PASSWORD_DEFAULT);
 			}
 
-			if(!preg_match("/true|false/", $this->comision_servicios)){throw new Exception("La comision servicios seleccionada no es valida", 1);}
-			else{$this->comision_servicios = (preg_match("/true/", $this->comision_servicios)?true:false);}
+			if(!($this->comision_servicios === true) && !($this->comision_servicios === false)){
+				throw new Exception("La comision servicios seleccionada no es valida", 1);
+			}
+			if(!($this->discapacitado === true) && !($this->discapacitado === false)){
+				throw new Exception("El valor para discapacitado no es valido", 1);
+			}
 
 			$this->validar_conexion($this->con);
 			$this->con->beginTransaction();
@@ -455,8 +487,7 @@ class Usuarios extends Conexion
 			$consulta->execute([$this->id]);
 
 			if(!($usuario = $consulta->fetch(PDO::FETCH_ASSOC))){
-				throw new Exception("El trabajdor seleccionado no ", 1);
-				
+				throw new Exception("El trabajador seleccionado no existe", 1);
 			}
 
 			if($usuario["cedula"] != $this->cedula){
@@ -468,6 +499,21 @@ class Usuarios extends Conexion
 					$cedula = $this->id;
 					throw new Exception("La nueva cedula ($this->cedula) ya existe :: $cedula", 1);
 				}
+			}
+
+
+			$consulta = null;
+			$consulta = $this->con->prepare("SELECT 1 FROM prima_profesionalismo WHERE id_prima_profesionalismo = ?;");
+			$consulta->execute([$this->nivel_profesional]);
+			if(!$consulta->fetch()){
+				throw new Exception("El nivel educativo es invalido", 1);
+			}
+
+			$consulta = null;
+			$consulta = $this->con->prepare("SELECT 1 FROM rol WHERE id_rol = ?;");
+			$consulta->execute([$this->nivel_profesional]);
+			if(!$consulta->fetch()){
+				throw new Exception("El rol seleccionado es invalido", 1);
 			}
 
 			if($this->pass != ''){
@@ -491,6 +537,8 @@ class Usuarios extends Conexion
 			$consulta->bindValue(":discapacidad",$this->discapacidad);
 			$consulta->bindValue(":genero",$this->genero_trabajador);
 
+
+
 			$consulta->execute();
 
 			if($usuario["cedula"] != $this->cedula){
@@ -504,7 +552,9 @@ class Usuarios extends Conexion
 			
 			$r['resultado'] = 'modificar_usuario';
 			$r['titulo'] = 'Éxito';
-			$this->con->commit();
+			//$this->con->commit();
+			$this->con->rollBack(); // WARNING modificar trabajador pruebas
+			$this->close_bd($this->con);
 		
 		} catch (Validaciones $e){
 			if($this->con instanceof PDO){
@@ -515,6 +565,8 @@ class Usuarios extends Conexion
 			$r['resultado'] = 'is-invalid';
 			$r['titulo'] = 'Error';
 			$r['mensaje'] =  $e->getMessage();
+			$r["line"] = $e->getFile()." line:".$e->getLine();
+
 			$r['console'] =  $e->getMessage().": Code : ".$e->getLine();
 		} catch (Exception $e) {
 			if($this->con instanceof PDO){
@@ -524,6 +576,7 @@ class Usuarios extends Conexion
 			}
 		
 			$r['resultado'] = 'error';
+			$r["line"] = $e->getFile()." line:".$e->getLine();
 			$r['titulo'] = 'Error';
 			$r['mensaje'] =  $e->getMessage();
 			//$r['mensaje'] =  $e->getMessage().": LINE : ".$e->getLine();
@@ -541,16 +594,21 @@ class Usuarios extends Conexion
 
 			if($this->id == $_SESSION["usuario_rotario"] ){
 				throw new Exception("No puede eliminar su propio usuario", 1);
-				
 			}
-			
-			$consulta = $this->con->prepare("SELECT cedula FROM trabajadores WHERE id_trabajador = ?");
+
+			Validaciones::numero($this->id,"1,","El id del trabajador no es valido");
+
+			$consulta = $this->con->prepare("SELECT cedula, id_rol FROM trabajadores WHERE id_trabajador = ?");
 			$consulta->execute([$this->id]);
 
 			if(!($consulta = $consulta->fetch())){
 				throw new Exception("El usuario seleccionado no existe", 1);
 			}
 			$cedula = $consulta["cedula"];
+
+			if($consulta["id_rol"] == '1'){
+				throw new Exception("No es posible eliminar al trabajador debido al rol de administrador del trabajador. Por favor modifique el rol del trabajador", 1);
+			}
 
 
 
@@ -566,7 +624,9 @@ class Usuarios extends Conexion
 			
 			$r['resultado'] = 'eliminar_usuario';
 			$r["mensaje"] = '';
-			$this->con->commit();
+			// $this->con->commit();
+			$this->con->rollBack(); // WARNING eliminar trabajador pruebas
+			$this->close_bd($this->con);
 		
 		} catch (Validaciones $e){
 			if($this->con instanceof PDO){
@@ -576,6 +636,7 @@ class Usuarios extends Conexion
 			}
 			$r['resultado'] = 'is-invalid';
 			$r['titulo'] = 'Error';
+			$r["line"] = $e->getFile()." line:".$e->getLine();
 			$r['mensaje'] =  $e->getMessage();
 			$r['console'] =  $e->getMessage().": Code : ".$e->getLine();
 		} catch (Exception $e) {
@@ -587,7 +648,9 @@ class Usuarios extends Conexion
 		
 			$r['resultado'] = 'error';
 			$r['titulo'] = 'Error';
-				;
+
+			$r["line"] = $e->getFile()." line:".$e->getLine();
+
 			$r['mensaje'] =  $e->getMessage();
 			if($e->getCode() == "23000"){
 				if($disable == false){

@@ -62,6 +62,7 @@ class Hijos extends Conexion
 			Validaciones::validarNombre($this->nombre, "1,60");
 			Validaciones::fecha($this->fecha_nacimiento,"fecha de nacimiento");
 			Validaciones::alfanumerico($this->observacion,"0,100","caracteres no permitidos en la observación");
+			Validaciones::validar($this->genero,"/^M|F$/","El genero del hijo es invalido");
 			if(!($this->discapacidad === true or $this->discapacidad === false)){
 				throw new Exception("El valor para discapacidad no es valida", 1);
 			}
@@ -139,7 +140,9 @@ class Hijos extends Conexion
 			
 			$r['resultado'] = 'modificar_hijo';
 			
-			$this->con->commit();
+			//$this->con->commit();
+			$this->con->rollback(); // WARNING PARA PUREBAS modificar hijo
+			$this->close_bd($this->con);
 		
 		} catch (Validaciones $e){
 			if($this->con instanceof PDO){
@@ -150,6 +153,7 @@ class Hijos extends Conexion
 			$r['resultado'] = 'is-invalid';
 			$r['titulo'] = 'Error';
 			$r['mensaje'] =  $e->getMessage();
+			$r["line"] = $e->getFile()." line:".$e->getLine();
 			$r['console'] =  $e->getMessage().": Code : ".$e->getLine();
 		} catch (Exception $e) {
 			if($this->con instanceof PDO){
@@ -160,6 +164,7 @@ class Hijos extends Conexion
 		
 			$r['resultado'] = 'error';
 			$r['titulo'] = 'Error';
+			$r["line"] = $e->getFile()." line:".$e->getLine();
 			$r['mensaje'] =  $e->getMessage();
 			//$r['mensaje'] =  $e->getMessage().": LINE : ".$e->getLine();
 		}
@@ -183,6 +188,8 @@ class Hijos extends Conexion
 			$this->validar_conexion($this->con);
 			$this->con->beginTransaction();
 
+			Validaciones::numero($this->id_hijo,"1,","El id del hijo es invalido");
+
 			$consulta = $this->con->prepare("SELECT 1 FROM hijos WHERE id_hijo = ?;");
 
 			$consulta->execute([$this->id_hijo]);
@@ -200,7 +207,9 @@ class Hijos extends Conexion
 			
 			$r['resultado'] = 'eliminar_hijo';
 			Bitacora::reg($this->con,"Elimino un hijo del registro");
-			$this->con->commit();
+			//$this->con->commit();
+			$this->con->rollback(); // WARNING PARA PUREBAS eliminar_hijos
+			$this->close_bd($this->con);
 		
 		} catch (Validaciones $e){
 			if($this->con instanceof PDO){
@@ -211,6 +220,7 @@ class Hijos extends Conexion
 			$r['resultado'] = 'is-invalid';
 			$r['titulo'] = 'Error';
 			$r['mensaje'] =  $e->getMessage();
+			$r["line"] = $e->getFile()." line:".$e->getLine();
 			$r['console'] =  $e->getMessage().": Code : ".$e->getLine();
 		} catch (Exception $e) {
 			if($this->con instanceof PDO){
@@ -221,6 +231,7 @@ class Hijos extends Conexion
 		
 			$r['resultado'] = 'error';
 			$r['titulo'] = 'Error';
+			$r["line"] = $e->getFile()." line:".$e->getLine();
 			$r['mensaje'] =  $e->getMessage();
 			//$r['mensaje'] =  $e->getMessage().": LINE : ".$e->getLine();
 		}
@@ -235,52 +246,36 @@ class Hijos extends Conexion
 			$this->validar_conexion($this->con);
 			
 			$consulta = $this->con->prepare("SELECT 
-		h.id_hijo as id,
-		h.nombre as nombreHijo,
-		h.fecha_nacimiento,
-		m.cedula as cedulaMadre,
-		p.cedula as cedulaPadre,
-		h.genero,
-		h.discapacidad,
-		h.observacion,
-		NULL as extra,
-		m.nombre as nombreMadre,
-		p.nombre as nombrePadre
-
-		    
-		FROM
-		    `hijos` AS h
-		LEFT JOIN trabajadores AS m
-		ON m.id_trabajador = h.id_trabajador_madre
-		LEFT JOIN trabajadores as p 
-		on p.id_trabajador = h.id_trabajador_padre
-		    
-		WHERE
-		    1 GROUP BY h.id_hijo,p.nombre,m.nombre ORDER BY h.id_hijo DESC;");
+				h.id_hijo as id, h.nombre as nombreHijo, h.fecha_nacimiento, m.cedula as cedulaMadre, p.cedula as cedulaPadre, h.genero,
+				h.discapacidad, h.observacion, NULL as extra, m.nombre as nombreMadre, p.nombre as nombrePadre
+				FROM
+				    `hijos` AS h
+				LEFT JOIN trabajadores AS m
+				ON m.id_trabajador = h.id_trabajador_madre
+				LEFT JOIN trabajadores as p 
+				on p.id_trabajador = h.id_trabajador_padre
+				WHERE 1 GROUP BY h.id_hijo,p.nombre,m.nombre ORDER BY h.id_hijo DESC;");
 
 			$consulta->execute();
 			
 			$r['resultado'] = 'listar_hijos';
 			$r['titulo'] = 'Éxito';
 			$r['mensaje'] =  $consulta->fetchall(PDO::FETCH_ASSOC);;
-			//$this->con->commit();
 		
 		} catch (Validaciones $e){
 			
 			$r['resultado'] = 'is-invalid';
 			$r['titulo'] = 'Error';
 			$r['mensaje'] =  $e->getMessage();
+			$r["line"] = $e->getFile()." line:".$e->getLine();
 			$r['console'] =  $e->getMessage().": Code : ".$e->getLine();
 		} catch (Exception $e) {
 			
 		
 			$r['resultado'] = 'error';
 			$r['titulo'] = 'Error';
+			$r["line"] = $e->getFile()." line:".$e->getLine();
 			$r['mensaje'] =  $e->getMessage();
-			//$r['mensaje'] =  $e->getMessage().": LINE : ".$e->getLine();
-		}
-		finally{
-			//$this->con = null;
 		}
 		return $r;
 	}
@@ -308,7 +303,7 @@ class Hijos extends Conexion
 			}
 			else{
 				$r["resultado"] = "no_existe";
-				$r["mensaje"] = "La cedula del trabajador no existe";
+				$r["mensaje"] = "La cedula ($this->cedula) del trabajador no existe";
 			}
 		
 		} catch (Validaciones $e){
@@ -344,8 +339,9 @@ class Hijos extends Conexion
 			Validaciones::validarNombre($this->nombre, "1,60");
 			Validaciones::fecha($this->fecha_nacimiento,"fecha de nacimiento");
 			Validaciones::alfanumerico($this->observacion,"0,100","caracteres no permitidos en la observación");
+			Validaciones::validar($this->genero,"/^M|F$/","El genero del hijo es invalido");
 			if(!($this->discapacidad === true or $this->discapacidad === false)){
-				throw new Exception("El valor para discapacidad no es valida", 1);
+				throw new Exception("El valor para discapacidad no es valido", 1);
 			}
 
 			if($this->cedula_madre != ''){
@@ -396,7 +392,9 @@ class Hijos extends Conexion
 			
 			$r['resultado'] = 'registrar_hijo';
 			$r['titulo'] = 'Éxito';
-			$this->con->commit();
+			//$this->con->commit();
+			$this->con->rollback(); // WARNING PARA PRUEBAS registrar_hijo
+			$this->close_bd($this->con);
 		
 		} catch (Validaciones $e){
 			if($this->con instanceof PDO){
@@ -407,6 +405,7 @@ class Hijos extends Conexion
 			$r['resultado'] = 'is-invalid';
 			$r['titulo'] = 'Error';
 			$r['mensaje'] =  $e->getMessage();
+			$r["line"] = $e->getFile()."::".$e->getLine();
 			$r['console'] =  $e->getMessage().": Code : ".$e->getLine();
 		} catch (Exception $e) {
 			if($this->con instanceof PDO){
@@ -418,6 +417,7 @@ class Hijos extends Conexion
 			$r['resultado'] = 'error';
 			$r['titulo'] = 'Error';
 			$r['mensaje'] =  $e->getMessage();
+			$r["line"] = $e->getFile()."::".$e->getLine();
 			//$r['mensaje'] =  $e->getMessage().": LINE : ".$e->getLine();
 		}
 		finally{
@@ -429,19 +429,13 @@ class Hijos extends Conexion
 	PRIVATE function get_hijo(){
 		try {
 			$this->validar_conexion($this->con);
+
+
+			Validaciones::validar($this->id_hijo,"/^[0-9]+$/","El id del hijo no es valido");
 			
 			$consulta = $this->con->prepare("SELECT 
-		h.id_hijo,
-		h.nombre,
-		h.fecha_nacimiento,
-		m.cedula as cedulaMadre,
-		p.cedula as cedulaPadre,
-		h.genero,
-		h.discapacidad,
-		h.observacion,
-		m.nombre as nombreMadre,
-		p.nombre as nombrePadre
-
+		h.id_hijo, h.nombre, h.fecha_nacimiento, m.cedula as cedulaMadre, p.cedula as cedulaPadre, h.genero,
+		h.discapacidad, h.observacion, m.nombre as nombreMadre, p.nombre as nombrePadre
 		    
 		FROM
 		    `hijos` AS h
@@ -458,7 +452,10 @@ class Hijos extends Conexion
 			
 			$r['resultado'] = 'get_hijo';
 			$r['mensaje'] =  $consulta->fetch(PDO::FETCH_ASSOC);
-			//$this->con->commit();
+
+			if(!$r["mensaje"]){
+				throw new Exception("El hijo seleccionado no existe o fue eliminado", 1);
+			}
 		
 		} catch (Validaciones $e){
 			

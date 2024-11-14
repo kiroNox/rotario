@@ -350,7 +350,7 @@ class Liquidaciones extends Conexion
 
 			$consulta = $this->con->prepare("SELECT id_rol FROM trabajadores WHERE id_trabajador = ?;");
 
-			$consulta->execute([$this->id_trabajador]);
+			//$consulta->execute([$this->id_trabajador]);
 
 			if($resp["id_rol"] == '1'){
 				throw new Exception("No es posible realizar el proceso de liquidación del trabajador debido al rol de administrador del trabajador. Por favor modifique el rol del trabajador", 1);
