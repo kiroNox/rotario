@@ -421,7 +421,7 @@ class Usuarios extends Conexion
 			Bitacora::registro($this->con, 2, "Registro al usuarios ($this->cedula)");
 			
 			//$this->con->commit();
-			$this->con->rollback(); // WARNING registrar trabajador
+			$this->con->rollback(); // WARNING Usuarios registrar trabajador
 			$this->close_bd($this->con);
 		
 		} catch (Validaciones $e){
@@ -553,7 +553,7 @@ class Usuarios extends Conexion
 			$r['resultado'] = 'modificar_usuario';
 			$r['titulo'] = 'Éxito';
 			//$this->con->commit();
-			$this->con->rollBack(); // WARNING modificar trabajador pruebas
+			$this->con->rollBack(); // WARNING Usuarios modificar trabajador pruebas
 			$this->close_bd($this->con);
 		
 		} catch (Validaciones $e){
@@ -625,7 +625,7 @@ class Usuarios extends Conexion
 			$r['resultado'] = 'eliminar_usuario';
 			$r["mensaje"] = '';
 			// $this->con->commit();
-			$this->con->rollBack(); // WARNING eliminar trabajador pruebas
+			$this->con->rollBack(); // WARNING Usuarios eliminar trabajador pruebas
 			$this->close_bd($this->con);
 		
 		} catch (Validaciones $e){

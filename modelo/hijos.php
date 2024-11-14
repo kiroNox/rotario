@@ -141,7 +141,7 @@ class Hijos extends Conexion
 			$r['resultado'] = 'modificar_hijo';
 			
 			//$this->con->commit();
-			$this->con->rollback(); // WARNING PARA PUREBAS modificar hijo
+			$this->con->rollback(); // WARNING Hijos modificar hijo
 			$this->close_bd($this->con);
 		
 		} catch (Validaciones $e){
@@ -208,7 +208,7 @@ class Hijos extends Conexion
 			$r['resultado'] = 'eliminar_hijo';
 			Bitacora::reg($this->con,"Elimino un hijo del registro");
 			//$this->con->commit();
-			$this->con->rollback(); // WARNING PARA PUREBAS eliminar_hijos
+			$this->con->rollback(); // WARNING Hijos eliminar_hijos
 			$this->close_bd($this->con);
 		
 		} catch (Validaciones $e){
@@ -393,7 +393,7 @@ class Hijos extends Conexion
 			$r['resultado'] = 'registrar_hijo';
 			$r['titulo'] = 'Éxito';
 			//$this->con->commit();
-			$this->con->rollback(); // WARNING PARA PRUEBAS registrar_hijo
+			$this->con->rollback(); // WARNING Hijos registrar_hijo
 			$this->close_bd($this->con);
 		
 		} catch (Validaciones $e){
