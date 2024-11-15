@@ -22,6 +22,7 @@
 				echo json_encode($cl->reset_pass_request_s($_POST["correo"]));
 			}
 			else if($accion == "change_pass"){
+				// TODO agregar validacion por token internamente
 				echo json_encode($cl->change_pass($_POST["new_pass"],$_POST["id"]));
 			}
 			exit;

@@ -4,7 +4,7 @@
  */
 class Hijos extends Conexion
 {
-	PRIVATE $con, $id_hijo, $cedula_madre, $cedula_padre, $nombre, $fecha_nacimiento, $genero, $discapacidad, $observacion, $cedula;
+	PRIVATE $con, $id_hijo, $cedula_madre, $cedula_padre, $nombre, $fecha_nacimiento, $genero, $discapacidad, $observacion, $cedula, $Testing;
 	
 	function __construct($con = '')
 	{
@@ -140,8 +140,12 @@ class Hijos extends Conexion
 			
 			$r['resultado'] = 'modificar_hijo';
 			
-			//$this->con->commit();
-			$this->con->rollback(); // WARNING Hijos modificar hijo
+			if($this->Testing===true){
+				$this->con->rollBack(); 
+			}
+			else{
+				$this->con->commit();
+			}
 			$this->close_bd($this->con);
 		
 		} catch (Validaciones $e){
@@ -207,8 +211,12 @@ class Hijos extends Conexion
 			
 			$r['resultado'] = 'eliminar_hijo';
 			Bitacora::reg($this->con,"Elimino un hijo del registro");
-			//$this->con->commit();
-			$this->con->rollback(); // WARNING Hijos eliminar_hijos
+			if($this->Testing===true){
+				$this->con->rollBack(); 
+			}
+			else{
+				$this->con->commit();
+			}
 			$this->close_bd($this->con);
 		
 		} catch (Validaciones $e){
@@ -392,8 +400,12 @@ class Hijos extends Conexion
 			
 			$r['resultado'] = 'registrar_hijo';
 			$r['titulo'] = 'Éxito';
-			//$this->con->commit();
-			$this->con->rollback(); // WARNING Hijos registrar_hijo
+			if($this->Testing===true){
+				$this->con->rollBack(); 
+			}
+			else{
+				$this->con->commit();
+			}
 			$this->close_bd($this->con);
 		
 		} catch (Validaciones $e){
@@ -545,6 +557,12 @@ class Hijos extends Conexion
 	}
 	PUBLIC function set_cedula_padre($value){
 		$this->cedula_padre = $value;
+	}
+	PUBLIC function get_Testing(){
+		return $this->Testing;
+	}
+	PUBLIC function set_Testing($value){
+		$this->Testing = $value;
 	}
 }
  ?>

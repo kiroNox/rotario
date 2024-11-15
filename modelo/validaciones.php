@@ -33,7 +33,7 @@ class Validaciones extends Exception
 		}
 	}
 	PUBLIC static function alfanumerico ($string,$n="1,50",$mensaje="caracteres no permitidos", $allow_empty = false){
-		$pattern=$n?"/^[0-9.,\/#!$%\^&\*;:{}=\-_`~()”“\"…a-zA-Z\\säÄëËïÏöÖüÜáéíóúáéíóúÁÉÍÓÚÂÊÎÔÛâêîôûàèìòùÀÈÌÒÙñÑ]{".$n."}$/u":"/^[0-9.,\/#!$%\^&\*;:{}=\-_`~()”“\"…a-zA-Z\\säÄëËïÏöÖüÜáéíóúáéíóúÁÉÍÓÚÂÊÎÔÛâêîôûàèìòùÀÈÌÒÙñÑ]+$/u";
+		$pattern=$n?"/^[0-9\@.,\/#!$%\^&\*;:{}=\-_`~()”“\"…a-zA-Z\\säÄëËïÏöÖüÜáéíóúáéíóúÁÉÍÓÚÂÊÎÔÛâêîôûàèìòùÀÈÌÒÙñÑ]{".$n."}$/u":"/^[0-9\@.,\/#!$%\^&\*;:{}=\-_`~()”“\"…a-zA-Z\\säÄëËïÏöÖüÜáéíóúáéíóúÁÉÍÓÚÂÊÎÔÛâêîôûàèìòùÀÈÌÒÙñÑ]+$/u";
 		if($allow_empty == true and $string == ''){
 			return true;
 		}
@@ -122,8 +122,9 @@ class Validaciones extends Exception
 			
 		}
 	}
-	PUBLIC static function numero($string,$n = "1,50",$mensaje = "El numero es invalido"){
-		if(!can_be_string($string) or (can_be_string($string) and !preg_match("/^[\-]?[0-9]{".$n."}$/", $string))){
+	PUBLIC static function numero($string,$n = "1,50",$mensaje = "El numero es invalido", $acept_minus = true){
+		$pattern = ($acept_minus)?"/^[\-]?[0-9]{".$n."}$/":"/^[0-9]{".$n."}$/";
+		if(!can_be_string($string) or (can_be_string($string) and !preg_match($pattern, $string))){
 			throw new Validaciones($mensaje, 1);
 		}
 	}

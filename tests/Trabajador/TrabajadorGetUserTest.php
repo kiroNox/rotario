@@ -7,6 +7,7 @@ class TrabajadorGetUserTest extends TestCase
 
     protected function setUp(): void {
         $this->trabajador= new Usuarios;
+        $this->trabajador->set_Testing(true);
     }
     /**
      * @dataProvider miFuncionProveedora

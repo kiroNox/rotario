@@ -43,7 +43,7 @@ use Dompdf\Dompdf;
 			$html .= '  </tbody>
 					  </table>';
 			
-					  $dompdf = new Dompdf\Dompdf();
+					  $dompdf = new Dompdf();
                 
 					  // Definimos el tamaño y orientación del papel que queremos.
 					  $dompdf->set_paper("A4", "portrait");

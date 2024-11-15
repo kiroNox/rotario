@@ -5,7 +5,7 @@
  */
 class administrar_empleados extends Conexion
 {
-	PRIVATE $id, $desde, $hasta, $dias_totales, $descripcion, $tipo_reposo, $tipo_de_permiso, $cedula, $nombre, $apellido, $telefono, $correo, $numero_cuenta, $fecha_nacimiento, $sexo, $salario, $id_tabla, $con, $intruccion;
+	PRIVATE $id, $desde, $hasta, $dias_totales, $descripcion, $tipo_reposo, $tipo_de_permiso, $cedula, $nombre, $apellido, $telefono, $correo, $numero_cuenta, $fecha_nacimiento, $sexo, $salario, $id_tabla, $con, $intruccion,$Testing;
 
 
 	function __construct($con = '')
@@ -103,7 +103,13 @@ class administrar_empleados extends Conexion
 			
 			$r['resultado'] = 'valid_cedula';
 			
-			$this->con->commit();
+			if($this->Testing===true){
+				$this->con->rollBack();
+			}
+			else{
+				$this->con->commit();
+			}
+			$this->close_bd($this->con);
 		
 		} catch (Validaciones $e){
 			if($this->con instanceof PDO){
@@ -146,7 +152,13 @@ class administrar_empleados extends Conexion
 			$r['resultado'] = 'listar';
 			$r['titulo'] = 'Éxito';
 			$r['mensaje'] = $consulta;
-			$this->con->commit();
+			if($this->Testing===true){
+				$this->con->rollBack();
+			}
+			else{
+				$this->con->commit();
+			}
+			$this->close_bd($this->con);
 		
 		} catch (Validaciones $e){
 			if($this->con instanceof PDO){
@@ -178,9 +190,9 @@ class administrar_empleados extends Conexion
 
 	private function registrar_vacacion() {
 		try {
-			Validaciones::numero($this->id, "1,", "El id del trabajador no es válido");
-			Validaciones::alfanumerico($this->descripcion, "1,200", "La descripción no es válida");
-			Validaciones::numero($this->dias_totales, "1,", "El número de días no es válido");
+			Validaciones::numero($this->id, "1,", "El id del trabajador no es válido",false);
+			Validaciones::alfanumerico($this->descripcion, "1,45", "La descripción no es válida");
+			Validaciones::numero($this->dias_totales, "1,", "El número de días no es válido",false);
 			Validaciones::fecha($this->desde, "Fecha de inicio no válida");
 			Validaciones::fecha($this->hasta, "Fecha de fin no válida");
 
@@ -206,9 +218,14 @@ class administrar_empleados extends Conexion
 			$consulta->bindValue(":desde", $this->desde);
 			$consulta->bindValue(":hasta", $this->hasta);
 			$consulta->execute();
+
+			if($this->Testing===true){
+				$this->con->rollBack();
+			}
+			else{
+				$this->con->commit();
+			}
 			
-			$this->con->rollBack(); // WARNING Ausencias registrar vacacion
-			//$this->con->commit();
 			$r['resultado'] = 'registrar';
 			$r['titulo'] = 'Éxito';
 			$r['mensaje'] = "Vacaciones registradas con éxito";
@@ -234,11 +251,11 @@ class administrar_empleados extends Conexion
 	private function modificar_vacacion() {
 		try {
 			// Validaciones de los datos a modificar
-			Validaciones::alfanumerico($this->descripcion, "1,200", "La descripción no es válida");
-			Validaciones::numero($this->dias_totales, "1,", "El número de días no es válido");
+			Validaciones::alfanumerico($this->descripcion, "1,45", "La descripción no es válida");
+			Validaciones::numero($this->dias_totales, "1,", "El número de días no es válido",false);
 			Validaciones::fecha($this->desde, "Fecha de inicio no válida");
 			Validaciones::fecha($this->hasta, "Fecha de fin no válida");
-			Validaciones::numero($this->id_tabla,"1,","El id de la vacacion no es valido");
+			Validaciones::numero($this->id_tabla,"1,","El id de la vacacion no es valido",false);
 
 
 			$tempdesde = date("Y-m-d", strtotime($this->desde));
@@ -270,8 +287,12 @@ class administrar_empleados extends Conexion
 			$consulta->bindValue(":id_vacaciones", $this->id_tabla);
 			$consulta->execute();
 			
-			$this->con->rollBack(); // WARNING Ausencias modificar vacacion
-			//$this->con->commit();
+			if($this->Testing===true){
+				$this->con->rollBack();
+			}
+			else{
+				$this->con->commit();
+			}
 			$this->close_bd($this->con);
 			$r['resultado'] = 'modificar';
 			$r['titulo'] = 'Éxito';
@@ -297,24 +318,52 @@ class administrar_empleados extends Conexion
 	private function registrar_repo() {
 		try {
 			// Validaciones de los datos del reposo
-			Validaciones::numero($this->id, "1,", "El id del trabajador no es válido");
-			Validaciones::alfanumerico($this->tipo_reposo, "1,100", "El tipo de reposo no es válido");
-			Validaciones::alfanumerico($this->descripcion, "1,200", "La descripción no es válida");
+			Validaciones::numero($this->id, "1,", "El id del trabajador no es válido",false);
+			Validaciones::numero($this->dias_totales, "1,", "El valor para días totales es invalido",false);
+			Validaciones::alfanumerico($this->tipo_reposo, "1,45", "El tipo de reposo no es válido");
+			Validaciones::alfanumerico($this->descripcion, "1,45", "La descripción no es válida");
 			Validaciones::fecha($this->desde, "Fecha de inicio no válida");
 			Validaciones::fecha($this->hasta, "Fecha de fin no válida");
+
+			$tempdesde = date("Y-m-d", strtotime($this->desde));
+			$temphasta = date("Y-m-d", strtotime($this->hasta));
+			// valida que $tempdesde sea menor que $temphasta
+			if (($tempdesde > $temphasta)) {
+				throw new Exception("La fecha de inicio debe ser menor que la fecha de fin");
+			}
+			if(($tempdesde == $temphasta)){
+				throw new Exception("La fecha de inicio debe ser diferente a la fecha de fin");
+			}
+
+
+
 			
 			$this->validar_conexion($this->con);
 			$this->con->beginTransaction();
+
+			$consulta = $this->con->prepare("SELECT 1 FROM `trabajadores` WHERE id_trabajador = ?");
+			$consulta->execute([$this->id]);
+
+			if(!$consulta->fetch()){
+				throw new Exception("El trabajador seleccionado no existe o fue eliminado", 1);
+			}
+
 			
-			$consulta = $this->con->prepare("INSERT INTO `reposo` (`id_trabajador`, `tipo_reposo`, `descripcion`, `desde`, `hasta`) VALUES (:id_trabajador, :tipo_reposo, :descripcion, :desde, :hasta)");
+			$consulta = $this->con->prepare("INSERT INTO `reposo` (`id_trabajador`, `tipo_reposo`, `descripcion`, `desde`, `hasta`, `dias_totales`) VALUES (:id_trabajador, :tipo_reposo, :descripcion, :desde, :hasta, :dias_totales)");
 			$consulta->bindValue(":id_trabajador", $this->id);
 			$consulta->bindValue(":tipo_reposo", $this->tipo_reposo);
 			$consulta->bindValue(":descripcion", $this->descripcion);
 			$consulta->bindValue(":desde", $this->desde);
 			$consulta->bindValue(":hasta", $this->hasta);
+			$consulta->bindValue(":dias_totales", $this->dias_totales);
 			$consulta->execute();
 			
-			$this->con->commit();
+			if($this->Testing===true){
+				$this->con->rollBack();
+			}
+			else{
+				$this->con->commit();
+			}
 			$r['resultado'] = 'registrar';
 			$r['titulo'] = 'Éxito';
 			$r['mensaje'] = "Reposo registrado con éxito";
@@ -336,19 +385,39 @@ class administrar_empleados extends Conexion
 		return $r;
 	}
 	
-	// Agrega validaciones similares para `modificar_repo`, `registrar_perm` y `modificar_perm` usando los métodos de la clase `Validaciones` según los requisitos de cada campo.
 	
 	private function modificar_repo() {
 		try {
 			// Validaciones de los datos a modificar en reposo
-			Validaciones::alfanumerico($this->tipo_reposo, "1,100", "El tipo de reposo no es válido");
-			Validaciones::alfanumerico($this->descripcion, "1,200", "La descripción no es válida");
-			Validaciones::numero($this->dias_totales, "1,2", "El número de días no es válido");
+			Validaciones::alfanumerico($this->tipo_reposo, "1,45", "El tipo de reposo no es válido");
+			Validaciones::alfanumerico($this->descripcion, "1,45", "La descripción no es válida");
+			Validaciones::numero($this->dias_totales, "1,", "El número de días no es válido",false);
+			Validaciones::numero($this->id_tabla, "1,", "El id del reposo no es valido",false);
 			Validaciones::fecha($this->desde, "Fecha de inicio no válida");
 			Validaciones::fecha($this->hasta, "Fecha de fin no válida");
 			
 			$this->validar_conexion($this->con);
 			$this->con->beginTransaction();
+
+			$tempdesde = date("Y-m-d", strtotime($this->desde));
+			$temphasta = date("Y-m-d", strtotime($this->hasta));
+			// valida que $tempdesde sea menor que $temphasta
+			if (($tempdesde > $temphasta)) {
+				throw new Exception("La fecha de inicio debe ser menor que la fecha de fin");
+			}
+			if(($tempdesde == $temphasta)){
+				throw new Exception("La fecha de inicio debe ser diferente a la fecha de fin");
+			}
+
+			$consulta = $this->con->prepare("SELECT 1 FROM `reposo` WHERE id_reposo = ?");
+			$consulta->execute([$this->id_tabla]);
+			if(!$consulta->fetch()){
+				throw new Exception("El reposo seleccionado no existe");
+			}
+			
+
+
+
 			
 			$consulta = $this->con->prepare("UPDATE `reposo` SET `tipo_reposo`=:tipo_reposo, `descripcion`=:descripcion, `dias_totales`=:dias_totales, `desde`=:desde, `hasta`=:hasta WHERE id_reposo = :id_reposo;");
 			$consulta->bindValue(":tipo_reposo", $this->tipo_reposo);
@@ -359,7 +428,12 @@ class administrar_empleados extends Conexion
 			$consulta->bindValue(":id_reposo", $this->id_tabla);
 			$consulta->execute();
 			
-			$this->con->commit();
+			if($this->Testing===true){
+				$this->con->rollBack(); 
+			}
+			else{
+				$this->con->commit();
+			}
 			$r['resultado'] = 'modificar';
 			$r['titulo'] = 'Éxito';
 			$r['mensaje'] = "Reposo modificado con éxito";
@@ -384,13 +458,22 @@ class administrar_empleados extends Conexion
 	private function registrar_perm() {
 		try {
 			// Validaciones de los datos del permiso
-			Validaciones::numero($this->id, "1,", "El id del trabajador no es válido");
-			Validaciones::alfanumerico($this->tipo_de_permiso, "1,100", "El tipo de permiso no es válido");
-			Validaciones::alfanumerico($this->descripcion, "1,200", "La descripción no es válida");
+			Validaciones::numero($this->id, "1,", "El id del trabajador no es válido",false);
+			Validaciones::alfanumerico($this->tipo_de_permiso, "1,45", "El tipo de permiso no es válido");
+			Validaciones::alfanumerico($this->descripcion, "1,45", "La descripción no es válida");
 			Validaciones::fecha($this->desde, "Fecha de inicio no válida");
 			
 			$this->validar_conexion($this->con);
 			$this->con->beginTransaction();
+
+			$consulta = $this->con->prepare("SELECT 1 FROM `permisos_trabajador` WHERE `id_trabajador` = :id_trabajador and `desde` = :desde ;");
+			$consulta->bindValue(":id_trabajador",$this->id);
+			$consulta->bindValue(":desde",$this->desde);
+			$consulta->execute();
+
+			if($consulta->fetch()){
+				throw new Exception("El trabajador ya posee un permiso asignado ese día", 1);
+			}
 			
 			$consulta = $this->con->prepare("INSERT INTO `permisos_trabajador` (`id_trabajador`, `tipo_de_permiso`, `descripcion`, `desde`) VALUES (:id_trabajador, :tipo_de_permiso, :descripcion, :desde)");
 			$consulta->bindValue(":id_trabajador", $this->id);
@@ -399,7 +482,13 @@ class administrar_empleados extends Conexion
 			$consulta->bindValue(":desde", $this->desde);
 			$consulta->execute();
 			
-			$this->con->commit();
+			if($this->Testing===true){
+				$this->con->rollBack(); 
+			}
+			else{
+				$this->con->commit();
+			}			
+			$this->close_bd($this->con);
 			$r['resultado'] = 'registrar';
 			$r['titulo'] = 'Éxito';
 			$r['mensaje'] = "Permiso registrado con éxito";
@@ -424,13 +513,33 @@ class administrar_empleados extends Conexion
 	private function modificar_perm() {
 		try {
 			// Validaciones de los datos a modificar en permiso
-			Validaciones::alfanumerico($this->tipo_de_permiso, "1,100", "El tipo de permiso no es válido");
-			Validaciones::alfanumerico($this->descripcion, "1,200", "La descripción no es válida");
+			Validaciones::alfanumerico($this->tipo_de_permiso, "1,45", "El tipo de permiso no es válido");
+			Validaciones::alfanumerico($this->descripcion, "1,45", "La descripción no es válida");
 			Validaciones::fecha($this->desde, "Fecha de inicio no válida");
+			Validaciones::numero($this->id_tabla, "1,", "El id del permiso no es válido",false);
 	
 			$this->validar_conexion($this->con);
 			$this->con->beginTransaction();
-			
+
+			$consulta = $this->con->prepare("SELECT desde,id_trabajador FROM `permisos_trabajador` WHERE `id_permisos` = ?");
+			$consulta->execute([$this->id_tabla]);
+
+
+			if(!($permiso = $consulta->fetch())){
+				throw new Exception("El permiso seleccionado no existe", 1);
+			}
+
+			$consulta = $this->con->prepare("SELECT * FROM permisos_trabajador WHERE id_trabajador = :id_trabajador and desde = :desdeNuevo and id_permisos <> :id_permisos");
+			$consulta->bindValue(":id_trabajador",$permiso["id_trabajador"]);
+			$consulta->bindValue(":desdeNuevo",$this->desde);
+			$consulta->bindValue(":id_permisos",$this->id_tabla);
+			$consulta->execute();
+
+			if($consulta->fetch()){
+				throw new Exception("El trabajador ya tiene un permiso asignado ese día", 1);
+			}
+
+
 			$consulta = $this->con->prepare("UPDATE `permisos_trabajador` SET `tipo_de_permiso`=:tipo_permiso, `descripcion`=:descripcion, `desde`=:desde WHERE id_permisos = :id_permisos;");
 			$consulta->bindValue(":tipo_permiso", $this->tipo_de_permiso);
 			$consulta->bindValue(":descripcion", $this->descripcion);
@@ -438,7 +547,12 @@ class administrar_empleados extends Conexion
 			$consulta->bindValue(":id_permisos", $this->id_tabla);
 			$consulta->execute();
 			
-			$this->con->commit();
+			if($this->Testing===true){
+				$this->con->rollBack(); 
+			}
+			else{
+				$this->con->commit();
+			}
 			$r['resultado'] = 'modificar';
 			$r['titulo'] = 'Éxito';
 			$r['mensaje'] = "Permiso modificado con éxito";
@@ -469,7 +583,12 @@ class administrar_empleados extends Conexion
 			$r['resultado'] = 'listar';
 			$r['titulo'] = 'Éxito';
 			$r['mensaje'] = $consulta;
-			$this->con->commit();
+			if($this->Testing===true){
+				$this->con->rollBack(); 
+			}
+			else{
+				$this->con->commit();
+			}
 		} catch (Exception $e) {
 			if ($this->con instanceof PDO && $this->con->inTransaction()) {
 				$this->con->rollBack();
@@ -489,7 +608,13 @@ class administrar_empleados extends Conexion
 			$r['resultado'] = 'listar';
 			$r['titulo'] = 'Éxito';
 			$r['mensaje'] = $consulta;
-			$this->con->commit();
+			if($this->Testing===true){
+				$this->con->rollBack(); 
+			}
+			else{
+				$this->con->commit();
+			}
+			$this->close_bd($this->con);
 		} catch (Exception $e) {
 			if ($this->con instanceof PDO && $this->con->inTransaction()) {
 				$this->con->rollBack();
@@ -509,7 +634,13 @@ class administrar_empleados extends Conexion
 			$r['resultado'] = 'listar';
 			$r['titulo'] = 'Éxito';
 			$r['mensaje'] = $consulta;
-			$this->con->commit();
+			if($this->Testing===true){
+				$this->con->rollBack(); 
+			}
+			else{
+				$this->con->commit();
+			}
+			$this->close_bd($this->con);
 		} catch (Exception $e) {
 			if ($this->con instanceof PDO && $this->con->inTransaction()) {
 				$this->con->rollBack();
@@ -529,7 +660,13 @@ class administrar_empleados extends Conexion
 			$r['resultado'] = 'dias_habiles';
 			$r['titulo'] = 'Éxito';
 			$r['mensaje'] = $consulta;
-			$this->con->commit();
+			if($this->Testing===true){
+				$this->con->rollBack(); 
+			}
+			else{
+				$this->con->commit();
+			}
+			$this->close_bd($this->con);
 		} catch (Exception $e) {
 			if ($this->con instanceof PDO && $this->con->inTransaction()) {
 				$this->con->rollBack();
@@ -545,9 +682,22 @@ class administrar_empleados extends Conexion
 		try {
 			$this->validar_conexion($this->con);
 			$this->con->beginTransaction();
-			$consulta = $this->con->prepare("
-			SELECT t.cedula, t.nombre, t.apellido, v.descripcion, v.desde, v.hasta, v.id_vacaciones, v.dias_totales, v.id_trabajador FROM vacaciones AS v JOIN trabajadores AS t ON v.id_trabajador = t.id_trabajador WHERE v.id_trabajador = :id_trabajador order by v.id_vacaciones desc limit 1;
-        ");
+
+			Validaciones::numero($id_trabajador,"1,","El id del trabajador no es valido",false);
+
+			$consulta = $this->con->prepare("SELECT * FROM trabajadores WHERE id_trabajador = :id_trabajador");
+			$consulta->bindParam(':id_trabajador', $id_trabajador, PDO::PARAM_INT);
+			$consulta->execute();
+			if(!$consulta->fetch()){
+				throw new Exception("El trabajador seleccionado no existe",1);
+			}
+
+			
+
+
+
+
+			$consulta = $this->con->prepare(" SELECT t.cedula, t.nombre, t.apellido, v.descripcion, v.desde, v.hasta, v.id_vacaciones, v.dias_totales, v.id_trabajador FROM vacaciones AS v JOIN trabajadores AS t ON v.id_trabajador = t.id_trabajador WHERE v.id_trabajador = :id_trabajador order by v.id_vacaciones desc limit 1;");
 			$consulta->bindParam(':id_trabajador', $id_trabajador, PDO::PARAM_INT);
 			$consulta->execute();
 			$resultado = $consulta->fetch(PDO::FETCH_ASSOC);
@@ -559,7 +709,13 @@ class administrar_empleados extends Conexion
 				$r['resultado'] = 'error';
 				$r['mensaje'] = 'No se encontraron vacaciones activas para este trabajador.';
 			}
-			$this->con->commit();
+			if($this->Testing===true){
+				$this->con->rollBack(); 
+			}
+			else{
+				$this->con->commit();
+			}
+			$this->close_bd($this->con);
 		} catch (Validaciones $e){
 			if($this->con instanceof PDO){
 				if($this->con->inTransaction()){
@@ -586,6 +742,20 @@ class administrar_empleados extends Conexion
 		try {
 			$this->validar_conexion($this->con);
 			$this->con->beginTransaction();
+
+
+
+			Validaciones::numero($id_trabajador,"1,","El id del trabajador no es valido",false);
+
+			$consulta = $this->con->prepare("SELECT * FROM trabajadores WHERE id_trabajador = :id_trabajador");
+			$consulta->bindParam(':id_trabajador', $id_trabajador, PDO::PARAM_INT);
+			$consulta->execute();
+			if(!$consulta->fetch()){
+				throw new Exception("El trabajador seleccionado no existe",1);
+			}
+
+
+
 			$consulta = $this->con->prepare("
 				SELECT t.cedula, t.nombre, t.apellido, r.tipo_reposo, r.descripcion, r.desde, r.hasta, r.id_reposo, r.dias_totales, r.id_trabajador
 				FROM reposo AS r
@@ -605,7 +775,13 @@ class administrar_empleados extends Conexion
 				$r['resultado'] = 'error';
 				$r['mensaje'] = 'No se encontraron reposos activos para este trabajador.';
 			}
-			$this->con->commit();
+			if($this->Testing===true){
+				$this->con->rollBack(); 
+			}
+			else{
+				$this->con->commit();
+			}
+			$this->close_bd($this->con);
 		} catch (Validaciones $e) {
 			if ($this->con instanceof PDO) {
 				if ($this->con->inTransaction()) {
@@ -633,6 +809,18 @@ class administrar_empleados extends Conexion
 		try {
 			$this->validar_conexion($this->con);
 			$this->con->beginTransaction();
+
+			Validaciones::numero($id_trabajador,"1,","El id del trabajador no es valido",false);
+
+			$consulta = $this->con->prepare("SELECT * FROM trabajadores WHERE id_trabajador = :id_trabajador");
+			$consulta->bindParam(':id_trabajador', $id_trabajador, PDO::PARAM_INT);
+			$consulta->execute();
+			if(!$consulta->fetch()){
+				throw new Exception("El trabajador seleccionado no existe",1);
+			}
+
+
+
 			$consulta = $this->con->prepare("
 				SELECT t.cedula, t.nombre, t.apellido, p.tipo_de_permiso, p.descripcion, p.desde, p.id_permisos, p.id_trabajador
 				FROM permisos_trabajador AS p
@@ -652,7 +840,13 @@ class administrar_empleados extends Conexion
 				$r['resultado'] = 'error';
 				$r['mensaje'] = 'No se encontraron permisos activos para este trabajador.';
 			}
-			$this->con->commit();
+			if($this->Testing===true){
+				$this->con->rollBack(); 
+			}
+			else{
+				$this->con->commit();
+			}
+			$this->close_bd($this->con);
 		} catch (Validaciones $e) {
 			if ($this->con instanceof PDO) {
 				if ($this->con->inTransaction()) {
@@ -679,7 +873,9 @@ class administrar_empleados extends Conexion
 		try {
 			$this->validar_conexion($this->con);
 			$this->con->beginTransaction();
-	
+
+			Validaciones::numero($year,"4","El año seleccionado debe ser un numero de 4 dígitos",false);
+
 			$consulta = $this->con->prepare("
 				SELECT 
 					MONTH(v.desde) as mes,
@@ -695,7 +891,13 @@ class administrar_empleados extends Conexion
 			$consulta->execute();
 			$resultado = $consulta->fetchAll(PDO::FETCH_ASSOC);
 	
-			$this->con->commit();
+			if($this->Testing===true){
+				$this->con->rollBack(); 
+			}
+			else{
+				$this->con->commit();
+			}
+			$this->close_bd($this->con);
 			return $resultado;
 	
 		} catch (Exception $e) {
@@ -872,6 +1074,13 @@ class administrar_empleados extends Conexion
 	}
 	PUBLIC function set_id_tabla($value){
 		$this->id_tabla = $value;
+	}
+
+	PUBLIC function get_Testing(){
+		return $this->Testing;
+	}
+	PUBLIC function set_Testing($value){
+		$this->Testing = $value;
 	}
 	
 }

@@ -7,6 +7,7 @@ class TrabajadorRegistrarTrabajadorTest extends TestCase
     protected function setUp(): void
     {
         $this->usuarios = new Usuarios();
+        $this->usuarios->set_Testing(true);
         $_SESSION['usuario_rotario'] = 2;
 
     }
@@ -50,24 +51,7 @@ class TrabajadorRegistrarTrabajadorTest extends TestCase
     {
         return [
             // Test case 1: Valid data
-            [
-                'V-12345678',
-                'John',
-                'Doe',
-                '0414-5555555',
-                'john.doe@example.com',
-                1,
-                'passworD1',
-                '12345678901234567890',
-                1,
-                '2022-01-01',
-                true,
-                false,
-                '',
-                'M',
-                'registrar',
-                1
-            ],
+            ['V-12345678', 'John', 'Doe', '0414-5555555', 'john.doe@example.com', 1, 'passworD1', '12345678901234567890', 1, '2022-01-01', true, false, '', 'M', 'registrar', 1 ],
             // Test case 2: Invalid cedula
             [
                 '12345678',

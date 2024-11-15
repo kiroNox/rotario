@@ -8,6 +8,7 @@ class HijosListarHijosTest extends TestCase
     protected function setUp(): void {
     
         $this->hijos= new Hijos;
+        $this->hijos->set_Testing(true);
     }
    
     public function testListarHijos(){

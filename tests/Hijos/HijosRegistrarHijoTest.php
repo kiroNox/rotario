@@ -9,6 +9,7 @@ class HijosRegistrarTest extends TestCase
 
     protected function setUp(): void {
         $this->hijos = new Hijos;
+        $this->hijos->set_Testing(true);
         $_SESSION['usuario_rotario'] = 2;
     }
 
@@ -73,7 +74,7 @@ class HijosRegistrarTest extends TestCase
         
         // Invalid observations
         ["V-27250544", "V-12434091", "Juan Perez", "2020-01-01", "M", true, str_repeat("a", 101), "is-invalid",17],
-        ["V-27250544", "V-12434091", "Juan Perez", "2020-01-01", "M", true, "@@##$$", "is-invalid",18]
+        ["V-27250544", "V-12434091", "Juan Perez", "2020-01-01", "M", true, "@@##$$<script>", "is-invalid",18]
     ];
 }
 }

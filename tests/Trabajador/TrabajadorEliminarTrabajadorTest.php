@@ -4,10 +4,11 @@ use PHPUnit\Framework\TestCase;
 
 class TrabajadorEliminarTrabajadorTest extends TestCase
 {
-    private $hijos;
+    private $trabajadores;
 
     protected function setUp(): void {
-        $this->hijos = new Usuarios;
+        $this->trabajadores = new Usuarios;
+        $this->trabajadores->set_Testing(true);
         $_SESSION['usuario_rotario'] = 2;
     }
 
@@ -16,7 +17,7 @@ class TrabajadorEliminarTrabajadorTest extends TestCase
      */
     public function testEliminarTrabajador($id, $expected_result, $intento)
     {
-        $resp = $this->hijos->eliminar_usuario_s($id);
+        $resp = $this->trabajadores->eliminar_usuario_s($id);
 
 
         $this->assertNotNull($resp);

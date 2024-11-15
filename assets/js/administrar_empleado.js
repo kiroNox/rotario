@@ -323,6 +323,7 @@ function setupFormValidation(formulario, accion, successMessage, cargarFuncion) 
                     var lee = JSON.parse(respuesta);
                     if (lee.resultado === "registrar") {
                         muestraMensaje("Exito", "Permiso nuevo registrado", "s");
+                        $("#exampleModal3").modal("hide");
                         cargarPermisos();
                     } else if (lee.resultado === 'modificar') {
                         muestraMensaje("Exito", "Permiso Modificado", "s");

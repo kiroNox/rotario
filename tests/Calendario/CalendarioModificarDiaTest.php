@@ -9,6 +9,7 @@ class CalendarioModificarDiaTest extends TestCase
 
 	protected function setUp(): void {
 		$this->calendario = new calendario;
+        $this->calendario->set_Testing(true);
 		$_SESSION['usuario_rotario'] = 2;
 	}
 

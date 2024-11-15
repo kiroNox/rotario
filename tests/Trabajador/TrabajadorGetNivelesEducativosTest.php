@@ -8,6 +8,8 @@ class TrabajadorGetNivelesEducativosTest extends TestCase
     protected function setUp(): void {
     
         $this->trabajadores= new Usuarios;
+        $this->trabajadores->set_Testing(true);
+        $_SESSION['usuario_rotario'] = 2;
     }
    
     public function testGetNivelesEducativos(){

@@ -5,7 +5,7 @@
  */
 class calendario extends Conexion
 {
-    PRIVATE $id, $fecha, $descripcion, $con, $recurrente;
+    PRIVATE $id, $fecha, $descripcion, $con, $recurrente, $Testing;
 
     function __construct($con = '')
     {
@@ -66,7 +66,12 @@ class calendario extends Conexion
     
             $r['resultado'] = 'exito';
             $r['mensaje'] = 'Evento agregado';
-            $this->con->commit();
+            if($this->Testing===true){
+                $this->con->rollBack(); 
+            }
+            else{
+                $this->con->commit();
+            }
             $this->close_bd($this->con);
         
         } catch (Exception $e) {
@@ -110,7 +115,12 @@ class calendario extends Conexion
     
             $r['resultado'] = 'exito';
             $r['mensaje'] = 'Evento modificado';
-            $this->con->commit();
+            if($this->Testing===true){
+                $this->con->rollBack(); 
+            }
+            else{
+                $this->con->commit();
+            }
             $this->close_bd($this->con);
         
         } catch (Exception $e) {
@@ -149,7 +159,12 @@ class calendario extends Conexion
     
             $r['resultado'] = 'exito';
             $r['mensaje'] = 'Evento eliminado';
-            $this->con->commit();
+            if($this->Testing===true){
+                $this->con->rollBack(); 
+            }
+            else{
+                $this->con->commit();
+            }
             $this->close_bd($this->con);
         
         } catch (Exception $e) {
@@ -196,9 +211,14 @@ class calendario extends Conexion
     
             $r['resultado'] = 'exito';
             $r['evento'] = $resultados;
-            $this->con->commit();
-
+            if($this->Testing===true){
+                $this->con->rollBack(); 
+            }
+            else{
+                $this->con->commit();
+            }
             $this->close_bd($this->con);
+            
         
         } catch (Exception $e) {
             if ($this->con instanceof PDO) {
@@ -237,6 +257,12 @@ class calendario extends Conexion
     }
     PUBLIC function set_recurrente($value){
         $this->recurrente = $value;
+    }
+    PUBLIC function get_Testing(){
+        return $this->Testing;
+    }
+    PUBLIC function set_Testing($value){
+        $this->Testing = $value;
     }
 }
  ?>

@@ -8,6 +8,7 @@ class AusenciasmodificarVacacionesTest extends TestCase
     protected function setUp(): void {
     
         $this->ausencias= new administrar_empleados;
+        $this->ausencias->set_Testing(true);
     }
     /**
      * @dataProvider ModificarVacacionesProvider

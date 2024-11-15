@@ -6,7 +6,7 @@
 class Usuarios extends Conexion
 {
 	PRIVATE $numero_cuenta, $cedula, $nombre, $apellido, $telefono, $correo, $id_rol, $pass, $con, $id, $nivel_profesional, $creado;
-	PRIVATE $comision_servicios, $discapacitado, $discapacidad, $genero_trabajador;
+	PRIVATE $comision_servicios, $discapacitado, $discapacidad, $genero_trabajador, $Testing;
 
 	function __construct($con = '')
 	{
@@ -25,14 +25,12 @@ class Usuarios extends Conexion
 	PUBLIC function get_roles(){
 		try {
 			$this->validar_conexion($this->con);
-			$this->con->beginTransaction();
 			$consulta = $this->con->query("SELECT id_rol as id, descripcion as rol FROM rol WHERE 1;")->fetchall(PDO::FETCH_ASSOC);
 
 			
 			$r['resultado'] = 'get_roles';
 			$r['titulo'] = 'Éxito';
 			$r['mensaje'] =  $consulta;
-			//$this->con->commit();
 		
 		} catch (Validaciones $e){
 			if($this->con instanceof PDO){
@@ -158,7 +156,7 @@ class Usuarios extends Conexion
 		try {
 			Validaciones::validarCedula($this->cedula);
 			$this->validar_conexion($this->con);
-			$this->con->beginTransaction();
+			
 
 			$consulta = $this->con->prepare("SELECT 1 FROM trabajadores as t WHERE cedula = ? and estado_actividad is true;");
 			$consulta->execute([$this->cedula]);
@@ -173,7 +171,10 @@ class Usuarios extends Conexion
 			
 			$r['resultado'] = 'valid_cedula';
 			
-			$this->con->commit();
+			
+			
+			
+			$this->close_bd($this->con);
 		
 		} catch (Validaciones $e){
 			if($this->con instanceof PDO){
@@ -254,7 +255,6 @@ class Usuarios extends Conexion
 		try {
 			$id = $this->id;
 			$this->validar_conexion($this->con);
-			$this->con->beginTransaction();
 
 			Validaciones::numero($id,"1,","El id del trabajador no es valido");
 
@@ -272,7 +272,6 @@ class Usuarios extends Conexion
 			$r['resultado'] = 'get_user';
 			$r['titulo'] = 'Éxito';
 			$r['mensaje'] =  $resp;
-			//$this->con->commit();
 		
 		} catch (Validaciones $e){
 			if($this->con instanceof PDO){
@@ -344,7 +343,7 @@ class Usuarios extends Conexion
 				throw new Exception("El nivel profesional seleccionado no existe", 1);
 			}
 
-			$consulta = $this->con->prepare("SELECT 1 FROM trabajadores WHERE correo = ? and estado_actividad is true;");
+			$consulta = $this->con->prepare("SELECT 1 FROM trabajadores WHERE correo = ?;");
 			$consulta->execute([$this->correo]);
 
 			if($consulta->fetch()){
@@ -420,8 +419,12 @@ class Usuarios extends Conexion
 
 			Bitacora::registro($this->con, 2, "Registro al usuarios ($this->cedula)");
 			
-			//$this->con->commit();
-			$this->con->rollback(); // WARNING Usuarios registrar trabajador
+			if($this->Testing===true){
+				$this->con->rollBack(); 
+			}
+			else{
+				$this->con->commit();
+			}
 			$this->close_bd($this->con);
 		
 		} catch (Validaciones $e){
@@ -516,6 +519,18 @@ class Usuarios extends Conexion
 				throw new Exception("El rol seleccionado es invalido", 1);
 			}
 
+			$consulta = $this->con->prepare("SELECT * FROM trabajadores WHERE correo = :correo and id_trabajador <> :id_trabajador;");
+			$consulta->bindValue(":correo",$this->correo);
+			$consulta->bindValue(":id_trabajador",$this->id);
+
+			$consulta->execute();
+
+			if($consulta->fetch()){
+				throw new Validaciones("El nuevo correo ya esta siendo utilizado por otro usuario por favor ingrese uno nuevo", 1);
+				
+			}
+
+
 			if($this->pass != ''){
 				$consulta = $this->con->prepare("UPDATE `trabajadores` SET cedula = :cedula, `id_prima_profesionalismo`=:id_prima_profesionalismo,`id_rol`=:id_rol,`numero_cuenta`=:numero_cuenta,`creado`=:creado,`nombre`=:nombre,`apellido`=:apellido,`telefono`=:telefono,`correo`=:correo,`clave`=:clave,`estado_actividad`= 1, `discapacidad` = :discapacidad, `discapacitado` = :discapacitado, `genero` = :genero WHERE id_trabajador = :id");
 				$consulta->bindValue(":clave",$this->pass);
@@ -552,8 +567,12 @@ class Usuarios extends Conexion
 			
 			$r['resultado'] = 'modificar_usuario';
 			$r['titulo'] = 'Éxito';
-			//$this->con->commit();
-			$this->con->rollBack(); // WARNING Usuarios modificar trabajador pruebas
+			if($this->Testing===true){
+				$this->con->rollBack(); 
+			}
+			else{
+				$this->con->commit();
+			}
 			$this->close_bd($this->con);
 		
 		} catch (Validaciones $e){
@@ -624,8 +643,12 @@ class Usuarios extends Conexion
 			
 			$r['resultado'] = 'eliminar_usuario';
 			$r["mensaje"] = '';
-			// $this->con->commit();
-			$this->con->rollBack(); // WARNING Usuarios eliminar trabajador pruebas
+			if($this->Testing===true){
+				$this->con->rollBack();
+			}
+			else{
+				$this->con->commit();
+			}
 			$this->close_bd($this->con);
 		
 		} catch (Validaciones $e){
@@ -779,6 +802,12 @@ class Usuarios extends Conexion
 	}
 	PUBLIC function set_genero_trabajador($value){
 		$this->genero_trabajador = $value;
+	}
+	PUBLIC function get_Testing(){
+		return $this->Testing;
+	}
+	PUBLIC function set_Testing($value){
+		$this->Testing = $value;
 	}
 }
 
