@@ -1591,10 +1591,10 @@ trait Calculadora{
 
 			$formula_array = &$this->calc_items;
 		}
-		$formula_array[0]->resolver("*");
-		$formula_array[0]->resolver("/");
-		$formula_array[0]->resolver("+");
-		$formula_array[0]->resolver("-");
+		$formula_array[0]->resolver("*","/");
+		//$formula_array[0]->resolver("/");
+		$formula_array[0]->resolver("+","-");
+		//$formula_array[0]->resolver("-");
 
 		$total = $formula_array[0]->get_total();
 
@@ -2260,7 +2260,7 @@ trait Calculadora{
 			$this->value = $value;
 		}
 
-		PUBLIC function resolver($control){
+		PUBLIC function resolver($control, $control2){
 
 			if($this->unique){
 				$valor = $this->get_value();
@@ -2279,7 +2279,7 @@ trait Calculadora{
 				return true;
 			}
 			
-			if(!$this->is_leaft() and $this->value == $control){
+			if(!$this->is_leaft() and ($this->value == $control or $this->value == $control2 )){
 
 
 				$numeros_decimales = $this->decimales_internos;
@@ -2326,7 +2326,7 @@ trait Calculadora{
 					$total = floatval(number_format($total, $numeros_decimales, '.',''));
 					$this->set_total($total);
 					$this->set_resolved();
-					$this->right->resolver($control);
+					$this->right->resolver($control,$control2);
 					break;
 
 					case '/':
@@ -2343,7 +2343,7 @@ trait Calculadora{
 					$total = floatval(number_format($total, $numeros_decimales, '.',''));
 					$this->set_total($total);
 					$this->set_resolved();
-					$this->right->resolver($control);
+					$this->right->resolver($control,$control2);
 					break;
 
 					case '+':
@@ -2356,7 +2356,7 @@ trait Calculadora{
 					$total = floatval(number_format($total, $numeros_decimales, '.',''));
 					$this->set_total($total);
 					$this->set_resolved();
-					$this->right->resolver($control);
+					$this->right->resolver($control,$control2);
 					break;
 
 					case '-':
@@ -2369,7 +2369,7 @@ trait Calculadora{
 					$total = floatval(number_format($total, $numeros_decimales, '.',''));
 					$this->set_total($total);
 					$this->set_resolved();
-					$this->right->resolver($control);
+					$this->right->resolver($control,$control2);
 					break;
 					
 					default:
@@ -2379,7 +2379,7 @@ trait Calculadora{
 			else if($this->operador instanceof calc_nodo){
 
 				//echo "<pre>\nENTRO AQUI\n</pre>";
-				$this->operador->resolver($control);// pasa al siguiente nodo
+				$this->operador->resolver($control,$control2);// pasa al siguiente nodo
 			}
 			else if(!$this->is_leaft()){
 				switch ($this->value) {
@@ -2387,7 +2387,7 @@ trait Calculadora{
 					case '+':
 					case '-':
 					case '/':
-					$this->right->resolver($control);
+					$this->right->resolver($control,$control2);
 					break;
 					case ')':
 					case ']':
@@ -2403,7 +2403,7 @@ trait Calculadora{
 			if($this->is_leaft() and $this->resolved !== true and $this->left===null and $this->right===null and $this->operador === null){
 
 				$temp = ($this->is_leaft())?"true":"false";
-				throw new Exception("Ocurrio un error con el nodo $this->orden is_leaft =  $temp valor = $this->value", 1);
+				throw new Exception("Ocurrió un error con el nodo $this->orden is_leaft =  $temp valor = $this->value", 1);
 				
 			}
 		}
