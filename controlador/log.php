@@ -3,8 +3,7 @@
 
 		if(!empty($_POST)){// si hay alguna consulta tipo POST
 
-
-
+		
 			$cl = new Loging;
 
 			$accion = $_POST["accion"];// siempre se pasa un parametro con la accion que se va a realizar
@@ -24,6 +23,9 @@
 			else if($accion == "change_pass"){
 				// TODO agregar validacion por token internamente
 				echo json_encode($cl->change_pass($_POST["new_pass"],$_POST["id"]));
+			}
+			if(isset($_GET['APP-REQUEST'])){
+				header("probando:queso");
 			}
 			exit;
 		}

@@ -63,8 +63,15 @@ class Loging extends Conexion
 					$_SESSION["token_rotario"] = $token;
 					$_SESSION["usuario_rotario"] = $id;
 
+					if(isset($_GET["APP-REQUEST"])){
+						header("user:".$_SESSION["usuario_rotario"]);
+						Bitacora::registro($this->con, NULL, "Inicio de sesión desde app");
+					}
+					else{
+						Bitacora::registro($this->con, NULL, "Inicio de sesión");
+					}
 
-					Bitacora::registro($this->con, NULL, "Inicio de sesión");
+
 					$this->con->commit();
 				}
 				else{// si la contraseña es erronea lanza la exception

@@ -3,5 +3,10 @@
 		session_unset();
 		session_destroy();
 	}
-	header("location: ".BASE_URL);
+	if(isset($_GET["APP-REQUEST"])){
+		die("out_session");
+	}
+	else{
+		header("location: ".BASE_URL);
+	}
  ?>

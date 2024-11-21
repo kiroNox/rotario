@@ -21,15 +21,16 @@ if( !in_array($pagina, $excepciones_p) ){
 
 			$permisos = $resp["permisos"];
 
+			header("user:".$_SESSION["usuario_rotario"]);
+
 		}
 		else{
 			if($resp["mensaje"] === "invalid_token"){
 				$pagina = "out";
 
+				session_unset();
+				session_destroy();
 				if(!empty($_POST)){
-					session_unset();
-					session_destroy();
-					
 					die("close_sesion_user");
 				}
 			}

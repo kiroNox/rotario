@@ -21,5 +21,15 @@
 				tests/Ausencias
 			</directory>
 		</testsuite>
+		<testsuite name="Sueldo">
+			<directory suffix=".php">
+				tests/Sueldo
+			</directory>
+		</testsuite>
+		<testsuite name="formulas">
+			<directory suffix=".php">
+				tests/Formulas
+			</directory>
+		</testsuite>
 	</testsuites>
 </phpunit>
