@@ -38,7 +38,7 @@ class AusenciasobtenerVacacionesAnualesTest extends TestCase
             [999, 2],
 
             // test caso 3: año vacio vacío
-            ["", "is-invalid", 3],
+            ["", 3],
 
             // test caso 4: año nulo
             [null, 4],

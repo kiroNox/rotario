@@ -15,9 +15,6 @@ class AusenciasmodificarVacacionesTest extends TestCase
      */
     public function testModificarVacaciones($desde, $hasta, $dias_totales, $descripcion, $id_tabla, $expected_result,$caso){
 
-    	
-
-
         $resp = $this->ausencias->modificar_vacaciones(
         	$desde,
         	$hasta,
@@ -25,7 +22,6 @@ class AusenciasmodificarVacacionesTest extends TestCase
         	$descripcion,
         	$id_tabla
         );
-
 
 
         $mensaje = "caso ($caso)";
@@ -92,8 +88,7 @@ class AusenciasmodificarVacacionesTest extends TestCase
             ["2024-09-05","2024-09-07","20","queso","id del registro","is-invalid",16],
             // test caso 17 id_tabla inexistente
             ["2024-09-05","2024-09-07","2","queso",999,"error",17],
-            // test caso 18 dieas totales incorrectos
-            //["2024-09-05","2024-09-07","750","queso","20","error",18],
+            
         ];
     }
 }

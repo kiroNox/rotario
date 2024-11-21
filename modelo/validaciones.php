@@ -13,7 +13,7 @@ class Validaciones extends Exception
 			return true;
 		}
 		if(
-			!can_be_string($string) or (can_be_string($string) and !preg_match($pattern,$string))
+			!can_be_string($string) or (can_be_string($string) and !preg_match($pattern, (String) $string))
 		){
 			throw new Validaciones($mensaje, 1);
 		}
@@ -27,7 +27,7 @@ class Validaciones extends Exception
 			return true;
 		}
 		if(
-			!can_be_string($string) or (can_be_string($string) and !preg_match($pattern,$string))
+			!can_be_string($string) or (can_be_string($string) and !preg_match($pattern, (String) $string))
 		){
 			throw new Validaciones($mensaje, 1);
 		}
@@ -38,7 +38,7 @@ class Validaciones extends Exception
 			return true;
 		}
 		if(
-			!can_be_string($string) or (can_be_string($string) and !preg_match($pattern,$string))
+			!can_be_string($string) or (can_be_string($string) and !preg_match($pattern, (String) $string))
 		){
 			throw new Validaciones($mensaje, 1);
 		}
@@ -51,7 +51,7 @@ class Validaciones extends Exception
 			return true;
 		}
 		if(
-			!can_be_string($string) or (can_be_string($string) and !preg_match($pattern,$string))
+			!can_be_string($string) or (can_be_string($string) and !preg_match($pattern, (String) $string))
 		){
 			throw new Validaciones($mensaje, 1);
 		}
@@ -70,9 +70,10 @@ class Validaciones extends Exception
 	{
 		$pattern='/^(?=.*[0-9])(?=.*[A-Z])(?=.*[a-z]).{6,20}$/';
 		if(
-			!can_be_string($string) or (can_be_string($string) and !preg_match($pattern,$string))
+			!can_be_string($string) or (can_be_string($string) and !preg_match($pattern,(String) $string))
 		){
 			$mensaje_temp = "";
+			$string = (String) $string;
 
 			if(!preg_match("/^.{6,20}$/", $string)) $mensaje_temp = "entre 6 y 20 caracteres";
 			if(!preg_match("/^(?=.*?[A-Z]).{1,}$/", $string)) $mensaje_temp .= ($mensaje_temp == '')?"una letra mayúscula": ", una letra mayúscula";
@@ -85,11 +86,11 @@ class Validaciones extends Exception
 
 	PUBLIC static function fecha($string, $mensaje = "fecha"){
 		if(can_be_string($string)){
-			if(!preg_match("/^[\d][\d][\d][\d][\/-][\d][\d][\/-][\d][\d]$/", $string)){
+			if(!preg_match("/^[\d][\d][\d][\d][\/-][\d][\d][\/-][\d][\d]$/", (String) $string)){
 				// si no es un string con el formato
 				throw new Validaciones("La $mensaje no tiene el formato adecuado (yyyy-mm-dd) :: $string", 1);
 			}
-			$string = preg_split("/\D/", $string);
+			$string = preg_split("/\D/", (String) $string);
 
 		}else{throw new Validaciones("la $mensaje no es una cadena de caracteres", 1);}
 
@@ -105,26 +106,26 @@ class Validaciones extends Exception
 	}
 
 	PUBLIC static function hora($string,$mensaje = "La hora no es valida"){
-		if(!can_be_string($string) or (can_be_string($string) and !preg_match("/^(?:[01]?[0-9]|2[0-3]):[0-5][0-9]$/", $string))){
+		if(!can_be_string($string) or (can_be_string($string) and !preg_match("/^(?:[01]?[0-9]|2[0-3]):[0-5][0-9]$/", (String) $string))){
 			throw new Validaciones($mensaje, 1);
 		}
 	}
 
 	PUBLIC static function monto_Miles($string, $mensaje = "El monto es invalido"){
-		if(!can_be_string($string) or (can_be_string($string) and !preg_match("/^[0-9]{1,3}(?:[\.][0-9]{3}){0,6}[,][0-9]{2}$/", $string))){
+		if(!can_be_string($string) or (can_be_string($string) and !preg_match("/^[0-9]{1,3}(?:[\.][0-9]{3}){0,6}[,][0-9]{2}$/", (String) $string))){
 			throw new Validaciones($mensaje, 1);
 			
 		}
 	}
 	PUBLIC static function monto($string, $mensaje = "El monto es invalido" ){
-		if( !can_be_string($string) or (can_be_string($string) and !preg_match("/^[0-9]{1,18}(?:[\,\.][0-9]{2})?$/", $string))){
+		if( !can_be_string($string) or (can_be_string($string) and !preg_match("/^[0-9]{1,18}(?:[\,\.][0-9]{2})?$/", (String) $string))){
 			throw new Validaciones($mensaje, 1);
 			
 		}
 	}
 	PUBLIC static function numero($string,$n = "1,50",$mensaje = "El numero es invalido", $acept_minus = true){
 		$pattern = ($acept_minus)?"/^[\-]?[0-9]{".$n."}$/":"/^[0-9]{".$n."}$/";
-		if(!can_be_string($string) or (can_be_string($string) and !preg_match($pattern, $string))){
+		if(!can_be_string($string) or (can_be_string($string) and !preg_match($pattern, (String) $string))){
 			throw new Validaciones($mensaje, 1);
 		}
 	}
@@ -134,7 +135,7 @@ class Validaciones extends Exception
 
 	PUBLIC static function validar($string,$pattern,$mensaje){// para otros personalizado
 		if(
-			!can_be_string($string) or (can_be_string($string) and !preg_match($pattern,$string)) 
+			!can_be_string($string) or (can_be_string($string) and !preg_match($pattern, (String) $string)) 
 		){
 			throw new Validaciones($mensaje, 1);
 		}
@@ -155,8 +156,8 @@ class Validaciones extends Exception
 
 		// modifica por referencia y también devuelve el valor
 
-		if(can_be_string($string) and preg_match("/(?:^\s)|(?:[\s][\s])|(?:[\s]+$)/", $string)){
-			$string = preg_replace("/\n/m", "---WHITE_ENDL_SPACE---", $string);
+		if(can_be_string($string) and preg_match("/(?:^\s)|(?:[\s][\s])|(?:[\s]+$)/", (String)  $string)){
+			$string = preg_replace("/\n/m", "---WHITE_ENDL_SPACE---", (String)  $string);
 			$string = preg_replace("/(?:^\s+)|(?:\s+$)/m", "", $string);
 
 			while (preg_match("/[\s][\s]/", $string)) {

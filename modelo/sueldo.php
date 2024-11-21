@@ -460,7 +460,7 @@ class Sueldo extends Conexion
 		return $this->sueldo_base;
 	}
 	PUBLIC function set_sueldo_base($value){
-		$value = preg_replace("/\D/", "", $value);
+		$value = preg_replace("/\D/", "", (String) $value);
 		$value = preg_replace("/(\d\d)$/", ".$1", $value);
 		$this->sueldo_base = $value;
 	}
