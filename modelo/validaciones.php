@@ -140,6 +140,12 @@ class Validaciones extends Exception
 		}
 	}
 
+	PUBLIC static function booleano($test,$mensaje = "Campo invalido"){
+		if($test !== true && $test !== false ){
+			throw new Validaciones($mensaje, 1);
+		}
+	}
+
 
 
 	PUBLIC static function removeWhiteSpace(&$string){

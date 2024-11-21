@@ -5,7 +5,7 @@ class Formulas extends Conexion
 {
 	use Calculadora;
 	PRIVATE $con, $id, $descripcion, $nombre;
-	PRIVATE $id_trabajador;
+	PRIVATE $id_trabajador, $Testing;
 
 	function __construct($con = '')
 	{
@@ -26,6 +26,8 @@ class Formulas extends Conexion
 		try {
 			$this->validar_conexion($this->con);
 			//$this->con->beginTransaction();
+
+			Validaciones::numero($this->id,"1,","El id de la formula es invalido");
 			
 			$consulta = $this->con->prepare("SELECT df.* ,f.nombre ,f.descripcion FROM detalles_formulas AS df LEFT JOIN formulas as f on f.id_formula = df.id_formula WHERE f.id_formula = ? ORDER BY df.orden;");
 			$consulta->execute([$this->id]);
@@ -89,7 +91,13 @@ class Formulas extends Conexion
 			$r['resultado'] = 'registrar_formula';
 			$r["mensaje"] = "La formula fue registrada exitosamente";
 
-			$this->con->commit();
+			if($this->Testing===true){
+				$this->con->rollBack(); 
+			}
+			else{
+				$this->con->commit();
+			}
+			$this->close_bd($this->con);
 		} catch (Exception $e) {
 			if($this->con instanceof PDO){
 				if($this->con->inTransaction()){
@@ -141,7 +149,13 @@ class Formulas extends Conexion
 			$r['resultado'] = 'modificar_formula';
 			$r['titulo'] = 'Éxito';
 			$r['mensaje'] =  "La formula fue modificada exitosamente";
-			$this->con->commit();
+			if($this->Testing===true){
+				$this->con->rollBack(); 
+			}
+			else{
+				$this->con->commit();
+			}
+			$this->close_bd($this->con);
 		
 		} catch (Exception $e) {
 			if($this->con instanceof PDO){
@@ -219,8 +233,12 @@ class Formulas extends Conexion
 			$consulta->execute([$this->id]);
 			
 			$r['resultado'] = 'eliminar_formula';
-			$this->con->commit();
-
+			if($this->Testing===true){
+				$this->con->rollBack(); 
+			}
+			else{
+				$this->con->commit();
+			}
 			$this->close_bd($this->con);
 
 		} catch (Exception $e) {
@@ -317,6 +335,12 @@ class Formulas extends Conexion
 	}
 	PUBLIC function set_id_trabajador($value){
 		$this->id_trabajador = $value;
+	}
+	PUBLIC function get_Testing(){
+		return $this->Testing;
+	}
+	PUBLIC function set_Testing($value){
+		$this->Testing = $value;
 	}
 
 

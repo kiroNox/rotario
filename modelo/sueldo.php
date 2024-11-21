@@ -6,6 +6,7 @@
 class Sueldo extends Conexion
 {
 	PRIVATE $con, $id_trabajador, $sueldo_base, $cargo, $cargo_codigo, $sector_salud, $id_escalafon, $tipo_nomina, $id_sueldo ;
+	private $Testing;
 
 	function __construct($con = '')
 	{
@@ -114,13 +115,19 @@ class Sueldo extends Conexion
 		try {
 			$this->validar_conexion($this->con);
 			$this->con->beginTransaction();
+
+			Validaciones::numero($this->id_trabajador,"1,","El trabajador es invalido");
 			
 			$consulta = $this->con->prepare("SELECT * FROM sueldo_base WHERE id_trabajador = ?;");
 			$consulta->execute([$this->id_trabajador]);
+
+			if(!($resp = $consulta->fetch(PDO::FETCH_ASSOC))){
+				throw new Exception("El trabajador no existe o fue eliminado", 1);
+			}
 			
 			$r['resultado'] = 'get_sueldo';
 			$r['titulo'] = 'Éxito';
-			$r['mensaje'] =  $consulta->fetch(PDO::FETCH_ASSOC);
+			$r['mensaje'] =  $resp;
 			//$this->con->commit();
 		
 		} catch (Validaciones $e){
@@ -160,9 +167,18 @@ class Sueldo extends Conexion
 			Validaciones::monto($this->sueldo_base,"EL Sueldo base no es valido");
 			Validaciones::numero($this->cargo,"1,","El cargo contiene caracteres inválidos");
 			Validaciones::numero($this->id_escalafon,"1,","El escalafón es invalido");
-			Validaciones::numero($this->id_trabajador,"1,","El trabajdor es invalido");
+			Validaciones::numero($this->id_trabajador,"1,","El trabajador es invalido");
+			Validaciones::booleano($this->sector_salud,"El valor para indicar que el trabajador es medico es invalido");
 
 			Validaciones::validar($this->tipo_nomina,"/^(?:1|2|3|4)$/","El tipo de nomina no es valido ($this->tipo_nomina)");
+
+
+			$consulta = $this->con->prepare("SELECT 1 FROM cargos WHERE codigo = ?;");
+			$consulta->execute([$this->cargo]);
+
+			if(!$consulta->fetch()){
+				throw new Exception("El cargo seleccionado no existe o fue eliminado", 1);
+			}
 
 
 			$consulta = $this->con->prepare("SELECT cedula FROM trabajadores WHERE id_trabajador = ?;");
@@ -195,7 +211,13 @@ class Sueldo extends Conexion
 			
 			$r['resultado'] = 'asignar_sueldo';
 			$r['titulo'] = 'Éxito';
-			$this->con->commit();
+			if($this->Testing===true){
+				$this->con->rollBack(); 
+			}
+			else{
+				$this->con->commit();
+			}
+			$this->close_bd($this->con);
 		
 		} catch (Validaciones $e){
 			if($this->con instanceof PDO){
@@ -230,11 +252,15 @@ class Sueldo extends Conexion
 			$this->validar_conexion($this->con);
 			$this->con->beginTransaction();
 
+
+			Validaciones::numero($this->id_trabajador,"1,","El trabajador es invalido");
+
+
 			$consulta = $this->con->prepare("SELECT t.cedula  FROM sueldo_base as sb LEFT join trabajadores as t on t.id_trabajador = sb.id_trabajador WHERE sb.id_trabajador = ?;");
 			$consulta->execute([$this->id_trabajador]);
 
 			if(!($cedula = $consulta->fetch(PDO::FETCH_ASSOC))){
-				throw new Exception("El sueldo no esta asignado a este trabajdor", 1);
+				throw new Exception("El sueldo no esta asignado a este trabajador", 1);
 			}
 
 			$cedula = $cedula["cedula"];
@@ -248,7 +274,13 @@ class Sueldo extends Conexion
 			
 			$r['resultado'] = 'eliminar_sueldo';
 			$r['titulo'] = 'Éxito';
-			$this->con->commit();
+			if($this->Testing===true){
+				$this->con->rollBack(); 
+			}
+			else{
+				$this->con->commit();
+			}
+			$this->close_bd($this->con);
 		
 		} catch (Validaciones $e){
 			if($this->con instanceof PDO){
@@ -281,7 +313,18 @@ class Sueldo extends Conexion
 
 	PUBLIC function new_cargo_s($codigo,$cargo,$replace){
 
-		$replace = ($replace =="false")?false:true;
+
+		// if($replace !== true and $replace !== false){
+		// 	if($replace == "false"){
+		// 		$replace = false;
+		// 	}
+		// 	else if ($replace == "true"){
+		// 		$replace = true;
+		// 	}
+		// 	else{
+		// 		$replace = false;
+		// 	}
+		// }
 
 		$this->set_cargo($cargo);
 		$this->set_cargo_codigo($codigo);
@@ -293,9 +336,13 @@ class Sueldo extends Conexion
 			$this->validar_conexion($this->con);
 			$this->con->beginTransaction();
 			
+			Validaciones::removeWhiteSpace($this->cargo);
+			Validaciones::removeWhiteSpace($this->cargo_codigo);
 			Validaciones::numero($this->cargo_codigo,"3,10","El código no es valido debe tener al menos 3 números y no puede contener letras");
-			$this->cargo = Validaciones::removeWhiteSpace($this->cargo);
+			Validaciones::booleano($replace,"replace invalido contacte con un administrador");
 			Validaciones::validar($this->cargo,"/^[a-zA-Z\säÄëËïÏöÖüÜáéíóúáéíóúÁÉÍÓÚÂÊÎÔÛâêîôûàèìòùÀÈÌÒÙñÑ\/]{1,50}$/u","El nombre del cargo es invalido, solo puede tener letras");
+
+			
 
 			$consulta = $this->con->prepare("SELECT 1 from cargos where codigo = ?");
 			$consulta->execute([$this->cargo_codigo]);
@@ -325,7 +372,12 @@ class Sueldo extends Conexion
 			$r['titulo'] = 'Éxito';
 			$r["mensaje"] = $this->cargo;
 
-			$this->con->commit();
+			if($this->Testing===true){
+				$this->con->rollBack(); 
+			}
+			else{
+				$this->con->commit();
+			}
 			$this->close_bd($this->con);
 		
 		} catch (Validaciones $e){
@@ -447,6 +499,12 @@ class Sueldo extends Conexion
 	}
 	PUBLIC function set_cargo_codigo($value){
 		$this->cargo_codigo = $value;
+	}
+	PUBLIC function get_Testing(){
+		return $this->Testing;
+	}
+	PUBLIC function set_Testing($value){
+		$this->Testing = $value;
 	}
 
 }

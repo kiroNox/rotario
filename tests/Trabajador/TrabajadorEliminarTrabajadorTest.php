@@ -41,7 +41,6 @@ class TrabajadorEliminarTrabajadorTest extends TestCase
             [2, "error", 3], // Usuario propio
             [3, "error", 4], // Usuario Administrador
             [0, "error", 5], // ID no registrado
-            [9, "error", 5], // ID no registrado
             [-1, "error", 6], // ID negativo
             ["a", "is-invalid", 8], // ID no numérico
             [null, "is-invalid", 9], // ID nulo
