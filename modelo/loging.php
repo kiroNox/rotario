@@ -2,7 +2,7 @@
 
 class Loging extends Conexion
 {
-	PRIVATE $id,$cedula,$correo,$pass,$con,$keyword;
+	PRIVATE $id,$cedula,$correo,$pass,$con,$keyword,$Testing;
 	use Correos;
 	function __construct($con = '')
 	{
@@ -24,11 +24,13 @@ class Loging extends Conexion
 
 	PRIVATE function singing(){
 		$correo = $this->correo;
-		$pass = $this->pass;
+		$pass = ($this->pass===null)?"":$this->pass;
 		try {
 			$this->validar_conexion($this->con);// si falla lanza una exepcion
 
 			Validaciones::validarEmail($correo);// si falla lanza una exepcion
+			Validaciones::removeWhiteSpace($correo);
+
 
 			$this->con->beginTransaction();// inicia la transaccion
 
@@ -72,7 +74,15 @@ class Loging extends Conexion
 					}
 
 
-					$this->con->commit();
+					if($this->Testing===true){
+						session_unset();
+						session_destroy();
+						$this->con->rollBack(); 
+					}
+					else{
+						$this->con->commit();
+					}
+					$this->close_bd($this->con);
 				}
 				else{// si la contraseña es erronea lanza la exception
 					throw new Exception("La contraseña es invalida", 1);
@@ -138,6 +148,10 @@ class Loging extends Conexion
 			$consulta = $this->con->prepare("SELECT * FROM trabajadores WHERE correo = ?;");
 			$consulta->execute([$this->correo]);
 
+			if($this->Testing===true){
+				$r["testLogin"] = "fail";
+			}
+
 
 			if(($resp = $consulta->fetch(PDO::FETCH_ASSOC))){
 
@@ -167,11 +181,17 @@ class Loging extends Conexion
 				$url = URL_PROD.$url;
 				$data["email"] = $this->correo;
 				$data["url"] = $url;
-				
 
-				$this->enviar_correo($data,"reset_pass",$asunto='Restablecer Contraseña');
+				
+				if($this->Testing===true){
+					$r["testLogin"] = "success";
+				}
+				else{
+					$this->enviar_correo($data,"reset_pass",$asunto='Restablecer Contraseña');
+				}
 
 			}
+			$this->close_bd($this->con);
 			
 			$r['resultado'] = 'reset_pass_request';
 			$r['titulo'] = 'Éxito';
@@ -183,6 +203,10 @@ class Loging extends Conexion
 					$this->con->rollBack();
 				}
 			}
+			if($this->Testing===true){
+				$r["testLogin"] = "fail";
+			}
+
 			$r['resultado'] = 'is-invalid';
 			$r['titulo'] = 'Error';
 			$r['mensaje'] =  $e->getMessage();
@@ -193,6 +217,11 @@ class Loging extends Conexion
 					$this->con->rollBack();
 				}
 			}
+			if($this->Testing===true){
+				$r["testLogin"] = "fail";
+			}
+
+
 		
 			$r['resultado'] = 'error';
 			$r['titulo'] = 'Error';
@@ -372,5 +401,11 @@ class Loging extends Conexion
 	}
 	PUBLIC function set_id($value){
 		$this->id = $value;
+	}
+	PUBLIC function get_Testing(){
+		return $this->Testing;
+	}
+	PUBLIC function set_Testing($value){
+		$this->Testing = $value;
 	}
 } 

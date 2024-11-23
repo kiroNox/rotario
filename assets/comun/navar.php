@@ -92,6 +92,12 @@
                                     Activity Log
                                 </a> -->
                                 <div class="dropdown-divider"></div>
+                                <a class="dropdown-item cursor-pointer" href="?p=perfil">
+                                    <!-- <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400 cursor-pointer"></i> -->
+                                    <span>Mi Perfil</span>
+                                    <span class="fas fa-id-card"></span>
+                                </a>
+                                <div class="dropdown-divider"></div>
                                 <a class="dropdown-item cursor-pointer" href="#" id="logout_btn" onclick="return false">
                                     <!-- <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400 cursor-pointer"></i> -->
                                     <span>Cerrar Sesión</span>

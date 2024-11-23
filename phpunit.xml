@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <phpunit bootstrap="vendor/autoload.php" stopOnFailure="false"  backupGlobals="false" colors="true" convertErrorsToExceptions="true" convertNoticesToExceptions="true" convertWarningsToExceptions="true">
 	<testsuites>
+		<testsuite name="Log">
+			<directory suffix=".php">
+				tests/Login
+			</directory>
+		</testsuite>
 		<testsuite name="Hijo">
 			<directory suffix=".php">
 				tests/Hijos

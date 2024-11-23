@@ -40,7 +40,8 @@ class AusenciasdiasHabilesTest extends TestCase
     foreach ($resp["mensaje"] as $fecha) {
     	$fecha = $fecha[0];
         $this->assertIsString($fecha);
-        $this->assertRegExp("/^\d{4}-\d{2}-\d{2}$/", $fecha);
+        $this->assertMatchesRegularExpression("/^\d{4}-\d{2}-\d{2}$/", $fecha);
+        
     }
 }
   

@@ -258,8 +258,12 @@ class Usuarios extends Conexion
 
 			Validaciones::numero($id,"1,","El id del trabajador no es valido");
 
-			$consulta = $this->con->prepare("SELECT p.*,r.id_rol as rol FROM trabajadores as p left join rol as r on r.id_rol = p.id_rol WHERE p.id_trabajador = ?;");
+			//$consulta = $this->con->prepare("SELECT p.*,r.id_rol as rol FROM trabajadores as p left join rol as r on r.id_rol = p.id_rol WHERE p.id_trabajador = ?;");
+			$consulta = $this->con->prepare("SELECT p.*, r.id_rol AS rol, r.descripcion as rol_descripcion, c.cargo, pf.descripcion as nivel_educativo FROM trabajadores AS p LEFT JOIN rol AS r ON r.id_rol = p.id_rol LEFT JOIN sueldo_base as sb on sb.id_trabajador = p.id_trabajador LEFT JOIN cargos as c on c.codigo = sb.cargo LEFT JOIN prima_profesionalismo as pf on pf.id_prima_profesionalismo = p.id_prima_profesionalismo WHERE p.id_trabajador = ?;");
 			$consulta->execute([$id]);
+			
+
+			
 
 			if($resp = $consulta->fetch(PDO::FETCH_ASSOC)){
 				unset($resp["token"]);
@@ -694,14 +698,11 @@ class Usuarios extends Conexion
 	}
 
 
-
-	
-
-
 	PUBLIC function get_cedula(){
 		return $this->cedula;
 	}
 	PUBLIC function set_cedula($value){
+		Validaciones::removeWhiteSpace($value);
 		$this->cedula = $value;
 	}
 	PUBLIC function get_nombre(){
@@ -795,6 +796,7 @@ class Usuarios extends Conexion
 		return $this->discapacidad;
 	}
 	PUBLIC function set_discapacidad($value){
+		Validaciones::removeWhiteSpace($value);
 		$this->discapacidad = $value;
 	}
 	PUBLIC function get_genero_trabajador(){

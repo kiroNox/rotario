@@ -21,7 +21,11 @@ if( !in_array($pagina, $excepciones_p) ){
 
 			$permisos = $resp["permisos"];
 
-			header("user:".$_SESSION["usuario_rotario"]);
+
+			if(isset($_GET['APP-REQUEST'])){
+				header("user:".$_SESSION["usuario_rotario"]);
+			}
+
 
 		}
 		else{
