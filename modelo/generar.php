@@ -131,6 +131,7 @@ class generar extends Conexion
 					on f2.id_factura = fp2.id_factura 
 					WHERE 
 						YEAR(f2.fecha) = YEAR(:fecha) AND MONTH(f2.fecha) = MONTH(:fecha) and f2.status = 1
+						HAVING SUM(fp2.monto) IS NOT NULL
 					");
 
 					$consulta->execute([":fecha"=>$this->fecha_desde]);
@@ -151,6 +152,21 @@ class generar extends Conexion
 					if(!$lista){
 						throw new Exception("No hay pagos culminados en el mes de la fecha ingresada", 1);
 					}
+
+					ob_start();
+					
+					echo "<pre>\n";
+					var_dump($lista);
+					echo "</pre>";
+					
+					$valor = ob_get_clean();
+					
+					$r["resultado"] = "console";
+					$r["mensaje"] = $valor;
+					
+					// echo $valor; exit;
+					echo json_encode($r);
+					//return $r;
 
 					ob_start();
 					require_once 'assets/templates/balancePrimas.php';
@@ -184,6 +200,7 @@ class generar extends Conexion
 			$r['titulo'] = 'Éxito';
 			$r['mensaje'] =  "";
 			//$this->con->commit();
+			Bitacora::reg($this->con,"Genero un balance de primas de la fecha $this->desde");
 			$this->close_bd($this->con);
 		
 		} catch (Validaciones $e){
