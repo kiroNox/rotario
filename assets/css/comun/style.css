@@ -283,6 +283,10 @@ input[type='checkbox'].check-button:disabled + .check-button::before{
 	background-color: #eaecf4 !important;
 }
 
+.hide-prevButtom.introjs-prevbutton{
+	display: none;
+}
+
 /* calculadora */
 
 
@@ -382,18 +386,27 @@ input[type='checkbox'].check-button:disabled + .check-button::before{
 	}
 	/*.dark-mode .nav-item .nav-link+.collapse .bg-white,
 	.dark-mode .nav-item .nav-link+.collapse .collapse-item,*/
-	.dark-mode .swal2-popup,
-	.dark-mode .collapse-item,
-	.dark-mode .bg-white,
-	.dark-mode .card,
-	.dark-mode .card-header,
-	.dark-mode .modal-content,
-	.dark-mode .modal-footer,
-	.dark-mode .form-control,
-	.dark-mode #wrapper,
-	.dark-mode #content-wrapper{
+	.dark-mode .swal2-popup:not([class|="introjs"]),
+	.dark-mode .collapse-item:not([class|="introjs"]),
+	.dark-mode .bg-white:not([class|="introjs"]),
+	.dark-mode .card:not([class|="introjs"]),
+	.dark-mode .card-header:not([class|="introjs"]),
+	.dark-mode .modal-content:not([class|="introjs"]),
+	.dark-mode .modal-footer:not([class|="introjs"]),
+	.dark-mode .form-control:not([class|="introjs"]),
+	.dark-mode #wrapper:not([class|="introjs"]),
+	.dark-mode #content-wrapper:not([class|="introjs"]),
+	.dark-mode .custom-select,
+	.dark-mode .select2-container--bootstrap .select2-selection,
+	.dark-mode .select2-selection__rendered[role="textbox"]{
 		background-color: var(--dark-back) !important;
 		color: #fff !important;
+	}
+	[class|='introjs']{
+		color: #858796;
+	}
+	.dark-mode .introjs-helperLayer{
+		background-color: rgba(255,255,255,0.08);
 	}
 
 	.dark-mode ul.sidebar li.nav-item [id^=collapse-items].collapse.show .collapse-inner{
@@ -461,12 +474,17 @@ input[type='checkbox'].check-button:disabled + .check-button::before{
 	.dark-mode table.table td,
 	.dark-mode table.table-bordered,
 	.dark-mode .form-control,
-	.dark-mode .card
+	.dark-mode .card,
+	.dark-mode .custom-select,
+	.dark-mode .select2-selection.select2-selection--single[role='combobox']
 	{
 		border-color: #646464 !important;
 	}
 
-	.dark-mode h1:not(.dark-h){
+
+
+
+	.dark-mode h1:not(.dark-h):not(.introjs-tooltip-title){
 		color: #c7c7c7 !important;
 	}
 

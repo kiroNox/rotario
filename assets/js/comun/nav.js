@@ -15,3 +15,15 @@ $("#logout_btn").on("click", (e)=>{
 		}
 	});
 });
+
+$("#help-btn").on("click", (e)=>{
+	console.log("queso");
+	if(typeof Intro !== 'undefined'){
+		Intro.setDontShowAgain(false);
+		Intro.start();
+	}
+	else{
+		introJs().setDontShowAgain(false);
+		introJs().start();
+	}
+});

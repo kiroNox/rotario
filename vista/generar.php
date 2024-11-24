@@ -12,15 +12,15 @@
                 <?php require_once("assets/comun/navar.php"); ?>
                 <div class="container-fluid">
                     <main class="main-content">
-                        <h1>Generar Constancia de Trabajo</h1>
+                        <h1 data-step="1" data-intro="Como el nombre indica puede generar la constancia de trabajo deseada">Generar Constancia de Trabajo</h1>
                         <!-- Brand Buttons -->
                         <div class="card shadow mb-4">
                             <div class="card-header py-3">
                                 <h6 class="m-0 font-weight-bold text-primary">Listado de trabajadores</h6>
                             </div>
-                            <div class="card-body" data-intro="Aqui tenemos un listado de trabajadores para gestionar sus Ausencias">
+                            <div class="card-body" >
                                 <div class="tab-pane " id="nav-consultar_usuarios" role="tabpanel" aria-labelledby="nav-consultar_usuarios-tab">
-                                    <table class="table table-bordered table-hover" id="tabla_trabajadores" width="100%" cellspacing="0">
+                                    <table data-step="2" data-intro="Aquí tienen la lista de trabajadores registrados actualmente" class="table table-bordered table-hover" id="tabla_trabajadores" width="100%" cellspacing="0">
                                         <thead>
                                             <tr>
                                                 <th>Cedula</th>
@@ -29,7 +29,7 @@
                                                 <th>Acciones</th>
                                             </tr>
                                         </thead>
-                                        <tbody id="tbody_trabajadores" class="row-cursor-pointer">
+                                        <tbody data-step="3" data-intro="Puede filtrar la lista de los trabajadores por nombre o cedula" id="tbody_trabajadores" class="row-cursor-pointer">
                                             <!-- Filas generadas dinámicamente -->
                                         </tbody>
                                     </table>
@@ -45,9 +45,16 @@
     <script src="assets/js/jquery.min.js"></script>
     <script src="assets/js/bootstrap.bundle.min.js"></script>
     <script src="assets/js/sb-admin-2.min.js"></script>
+    <script src="vendor/intro.js-7.2.0/package/minified/intro.min.js"></script>
+    <script src="assets/js/comun/introConfig.js"></script>
     <script>
         $(document).ready(function() {
             load_lista_usuarios();
+
+            Intro.setOption("disableInteraction",true);
+            Intro.start();
+
+
             
             function load_lista_usuarios(){
                 var datos = new FormData();

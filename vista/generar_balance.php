@@ -12,15 +12,15 @@
                 <?php require_once("assets/comun/navar.php"); ?>
                 <div class="container-fluid">
                     <main class="main-content">
-                        <h1>Generar Balance de Primas</h1>
+                        <h1 data-step="1" data-intro="Aquí puede generar el balance de primas de un mes es especifico">Generar Balance de Primas</h1>
                         <!-- Brand Buttons -->
                         <div class="card shadow mb-4">
-                            <div class="card-body" data-intro="Aqui tenem#os un listado de trabajadores para gestionar sus Ausencias">
+                            <div class="card-body">
                                 <div class="tab-pane " id="nav-consultar_usuarios" role="tabpanel" aria-labelledby="nav-consultar_usuarios-tab">
                                     <form method="POST" id="f1" onsubmit="return false">
                                         <div class="row justify-content-center">
                                             <div class="col" style="max-width: 500px;">
-                                                <input required type="date" id="fecha_1" name="fecha_desde" class="form-control">
+                                                <input data-step="2" data-intro="Debe ingresar una fecha en la que se halla realizado los pagos a los trabajadores solo hace falta que conicida el año y el mes" required type="date" id="fecha_1" name="fecha_desde" class="form-control">
                                             </div>
                                         </div>
                                         <input required type="date" id="fecha_2" name="fecha_hasta" value="2024-12-12" class="d-none">
@@ -37,6 +37,8 @@
             </div>
         </div>
     </div>
+    <script src="vendor/intro.js-7.2.0/package/minified/intro.min.js"></script>
+    <script src="assets/js/comun/introConfig.js"></script>
     <script>
         $(document).ready(function() {
 
@@ -108,6 +110,10 @@
                 a.click();
                 });
             });
+            Intro.setOption("disableInteraction",true);
+            Intro.start();
+
+
         });
     </script>
 </body>

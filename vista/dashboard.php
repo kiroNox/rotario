@@ -41,9 +41,9 @@
 
                 <!-- Begin Page Content -->
                 <div class="container-fluid"  >
-                 <a data-title="Hola!" data-intro="Bienvenido al Sistema de Recursos Humanos! 👋" class="card-demo"></a>
+                 <a class="card-demo intro-point-1"></a>
                     <!-- Content Row -->
-                    <div data-intro="Aca tenemos un resumen de varios aspectos importantes del sistema">
+                    <div class="intro-point-2">
 
                     <div class="row" >
 

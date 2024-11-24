@@ -1,34 +1,13 @@
 // INICIALIZANDO **************************
 	load_sueldos();
 	load_escalafon();
+	load_cargos_list();
 	eventoMonto("sueldo");
-
-	// eventoKeyup("cargo", /^[a-zA-Z\säÄëËïÏöÖüÜáéíóúáéíóúÁÉÍÓÚÂÊÎÔÛâêîôûàèìòùÀÈÌÒÙñÑ]{1,50}$/, "Solo se permiten letras", undefined,undefined,function(elem,resp){
-	// 		if(resp){
-				
-	// 			let found = false;
-	// 			document.querySelectorAll("#lista_cargos option").forEach(options =>{
-	// 				if(elem.value == options.innerText){
-	// 					found = true;
-	// 				}
-	// 			});
-
-	// 			console.log(found);
-
-	// 			if(!found){
-	// 				validarKeyUp(false, "cargo", "Por favor ingrese un valor de la lista o agregue uno nuevo");
-	// 			}
-	// 			else{
-	// 				validarKeyUp(true, "cargo", "Por favor ingrese un valor de la lista o agregue uno nuevo");
-
-	// 			}
-	// 		}
-
-	// 	});
-
 	eventoKeyup("tipo_nomina", /^[0-9]+$/, "Seleccion no valida");
 	eventoKeyup("escalafon", /^[0-9]+$/, "Seleccion no valida");
 	eventoKeyup("cargo", /^[0-9]+$/, "Seleccion no valida");
+	eventoKeyup("cargo_codigo", /^[0-9]+$/, "El código debe ser un numero y no puede tener espacios");
+	eventoKeyup("new_cargo", /^[a-zA-Z\säÄëËïÏöÖüÜáéíóúáéíóúÁÉÍÓÚÂÊÎÔÛâêîôûàèìòùÀÈÌÒÙñÑ\/]{1,50}$/, "Solo se permiten letras");
 
 	document.getElementById('escalafon').onchange = document.getElementById('tipo_nomina').onchange =function(){
 		this.onkeyup({key:""});
@@ -233,6 +212,18 @@
 		});
 	}
 
+	document.getElementById('f_cargos').onsubmit = function (e) {
+		e.preventDefault();
+		new_cargos_submit();
+	};
+
+	$('#nuevo_cargo').on('hide.bs.modal', function (e) {
+		
+		document.getElementById('f1').load();
+		$("#modal_asignar").modal("show");
+
+	});
+
 // FUNCIONES ******************************************
 
 	function load_escalafon(){
@@ -277,6 +268,8 @@
 				}
 				
 				$("#tbody_sueldos").html("");
+
+				let primera_fila=true;
 				
 				if (!$.fn.DataTable.isDataTable("#table_sueldos")) {
 					$("#table_sueldos").DataTable({
@@ -309,6 +302,7 @@
 
 							row.dataset.id = data.id_trabajador;
 
+
 							row.querySelector("td:nth-child(2)").appendChild(crearElem("span","class,d-block",data.apellido));
 							if(data.sueldo_base == "Por Asignar"){
 								row.querySelector("td:nth-child(3)").classList.add("text-danger","sin_asignar");
@@ -318,6 +312,11 @@
 
 
 							var acciones = row.querySelector("td:nth-child(8)");
+							if(primera_fila){
+								primera_fila = false;
+								acciones.dataset.step="2";
+								acciones.dataset.intro="Aquí puede asignar o eliminar el sueldo de un trabajador si tiene los permisos adecuados ";
+							}
 							acciones.innerHTML = '';
 							var btn = crearElem("button", "class,btn btn-warning,data-action,asignar", "<span class='bi bi-pencil-square' title='Asignar Sueldo'></span>")
 							if( checkPermisos("sueldo","modificar") )	{
@@ -363,4 +362,120 @@
 				muestraMensaje(lee.titulo, lee.mensaje,"error");
 			}
 		});
+	}
+
+	function new_cargos_submit(replace=false,dataTemp){
+		let form = document.getElementById('f_cargos');
+
+		if(form.sending){
+			return false;
+		}
+
+		//form.querySelector("button[type='submit']").disabled=true; // TODO agregar esto
+
+		let elem = document.querySelectorAll("#f_cargos input:not(input[type='hidden']):not(input[type='checkbox']), #f_cargos select");
+		for(var el of elem){
+			if(!el.validarme()){
+				return false;
+			}
+		}
+
+		if(dataTemp){
+			datos = dataTemp;
+		}
+		else{
+			var datos = new FormData(form);
+		}
+
+
+		datos.append("accion","new_cargo");
+		datos.append("replace",replace);
+		enviaAjax(datos,function(respuesta, exito, fail){
+		
+			var lee = JSON.parse(respuesta);
+			if(lee.resultado == "new_cargo"){
+
+				$('#nuevo_cargo').modal("hide");
+				load_cargos_list(datos.get("cargo_codigo"));
+				
+			}
+			else if (lee.resultado == "old_cargo_found"){
+				form.sending=undefined;
+				muestraMensaje("Advertencia", "El codigo del cargo ingresado ya existe<ENDL>¿Desea remplazar el cargo?", "w",function(resp){
+					if(resp){
+						new_cargos_submit(true,datos);
+						// load_cargos_list();
+					}
+				});
+			}
+			else if (lee.resultado == 'is-invalid'){
+				muestraMensaje(lee.titulo, lee.mensaje,"error");
+			}
+			else if(lee.resultado == "error"){
+				muestraMensaje(lee.titulo, lee.mensaje,"error");
+				console.error(lee.mensaje);
+			}
+			else if(lee.resultado == "console"){
+				console.log(lee.mensaje);
+			}
+			else{
+				muestraMensaje(lee.titulo, lee.mensaje,"error");
+			}
+			exito();
+		},"loader_body").p.finally((a)=>{
+			form.sending=undefined;
+		});
+
+
+
+	}
+
+	function load_cargos_list(codigo_selected=false){
+		var datos = new FormData();
+		datos.append("accion","load_cargos");
+		enviaAjax(datos,function(respuesta, exito, fail){
+		
+			var lee = JSON.parse(respuesta);
+			if(lee.resultado == "load_cargos"){
+
+				let lista = document.getElementById('cargo');
+
+				let array_lista = [];
+
+				lista.innerHTML ="";
+				lista.appendChild(crearElem("option","value,_","- Seleccione - "));
+				lee.mensaje.forEach((data)=>{
+					array_lista.push({id:data.codigo,text:data.cargo});
+					//lista.appendChild(crearElem("option",`value,${data.codigo}`,data.cargo));
+				});
+
+				 $('#cargo').select2({theme:'bootstrap',data:array_lista});
+
+				 if(codigo_selected!==false){
+					 $('#cargo').val(codigo_selected);
+					 $('#cargo').trigger('change');
+				 }
+
+				
+			}
+			else if (lee.resultado == 'is-invalid'){
+				muestraMensaje(lee.titulo, lee.mensaje,"error");
+			}
+			else if(lee.resultado == "error"){
+				muestraMensaje(lee.titulo, lee.mensaje,"error");
+				console.error(lee.mensaje);
+			}
+			else if(lee.resultado == "console"){
+				console.log(lee.mensaje);
+			}
+			else{
+				muestraMensaje(lee.titulo, lee.mensaje,"error");
+			}
+		});
+	}
+
+	function new_cargos(){
+		document.getElementById('f1').save();
+		$("#modal_asignar").modal("hide");
+		$("#nuevo_cargo").modal("show");
 	}

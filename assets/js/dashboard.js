@@ -1,7 +1,33 @@
+const IntroSteps = {
+    dontShowAgain:true,
+    steps:[{
+        element: document.querySelector('.intro-point-1'),
+        title: "Hola!",
+        intro: "Bienvenido al Sistema de Recursos Humanos! 👋"
+        },
+        {
+            element: document.querySelector('.intro-point-2'),
+            intro: "Acá tenemos un resumen de varios aspectos importantes del sistema"
+        },
+        {
+            element: document.querySelector('#accordionSidebar'),
+            intro: "Aquí podemos acceder a diferentes módulos del sistema"
+        },
+        {
+            element: document.querySelector('#userDropdown'),
+            intro: "Desde aquí podemos cerrar la sesión actual"
+        },
+        ]
+} 
+const Intro = introJs();
 $(document).ready(function() {
-    introJs().setOption("dontShowAgain", true).start();
+    Intro.onbeforechange((elem)=>{
+        if(elem.id=="accordionSidebar"){
+            document.getElementById('sidebarToggleTop').click();
+        }
+    })
+    Intro.setOptions( IntroSteps ).start();
 
-    console.log("adds");
     $.ajax({
         url: '',
         type: 'POST',

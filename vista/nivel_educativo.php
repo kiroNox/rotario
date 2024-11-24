@@ -14,13 +14,13 @@
 
 					<main class="main-content">
 						<div class="row mb-4">
-							<div class="col">
+							<div class="col" data-step="1" data-intro="Aquí puede gestionar el nivel educativo que se puede asignar a los trabajadores">
 								<h1 class="h3 mb-2 text-gray-800">Nivel Educativo</h1>
 								<p>Nivel Educativo de los trabajadores y la prima correspondiente</p>
 							</div>
 							<div class="col d-flex justify-content-end align-items-center">
 								<div>
-									<button class="btn btn-primary" data-toggle="modal" data-target="#modal_registrar_nivel_educativo">Registrar Nivel Educativo</button>
+									<button data-step="2" data-intro="Para registrar un nuevo nivel educativo debe pulsar este boton" class="btn btn-primary" data-toggle="modal" data-target="#modal_registrar_nivel_educativo">Registrar Nivel Educativo</button>
 								</div>
 							</div>
 						</div>
@@ -28,13 +28,13 @@
 
 
 
-						<table class="table table-bordered table-hover table-middle" id="table_nivel_profesional">
+						<table data-step="4" data-intro="Aquí puede ver la lista de todos los niveles educativos registrados" class="table table-bordered table-hover table-middle" id="table_nivel_profesional">
 							<thead class="bg-primary text-light">
 								<th>Nivel</th>
 								<!-- <th>Monto</th> -->
 								<th>Acción</th>
 							</thead>
-							<tbody id="tbody_nivel_profesional" class="text-center">
+							<tbody data-step="5" data-intro="Si posee los permisos podrá modificar/eliminar los niveles registrados" id="tbody_nivel_profesional" class="text-center">
 								
 							</tbody>
 							
@@ -52,7 +52,7 @@
 
 	<div class="modal fade" tabindex="-1" role="dialog" id="modal_registrar_nivel_educativo">
 		<div class="modal-dialog modal-md" role="document">
-			<div class="modal-content">
+			<div class="modal-content" data-step="3" data-intro="Solo necesita ingresar el nombre del nuevo nivel educativo y pulsar registrar">
 				<div class="modal-header text-light bg-primary">
 					<h5 class="modal-title">Nivel - Educación</h5>
 					<button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
@@ -85,6 +85,8 @@
 		</div>
 	</div>
 
+	<script src="vendor/intro.js-7.2.0/package/minified/intro.min.js"></script>
+	<script src="assets/js/comun/introConfig.js"></script>
 	<script>
 		load_niveles();
 
@@ -225,6 +227,26 @@
 
 
 		};
+
+
+		Intro.setOption("disableInteraction",true);
+		Intro.setOption("buttonClass","hide-prevButtom introjs-button");
+		Intro.onexit(()=>{$("#modal_registrar_nivel_educativo").modal("hide");})
+		console.log(Intro,"intro");
+		Intro.onbeforechange(async (elem)=>{
+			if(elem){
+				if(elem.dataset.step==3){
+					$("#modal_registrar_nivel_educativo").modal("show");
+	  				await new Promise(resolve => setTimeout(resolve, 400));
+
+				}
+				else if(elem.dataset.step==4){
+					$("#modal_registrar_nivel_educativo").modal("hide");
+	  				await new Promise(resolve => setTimeout(resolve, 400));
+				}
+			}
+		})
+		Intro.start();
 		
 
 

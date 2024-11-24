@@ -28,7 +28,7 @@
 	</style>
 	<title>Sueldo - Servicio Desconcentrado Hospital Rotario</title>
 </head>
-<body id="page-top">
+<body id="page-top" class="<?= $modo_oscuro ?>">
 	<div id="wrapper">
 		<?php   require_once("assets/comun/menu.php"); ?>
 		<div id="content-wrapper" class="d-flex flex-column">
@@ -37,7 +37,7 @@
 				<div class="container-fluid">                                                      
 
 					<main class="main-content">
-						<h1>sueldo</h1>
+						<h1 data-step="1" data-intro="Aquí puede gestionar el sueldo de los trabajadores">sueldo</h1>
 
 						<table class="table table-bordered table-responsive-xl scroll-bar-style" id="table_sueldos">
 							<thead>
@@ -198,152 +198,16 @@
 
 
 
-
+	<script src="vendor/intro.js-7.2.0/package/minified/intro.min.js"></script>
+	<script src="assets/js/comun/introConfig.js"></script>
 
 	<script src="assets/js/sueldos.js"></script>
 	<script src="assets/js/sb-admin-2.min.js"></script>
-
 	<script>
-		load_cargos_list();
-
-		
-		
-		$('#nuevo_cargo').on('hide.bs.modal', function (e) {
-			
-			document.getElementById('f1').load();
-			$("#modal_asignar").modal("show");
-
-		});
-
-		eventoKeyup("cargo_codigo", /^[0-9]+$/, "El código debe ser un numero y no puede tener espacios");
-		eventoKeyup("new_cargo", /^[a-zA-Z\säÄëËïÏöÖüÜáéíóúáéíóúÁÉÍÓÚÂÊÎÔÛâêîôûàèìòùÀÈÌÒÙñÑ\/]{1,50}$/, "Solo se permiten letras");
-
-		document.getElementById('f_cargos').onsubmit = function (e) {
-			e.preventDefault();
-			new_cargos_submit();
-		};
-
-		function new_cargos_submit(replace=false,dataTemp){
-			let form = document.getElementById('f_cargos');
-
-			if(form.sending){
-				return false;
-			}
-
-			//form.querySelector("button[type='submit']").disabled=true; // TODO agregar esto
-
-			let elem = document.querySelectorAll("#f_cargos input:not(input[type='hidden']):not(input[type='checkbox']), #f_cargos select");
-			for(var el of elem){
-				if(!el.validarme()){
-					return false;
-				}
-			}
-
-			if(dataTemp){
-				datos = dataTemp;
-			}
-			else{
-				var datos = new FormData(form);
-			}
-
-
-			datos.append("accion","new_cargo");
-			datos.append("replace",replace);
-			enviaAjax(datos,function(respuesta, exito, fail){
-			
-				var lee = JSON.parse(respuesta);
-				if(lee.resultado == "new_cargo"){
-
-					$('#nuevo_cargo').modal("hide");
-					load_cargos_list(datos.get("cargo_codigo"));
-					
-				}
-				else if (lee.resultado == "old_cargo_found"){
-					form.sending=undefined;
-					muestraMensaje("Advertencia", "El codigo del cargo ingresado ya existe<ENDL>¿Desea remplazar el cargo?", "w",function(resp){
-						if(resp){
-							new_cargos_submit(true,datos);
-							// load_cargos_list();
-						}
-					});
-				}
-				else if (lee.resultado == 'is-invalid'){
-					muestraMensaje(lee.titulo, lee.mensaje,"error");
-				}
-				else if(lee.resultado == "error"){
-					muestraMensaje(lee.titulo, lee.mensaje,"error");
-					console.error(lee.mensaje);
-				}
-				else if(lee.resultado == "console"){
-					console.log(lee.mensaje);
-				}
-				else{
-					muestraMensaje(lee.titulo, lee.mensaje,"error");
-				}
-				exito();
-			},"loader_body").p.finally((a)=>{
-				form.sending=undefined;
-			});
-
-
-
-		}
-
-		function load_cargos_list(codigo_selected=false){
-			var datos = new FormData();
-			datos.append("accion","load_cargos");
-			enviaAjax(datos,function(respuesta, exito, fail){
-			
-				var lee = JSON.parse(respuesta);
-				if(lee.resultado == "load_cargos"){
-
-					let lista = document.getElementById('cargo');
-
-					let array_lista = [];
-
-					lista.innerHTML ="";
-					lista.appendChild(crearElem("option","value,_","- Seleccione - "));
-					lee.mensaje.forEach((data)=>{
-						array_lista.push({id:data.codigo,text:data.cargo});
-						//lista.appendChild(crearElem("option",`value,${data.codigo}`,data.cargo));
-					});
-
-					 $('#cargo').select2({theme:'bootstrap',data:array_lista});
-
-					 if(codigo_selected!==false){
-						 $('#cargo').val(codigo_selected);
-						 $('#cargo').trigger('change');
-					 }
-
-					
-				}
-				else if (lee.resultado == 'is-invalid'){
-					muestraMensaje(lee.titulo, lee.mensaje,"error");
-				}
-				else if(lee.resultado == "error"){
-					muestraMensaje(lee.titulo, lee.mensaje,"error");
-					console.error(lee.mensaje);
-				}
-				else if(lee.resultado == "console"){
-					console.log(lee.mensaje);
-				}
-				else{
-					muestraMensaje(lee.titulo, lee.mensaje,"error");
-				}
-			});
-		}
-
-		function new_cargos(){
-			document.getElementById('f1').save();
-			$("#modal_asignar").modal("hide");
-			$("#nuevo_cargo").modal("show");
-		}
-
-
-
-
-
+		Intro.start();
 	</script>
-	
+
+
+
 </body>
 </html>

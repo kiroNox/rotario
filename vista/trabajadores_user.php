@@ -16,7 +16,7 @@
 
 </head>
 
-<body id="page-top">
+<body id="page-top" class="<?= $modo_oscuro ?>">
 
 
 	<!-- Page Wrapper -->
@@ -42,11 +42,11 @@
 						<!-- Page Heading -->
 						<div class="row mb-4">
 							<div class="col">
-								<h1 class="h3 mb-2 text-gray-800">Trabajadores</h1>
+								<h1 class="h3 mb-2 text-gray-800" data-title="Modulo de Trabajadores" data-intro="Desde aquí podemos Gestionar los trabajadores del sistema" data-step="1">Trabajadores</h1>
 							</div>
 							<div class="col d-flex justify-content-end align-items-center">
 								<div>
-									<button class="btn btn-primary" data-toggle="modal" data-target="#modal_registrar">Registrar Trabajadores</button>
+									<button class="btn btn-primary" data-toggle="modal" data-target="#modal_registrar" data-step="2" data-intro="Aquí podemos registrar un nuevo trabajador">Registrar Trabajadores</button>
 								</div>
 							</div>
 						</div>
@@ -57,7 +57,7 @@
 							<div class="tab-content" id="nav-tabContent">
 								<div class="tab-pane show active" id="nav-consultar_usuarios" role="tabpanel" aria-labelledby="nav-consultar_usuarios-tab">
 
-									<table class="table table-bordered table-middle scroll-bar-style" id="tabla_usuarios">
+									<table data-intro="Esta es la lista de trabajadores registrados" data-step="5" class="table table-bordered table-middle scroll-bar-style" id="tabla_usuarios">
 										<thead class="bg-primary text-light w-100">
 											<tr>
 												<th>Cedula</th>
@@ -70,7 +70,7 @@
 												<th>Acción</th>
 											</tr>
 										</thead>
-										<tbody id="tbody_usuarios" class="align-middle">
+										<tbody id="tbody_usuarios" class="align-middle" data-intro="Si tiene los permisos podrá modificar o eliminar los trabajadores" data-step="6">
 											<tr>
 												<td colspan="9" class="text-center"> No se encontraron registros de usuarios </td>
 											</tr>
@@ -212,7 +212,7 @@
 
 						<div class="modal fade" tabindex="-1" role="dialog" id="modal_registrar">
 							<div class="modal-dialog modal-xl" role="document">
-								<div class="modal-content">
+								<div class="modal-content" data-intro="Aquí podrá registrar un nuevo trabajador" data-step="3">
 									<div class="modal-header text-light bg-primary">
 										<h5 class="modal-title">Registrar Trabajadores</h5>
 										<button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
@@ -222,7 +222,7 @@
 									<div class="container" style="min-height: 200px;">
 										<form action="" method="POST" onsubmit="return false" id="f1">
 											<div class="row">
-												<div class="col-lg-4 col-12">
+												<div class="col-lg-4 col-12" data-intro="Debe ingresar una cedula valida para mostrar los siguientes campos" data-step="4">
 													<label for="cedula">Ingrese la cedula del nuevo trabajador</label>
 													<input type="text" class="form-control" id="cedula" name="cedula" data-span="invalid-span-cedula" value="V-2725051">
 													<span id="invalid-span-cedula" class="invalid-span text-danger"></span>
@@ -335,7 +335,6 @@
 								</div>
 							</div>
 						</div>
-						<script type="text/javascript" src="assets/js/usuarios.js"></script>
 					</div>
 				</main>
 
@@ -355,9 +354,48 @@
 	
 
 	 <!-- Page level plugins -->
+	<script src="vendor/intro.js-7.2.0/package/minified/intro.min.js"></script>
+	<script src="assets/js/comun/introConfig.js"></script>
+	<script type="text/javascript" src="assets/js/usuarios.js"></script>
+	<script>
+		Intro.setOption("disableInteraction",true);
+		Intro.setOption("buttonClass","hide-prevButtom introjs-button");
+		//Intro.setOption("buttonClass","introjs-button");
+
+		Intro.onbeforechange(async (elem)=> {
+			if(elem)
+			{
+				if(elem.dataset.step==3){
+					document.querySelector("button[data-target='#modal_registrar']").click();
+					await new Promise(resolve => setTimeout(resolve, 400));
+				}
+				else if (elem.dataset.step == 5){
+					$("#modal_registrar").modal("hide");
+				}
+			}
+  		});
+  		Intro.start();
+
+
+  		// introJs(".main-content").setOption("disableInteraction",true)addSteps([{
+		// 	element: document.querySelectorAll('#step2')[0],
+		// 	intro: "Ok, wasn't that fun?",
+		// 	position: 'right'
+		// }]).start();
+
+
+
+
+
+
+
+
+		
+	</script>
 	<script src="vendor/datatables/jquery.dataTables.min.js"></script>
 	<script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
 	<script src="assets/js/sb-admin-2.min.js"></script>
+
 </body>
 
 </html>

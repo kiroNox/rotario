@@ -13,13 +13,13 @@
 				<div class="container-fluid">                                                      
 					<main class="main-content">
 						<div class="row mb-4">
-							<div class="col">
+							<div class="col" data-intro="Aquí podrá gestionar los hijos de los trabajadores registrados" data-step="1">
 								<h1 class="h3 mb-2 text-gray-800">Hijos</h1>
 								<p>Hijos de los trabajadores</p>
 							</div>
 							<div class="col d-flex justify-content-end align-items-center">
 								<div>
-									<button class="btn btn-primary" data-toggle="modal" data-target="#modal_registar_hijos">Registrar Hijos</button>
+									<button class="btn btn-primary" data-toggle="modal" data-target="#modal_registar_hijos" data-intro="Aqui podra registrar nuevos hijos para los trabajadores ya registrados" data-step="2">Registrar Hijos</button>
 								</div>
 							</div>
 						</div>
@@ -29,7 +29,7 @@
 							<div class="card-body">
 								<div class="table-responsive">
 									
-									<table class="table table-bordered scroll-bar-style table-hover" id="tabla_hijos">
+									<table data-intro="Aquí se puede ver la lista de hijos registrados" data-step="5" class="table table-bordered scroll-bar-style table-hover" id="tabla_hijos">
 										<thead class="bg-primary text-light">
 											<tr>
 												<th>Nombre</th>
@@ -42,7 +42,7 @@
 												<th>Acción</th>
 											</tr>
 										</thead>
-										<tbody class="table-cell-aling-middle" id="tbody_hijos">
+										<tbody class="table-cell-aling-middle" id="tbody_hijos" data-intro="si tiene los permisos podrá modificarlos/eliminarlos" data-step="6">
 											<tr>
 												<td colspan="8" class="text-center"> Cargando </td>
 											</tr>
@@ -64,7 +64,7 @@
 		<div class="modal-dialog modal-xl" role="document">
 			<div class="modal-content">
 				<div class="modal-header text-light bg-primary">
-					<h5 class="modal-title">Registrar Hijo</h5>
+					<h5 class="modal-title" data-step="3" data-intro="Aquí podra registrar nuevos hijos">Registrar Hijo</h5>
 					<button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
 						<span aria-hidden="true">&times;</span>
 					</button>
@@ -73,7 +73,7 @@
 
 					<form action="" method="POST" onsubmit="return false" id="f1">
 						<input type="hidden" name="id" id="form_id_hijo">
-						<div class="row">
+						<div class="row" data-intro="Debe ingresar al menos un tutor" data-step="4">
 							<div class="col-6">
 								<div>
 									<label for="madre_cedula">Madre (cedula)</label>
@@ -105,15 +105,16 @@
 							<div class="col-12 col-md-4">
 								<label for="genero">Genero</label>
 								<select required id="genero" name="genero" data-span="invalid-span-genero" class="custom-select">
-									<option value=""></option>
+									<option value="">-Seleccione-</option>
 									<option value="F">Femenino</option>
 									<option value="M">Masculino</option>
 								</select>
 								<span id="invalid-span-genero" class="invalid-span text-danger"></span>
 							</div>
-							<div class="col-12 col-md-6">
-								<label for="discapacitado" class="d-block cursor-pointer">Discapacitado</label>
-								<input type="checkbox" id="discapacitado" class="cursor-pointer" name="discapacitado" data-span="invalid-span-discapacitado">
+							<div class="col-12 col-md-6 d-flex align-items-center py-2">
+								<input type="checkbox" id="discapacitado" class="cursor-pointer check-button" name="discapacitado" data-span="invalid-span-discapacitado">
+								<label for="discapacitado" class="check-button mr-2"></label>
+								<label for="discapacitado" class="d-block cursor-pointer m-0">Discapacitado</label>
 								<span id="invalid-span-discapacitado" class="invalid-span text-danger"></span>
 							</div>
 							<div class="col-12">
@@ -137,6 +138,8 @@
 			</div>
 		</div>
 	</div>
+	<script src="vendor/intro.js-7.2.0/package/minified/intro.min.js"></script>
+	<script src="assets/js/comun/introConfig.js"></script>
 	<script>
 		$('#modal_registar_hijos').on('hidden.bs.modal', function (e) {
 			$("#f1 input:not(input[type='checkbox']):not(input[type='submit']), #f1 select").each(function(index, el) {
@@ -366,6 +369,28 @@
 		 		}
 		 	}
 		},false);
+
+		
+		Intro.setOption("disableInteraction",true);
+		Intro.setOption("buttonClass","hide-prevButtom introjs-button");
+		Intro.onexit(()=>{$("#modal_registar_hijos").modal("hide");})
+		console.log(Intro,"intro");
+		Intro.onbeforechange(async (elem)=>{
+			if(elem){
+				if(elem.dataset.step==3){
+					$("#modal_registar_hijos").modal("show");
+	  				await new Promise(resolve => setTimeout(resolve, 400));
+
+				}
+				else if(elem.dataset.step==5){
+					$("#modal_registar_hijos").modal("hide");
+	  				await new Promise(resolve => setTimeout(resolve, 400));
+				}
+			}
+		})
+		Intro.start();
+
+
 
 	// Funciones ************************************************
 		function valid_parent(etiqueta,valid)

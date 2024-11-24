@@ -71,7 +71,7 @@
                     <!-- Nav Item - User Information -->
                     <li class="nav-item dropdown no-arrow">
                         <a class="nav-link dropdown-toggle no-select" draggable="false" href="#" id="userDropdown" role="button"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-intro="Desde aqui podemos cerrar la sesión actual" data-step="4">
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <span class="mr-2 d-none d-lg-inline text-gray-600 small"><?=$_SESSION["usuario_rotario_name"] ?></span>
                         <!-- <img class="img-profile rounded-circle" src=""> -->
                                 <span class="img-profile rounded-circle bi bi-person-circle d-flex justify-content-center align-items-center" style="font-size: 2rem"></span>
@@ -96,6 +96,11 @@
                                     <!-- <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400 cursor-pointer"></i> -->
                                     <span>Mi Perfil</span>
                                     <span class="fas fa-id-card"></span>
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item cursor-pointer" href="#" id="help-btn" onclick="return false;">
+                                    <span>Mostrar Ayuda</span>
+                                    <span class="fas fa-question"></span>
                                 </a>
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item cursor-pointer" href="#" id="logout_btn" onclick="return false">
