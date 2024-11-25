@@ -36,7 +36,7 @@ class FormulaeliminarFormulaTest extends TestCase
         return [
 
             //test caso 1 Eliminar formula valido
-            ["74","eliminar_formula", 1],
+            ["75","eliminar_formula", 1],
             //test caso 2 Eliminar formula valido
             ["formula","error", 2],
             //test caso 3 Eliminar formula inexistente

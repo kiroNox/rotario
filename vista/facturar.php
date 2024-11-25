@@ -627,7 +627,7 @@
 		function data_table_detalles(table,data,extra = ''){
 			if(extra != ''){
 				data.push({descripcion: "<b>Sueldo Base</b>", monto: extra.sueldo_base})
-				data.push({descripcion: "<b>Sueldo Integral</b>", monto: extra.suma_integral})
+				data.push({descripcion: "<b>Sueldo Bruto</b>", monto: extra.suma_integral})
 				data.push({descripcion: "<b>Deducciones</b>", monto: extra.sueldo_deducido})
 				data.push({descripcion: "<b>Total A Pagar</b>", monto: extra.sueldo_total})
 			}

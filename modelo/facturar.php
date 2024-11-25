@@ -85,16 +85,14 @@ class Facturar extends Conexion
 
 			$consulta = null;
 
-			 $consulta = $this->con->prepare("SELECT descripcion, monto from detalles_factura as d WHERE d.id_factura = :id AND d.prima IS true
-			 UNION
-			 SELECT descripcion, CONCAT('-',monto) from detalles_factura as d WHERE d.id_factura = :id AND (d.prima IS FALSE OR d.islr IS TRUE);");
-			$consulta->bindValue(":id",$this->id);;
-			$consulta->execute();
-
-			if(!($resp2 = $consulta->fetchall(PDO::FETCH_ASSOC))){// TODO quitar esto
+			
 
 
-			$consulta = $this->con->prepare("call calcular_detalles(:id)");
+
+			$consulta = $this->con->prepare("SELECT pg.descripcion,fpg.monto FROM factura_primas_generales fpg 
+LEFT JOIN primas_generales as pg on pg.id_primas_generales = fpg.id_primas_generales 
+LEFT JOIN factura f on f.id_factura = fpg.id_factura
+WHERE f.id_factura = :id ;");
 
 
 			$consulta->bindValue(":id",$this->id);;
@@ -102,7 +100,6 @@ class Facturar extends Conexion
 
 			$resp2 = $consulta->fetchall(PDO::FETCH_ASSOC);
 
-			}
 
 			
 			$r['resultado'] = 'detalles_factura';
@@ -635,16 +632,7 @@ class Facturar extends Conexion
 
 			
 
-			foreach ($facturas as &$elem) {
-				$this->id = $elem["id_factura"];
-				$elem["detalles"] = $this->detalles_factura()["detalles"];
-				$consulta = $this->con->prepare("SELECT COALESCE(sum(monto),0) as islr FROM detalles_factura WHERE id_factura = ? AND islr IS TRUE;");
-				$consulta->execute([$elem["id_factura"]]);;
-				$elem["islr"] = $consulta->fetch(PDO::FETCH_ASSOC)["islr"];
-				$consulta = null;
-
-
-			}
+	
 
 
 

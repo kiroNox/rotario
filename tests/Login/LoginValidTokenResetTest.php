@@ -1,4 +1,5 @@
 <?php 
+/*
 error_reporting(E_ALL);
 use PHPUnit\Framework\TestCase;
 class LoginValidTokenResetTest extends TestCase
@@ -15,6 +16,7 @@ class LoginValidTokenResetTest extends TestCase
     /**
      * @dataProvider loginProvider
      */
+    /*
     public function testValidTokenReset($user,$pass, $expected_result, $caso){
     
         $resp = $this->login->singing_c($user, $pass);

@@ -91,20 +91,21 @@ class calendario extends Conexion
     PRIVATE function modificar_d() {
         try {
             // Validaciones para los datos del evento
-            $this->validar_conexion($this->con);
             Validaciones::alfanumerico($this->descripcion, "1,200", "La descripción no es válida");
             Validaciones::fecha($this->fecha, "Fecha del evento no válida");
             Validaciones::validar($this->recurrente,"/^(?:0|1)$/","El valor de recurrencia no es valido");
+            $this->validar_conexion($this->con);
+            $this->con->beginTransaction();
     
-            $consultaDuplicado = $this->con->prepare("SELECT 1 FROM calendario WHERE fecha = :fecha;");
-            $consultaDuplicado->bindValue(":fecha", $this->fecha);
-            $consultaDuplicado->execute();
+            // Verificar si ya existe un evento con la misma fecha
+            $consulta = $this->con->prepare("SELECT 1 FROM `calendario` WHERE `fecha` = :fecha");
+            $consulta->bindValue(":fecha", $this->fecha);
+            $consulta->execute();
 
-            if(!$consultaDuplicado->fetch()){
-                throw new Exception("La fecha a modificar/eliminar no existe", 1);
+            if(!$consulta->fetch()){
+                throw new Exception("La fecha a modificar no existe",1);
             }
     
-            $this->con->beginTransaction();
     
             $consulta = $this->con->prepare("UPDATE calendario SET descripcion = :descripcion, recurrente = :recurrente WHERE fecha = :fecha");
             $consulta->bindValue(":descripcion", $this->descripcion);
@@ -143,6 +144,14 @@ class calendario extends Conexion
     
             $this->validar_conexion($this->con);
             $this->con->beginTransaction();
+
+            $consulta = $this->con->prepare("SELECT 1 FROM `calendario` WHERE `fecha` = :fecha");
+            $consulta->bindValue(":fecha", $this->fecha);
+            $consulta->execute();
+
+            if(!$consulta->fetch()){
+                throw new Exception("La fecha a elimnar no existe",1);
+            }
     
             $consulta = $this->con->prepare("DELETE FROM `calendario` WHERE `fecha` = :fecha");
             $consulta->bindValue(":fecha", $this->fecha);
@@ -177,6 +186,11 @@ class calendario extends Conexion
             // Validaciones para obtener eventos
             Validaciones::numero($year, "4", "El año no es válido");
             Validaciones::numero($month, "1,2", "El mes no es válido");
+
+            // verifica que el mes no sea mayor a 12 ni menor a 1    
+            if (intval($month) < 1 || intval($month) > 12) {
+                throw new Exception("El mes no es valido",1);
+            }
     
             $this->validar_conexion($this->con);
             $this->con->beginTransaction();
