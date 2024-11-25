@@ -123,15 +123,23 @@
                 ["permisos"=>"permisos", "href"=>"permisos_usuario", "descrip" => "Roles y Permisos"]
             ]
         ];
+        
+
+        $lista_separadores[] = $obj;
+
+        $obj = new stdClass();
+        $obj->{"separator"} = "Ayuda";
+        $obj->items = [];
         $obj->items[] = [
-            "collapse"=>"Mantenimiento",
-            "icono"=>"fas fa-fw fa-folder",
+            "collapse" => "Documentación",
+            "icono" => "fas fa-fw fa-book",
             "lista" => [
-                ["permisos"=>"innecesario", "href"=>"restaurar_bd", "descrip" => "Restaurar/Exportar BD"]
+                ["permisos" => "innecesario", "href" => "manual_usuario", "descrip" => "Manual del Usuario"]
             ]
         ];
 
-        $lista_separadores[] = $obj;
+$lista_separadores[] = $obj;
+
 
 
         function print_items($items,$n,$active=false){
